@@ -1,0 +1,47 @@
+{
+  "name": "grumpy-reviewer",
+  "version": "0.1.0",
+  "description": "Your agent's code, reviewed by the staff engineer who has rejected 4,000 pull requests, before it ever reaches your branch.",
+  "license": "MIT",
+  "author": "Sandeep Bazar (https://github.com/sandeepbazar)",
+  "homepage": "https://lazy-senior-dev.github.io/grumpy-reviewer",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lazy-senior-dev/grumpy-reviewer.git"
+  },
+  "bugs": "https://github.com/lazy-senior-dev/grumpy-reviewer/issues",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "rules/",
+    "hooks/",
+    "skills/",
+    "action/",
+    "action.yml",
+    ".claude-plugin/",
+    "AGENTS.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "node scripts/build-adapters.mjs",
+    "check": "node scripts/check-adapters.mjs && node scripts/check-attribution.mjs && node scripts/check-manifests.mjs",
+    "test": "node --test tests/",
+    "bench": "node benchmarks/run.mjs",
+    "bench:report": "node benchmarks/report.mjs",
+    "chart": "node scripts/render-chart.mjs",
+    "gif": "vhs docs/demo.tape"
+  },
+  "keywords": [
+    "code-review",
+    "ai-agents",
+    "claude-code",
+    "codex",
+    "github-action",
+    "agent-skills",
+    "persona",
+    "pull-request"
+  ]
+}
