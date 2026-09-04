@@ -137,7 +137,7 @@ const wanted = opt("--agent", null);
 const available = await availableAgents();
 const agentName = wanted && AGENTS[wanted] ? wanted : available[0];
 if (!agentName || (wanted && !available.includes(wanted))) {
-  console.error(`No headless agent found${wanted ? ` for --agent ${wanted}` : ""}. Install and sign in to one of: claude, codex, agy; or set ANTHROPIC_API_KEY / OPENAI_API_KEY.`);
+  console.error(`No headless agent found${wanted ? ` for --agent ${wanted}` : ""}. Install and sign in to one of: claude, codex, agy, bob (with BOB_API_KEY); or set ANTHROPIC_API_KEY.`);
   process.exit(2);
 }
 const agent = AGENTS[agentName];
