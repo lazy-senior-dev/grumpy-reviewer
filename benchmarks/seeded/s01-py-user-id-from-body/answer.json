@@ -1,0 +1,1 @@
+{"id":"s01-py-user-id-from-body","language":"python","category":"auth","verdict":"BLOCK","file":"app/api/profiles.py","lines":[14,15],"defect":"user_id is read from the request body instead of the session, so any authenticated caller can read any profile","match":["user_id","session|authoriz|authenticated user|any (other )?user|IDOR|insecure direct|another user"]}

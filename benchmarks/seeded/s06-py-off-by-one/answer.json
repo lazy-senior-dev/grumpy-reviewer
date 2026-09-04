@@ -1,0 +1,1 @@
+{"id":"s06-py-off-by-one","language":"python","category":"correctness","verdict":"REQUEST_CHANGES","file":"app/api/pagination.py","lines":[12,13],"defect":"the last page is computed with integer division, so a final partial page is never served","match":["off-by-one|off by one|last page|partial page|ceil|\\+ ?1|// ?page_size|integer division|dropped|missing (the )?last"]}

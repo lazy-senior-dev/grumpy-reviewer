@@ -1,0 +1,17 @@
+Ticket: CI-21 "Cache npm dependencies to cut CI time"
+
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -12,9 +12,11 @@ jobs:
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v4
+       - uses: actions/setup-node@v4
+         with:
+           node-version: 22
++          cache: npm
++          cache-dependency-path: package-lock.json
+       - run: npm ci
+       - run: npm test
+       - run: npm run lint

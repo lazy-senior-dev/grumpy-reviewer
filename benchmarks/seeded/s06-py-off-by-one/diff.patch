@@ -1,0 +1,30 @@
+Ticket: API-58 "Paginate the audit log endpoint"
+
+diff --git a/app/api/pagination.py b/app/api/pagination.py
+--- a/app/api/pagination.py
++++ b/app/api/pagination.py
+@@ -0,0 +1,24 @@
++from dataclasses import dataclass
++
++
++@dataclass(frozen=True)
++class Page:
++    items: list
++    page: int
++    total_pages: int
++
++
++def paginate(items: list, page: int, page_size: int = 25) -> Page:
++    if page < 1:
++        raise ValueError("page starts at 1")
++    total_pages = len(items) // page_size
++    if page > max(total_pages, 1):
++        return Page(items=[], page=page, total_pages=total_pages)
++    start = (page - 1) * page_size
++    return Page(items=items[start : start + page_size], page=page, total_pages=total_pages)
++
++
++def next_page(current: Page) -> int | None:
++    if current.page >= current.total_pages:
++        return None
++    return current.page + 1

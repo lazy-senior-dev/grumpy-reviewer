@@ -1,0 +1,30 @@
+Ticket: PROMO-14 "Coupons can be redeemed a limited number of times"
+
+diff --git a/src/coupons/redeem.ts b/src/coupons/redeem.ts
+--- a/src/coupons/redeem.ts
++++ b/src/coupons/redeem.ts
+@@ -1,7 +1,24 @@
+ import { db } from "../db";
+ 
+ export class CouponExhausted extends Error {}
+ 
+-export async function redeem(_code: string, _orderId: string): Promise<void> {
+-  throw new Error("not implemented");
++export async function redeem(code: string, orderId: string): Promise<void> {
++  const coupon = await db.coupon.findUnique({ where: { code } });
++  if (!coupon) throw new Error(`unknown coupon ${code}`);
++  if (coupon.redeemed >= coupon.maxRedemptions) {
++    throw new CouponExhausted(code);
++  }
++  await db.coupon.update({
++    where: { code },
++    data: { redeemed: coupon.redeemed + 1 },
++  });
++  await db.redemption.create({ data: { couponCode: code, orderId } });
++}
++
++export async function remaining(code: string): Promise<number> {
++  const coupon = await db.coupon.findUnique({ where: { code } });
++  if (!coupon) return 0;
++  return Math.max(0, coupon.maxRedemptions - coupon.redeemed);
+ }

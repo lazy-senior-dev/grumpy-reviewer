@@ -1,0 +1,37 @@
+Ticket: WEB-140 "Deploy a preview site for every pull request"
+
+diff --git a/.github/workflows/pr-preview.yml b/.github/workflows/pr-preview.yml
+--- /dev/null
++++ b/.github/workflows/pr-preview.yml
+@@ -0,0 +1,31 @@
++name: pr-preview
++
++on:
++  pull_request_target:
++    types: [opened, synchronize]
++
++permissions:
++  contents: read
++  pull-requests: write
++
++jobs:
++  preview:
++    runs-on: ubuntu-latest
++    steps:
++      - uses: actions/checkout@v4
++        with:
++          ref: ${{ github.event.pull_request.head.sha }}
++          repository: ${{ github.event.pull_request.head.repo.full_name }}
++      - uses: actions/setup-node@v4
++        with:
++          node-version: 22
++      - run: npm ci && npm run build
++      - name: Deploy preview
++        run: npx netlify deploy --dir=dist --alias=pr-${{ github.event.pull_request.number }}
++        env:
++          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
++          NETLIFY_SITE_ID: ${{ vars.NETLIFY_SITE_ID }}
++      - name: Comment link
++        run: gh pr comment ${{ github.event.pull_request.number }} --body "Preview: https://pr-${{ github.event.pull_request.number }}--site.netlify.app"
++        env:
++          GH_TOKEN: ${{ github.token }}

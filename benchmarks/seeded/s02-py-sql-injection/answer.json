@@ -1,0 +1,1 @@
+{"id":"s02-py-sql-injection","language":"python","category":"injection","verdict":"BLOCK","file":"app/search.py","lines":[9,10],"defect":"the search term is interpolated into the SQL string; a crafted term runs arbitrary SQL","match":["sql injection|injection|interpolat|f-string|format|parameteri[sz]|placeholder|bind"]}

@@ -1,0 +1,28 @@
+Ticket: INV-23 "GET /invoices/:id returns the invoice as JSON"
+
+diff --git a/src/http/invoices.ts b/src/http/invoices.ts
+--- a/src/http/invoices.ts
++++ b/src/http/invoices.ts
+@@ -1,8 +1,24 @@
+ import type { Request, Response } from "express";
+ import { findInvoice } from "../invoices/repo";
+ 
+ export function registerInvoiceRoutes(app: import("express").Express) {
+-  app.get("/invoices/:id", (_req: Request, res: Response) => res.status(501).end());
++  app.get("/invoices/:id", getInvoice);
+ }
++
++export async function getInvoice(req: Request, res: Response) {
++  const id = String(req.params.id);
++  if (!/^inv_[a-z0-9]{12}$/.test(id)) {
++    res.status(400).json({ error: "invalid invoice id" });
++    return;
++  }
++  const invoice = await findInvoice(id);
++  if (!invoice) {
++    res.status(200).json({ ok: false, error: "invoice not found" });
++    return;
++  }
++  res.setHeader("Cache-Control", "private, max-age=60");
++  res.status(200).json({ ok: true, invoice });
++}

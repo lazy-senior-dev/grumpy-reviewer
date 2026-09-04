@@ -1,0 +1,36 @@
+Ticket: PLAT-214 "Run the image-resize worker in the cluster"
+
+diff --git a/deploy/k8s/worker-deployment.yaml b/deploy/k8s/worker-deployment.yaml
+--- /dev/null
++++ b/deploy/k8s/worker-deployment.yaml
+@@ -0,0 +1,31 @@
++apiVersion: apps/v1
++kind: Deployment
++metadata:
++  name: image-worker
++  namespace: media
++spec:
++  replicas: 3
++  selector:
++    matchLabels:
++      app: image-worker
++  template:
++    metadata:
++      labels:
++        app: image-worker
++    spec:
++      terminationGracePeriodSeconds: 60
++      containers:
++        - name: worker
++          image: registry.example.com/media/image-worker:2.4.1
++          args: ["--queue", "resize", "--concurrency", "4"]
++          env:
++            - name: QUEUE_URL
++              valueFrom:
++                secretKeyRef:
++                  name: media-queue
++                  key: url
++          livenessProbe:
++            exec:
++              command: ["/bin/worker", "health"]
++            periodSeconds: 30

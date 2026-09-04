@@ -1,0 +1,27 @@
+Ticket: EXP-15 "Let users download their exports as a tarball"
+
+diff --git a/app/exports/archive.py b/app/exports/archive.py
+--- a/app/exports/archive.py
++++ b/app/exports/archive.py
+@@ -1,6 +1,21 @@
+ import os
+ import subprocess
+ 
+ EXPORT_ROOT = "/var/exports"
+ 
+ 
++def archive_export(user_id: int, export_name: str) -> str:
++    """Create /var/exports/<user_id>/<export_name>.tar.gz and return its path."""
++    src = os.path.join(EXPORT_ROOT, str(user_id), export_name)
++    if not os.path.isdir(src):
++        raise FileNotFoundError(src)
++    dest = f"{src}.tar.gz"
++    cmd = f"tar -czf {dest} -C {os.path.dirname(src)} {export_name}"
++    result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=120)
++    if result.returncode != 0:
++        raise RuntimeError(f"tar failed: {result.stderr.strip()}")
++    return dest
++
++
+ def export_size(path: str) -> int:
+     return os.path.getsize(path)

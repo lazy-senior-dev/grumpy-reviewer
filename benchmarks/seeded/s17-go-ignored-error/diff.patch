@@ -1,0 +1,40 @@
+Ticket: CFG-12 "Load service config from a JSON file with env override"
+
+diff --git a/internal/config/load.go b/internal/config/load.go
+--- /dev/null
++++ b/internal/config/load.go
+@@ -0,0 +1,34 @@
++package config
++
++import (
++	"encoding/json"
++	"fmt"
++	"os"
++)
++
++type Config struct {
++	ListenAddr   string `json:"listen_addr"`
++	DatabaseURL  string `json:"database_url"`
++	ReadTimeoutS int    `json:"read_timeout_s"`
++}
++
++func Load(path string) (Config, error) {
++	var cfg Config
++	raw, err := os.ReadFile(path)
++	if err != nil {
++		return cfg, fmt.Errorf("read config %s: %w", path, err)
++	}
++	_ = json.Unmarshal(raw, &cfg)
++	if v := os.Getenv("LISTEN_ADDR"); v != "" {
++		cfg.ListenAddr = v
++	}
++	if v := os.Getenv("DATABASE_URL"); v != "" {
++		cfg.DatabaseURL = v
++	}
++	if cfg.ReadTimeoutS == 0 {
++		cfg.ReadTimeoutS = 15
++	}
++	return cfg, nil
++}
++
++func (c Config) Addr() string { return c.ListenAddr }

@@ -1,0 +1,30 @@
+Ticket: OBS-12 "Wrap storage errors with the object key so incidents are searchable"
+
+diff --git a/internal/blob/store.go b/internal/blob/store.go
+--- a/internal/blob/store.go
++++ b/internal/blob/store.go
+@@ -1,24 +1,25 @@
+ package blob
+ 
+ import (
+ 	"context"
++	"fmt"
+ 	"io"
+ )
+ 
+ func (s *Store) Put(ctx context.Context, key string, r io.Reader) error {
+ 	if err := s.client.Upload(ctx, s.bucket, key, r); err != nil {
+-		return err
++		return fmt.Errorf("blob put %s/%s: %w", s.bucket, key, err)
+ 	}
+ 	return nil
+ }
+ 
+ func (s *Store) Get(ctx context.Context, key string) (io.ReadCloser, error) {
+ 	rc, err := s.client.Download(ctx, s.bucket, key)
+ 	if err != nil {
+-		return nil, err
++		return nil, fmt.Errorf("blob get %s/%s: %w", s.bucket, key, err)
+ 	}
+ 	return rc, nil
+ }

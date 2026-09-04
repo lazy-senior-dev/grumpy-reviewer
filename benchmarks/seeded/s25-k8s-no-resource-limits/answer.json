@@ -1,0 +1,1 @@
+{"id":"s25-k8s-no-resource-limits","language":"yaml","category":"inputs","verdict":"REQUEST_CHANGES","file":"deploy/k8s/worker-deployment.yaml","lines":[18,19,20,21],"defect":"the worker container declares no resource requests or limits, so one runaway worker can starve every other pod on the node","match":["limit|request|resources|memory|cpu|OOM|starve|node|evict|unbounded"]}

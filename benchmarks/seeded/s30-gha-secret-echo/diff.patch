@@ -1,0 +1,36 @@
+Ticket: REL-12 "Publish the package on tag and fix the flaky auth step"
+
+diff --git a/.github/workflows/release.yml b/.github/workflows/release.yml
+--- a/.github/workflows/release.yml
++++ b/.github/workflows/release.yml
+@@ -1,24 +1,30 @@
+ name: release
+ 
+ on:
+   push:
+     tags: ["v*"]
+ 
+ permissions:
+   contents: write
+   id-token: write
+ 
+ jobs:
+   publish:
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v4
+       - uses: actions/setup-node@v4
+         with:
+           node-version: 22
+           registry-url: https://registry.npmjs.org
+       - run: npm ci
+       - run: npm test
++      - name: Check registry auth
++        run: |
++          echo "token=${{ secrets.NPM_TOKEN }}"
++          npm whoami
++        env:
++          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+       - run: npm publish --provenance --access public
+         env:
+           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

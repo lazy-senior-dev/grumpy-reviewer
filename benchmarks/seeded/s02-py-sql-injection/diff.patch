@@ -1,0 +1,22 @@
+Ticket: SRCH-77 "Search orders by customer name prefix"
+
+diff --git a/app/search.py b/app/search.py
+--- a/app/search.py
++++ b/app/search.py
+@@ -1,6 +1,18 @@
+ from app.db import query_all
+ 
+ 
+ def orders_for_customer(customer_id: int):
+     return query_all("select * from orders where customer_id = %s", (customer_id,))
++
++
++def orders_by_customer_prefix(prefix: str, limit: int = 50):
++    prefix = prefix.strip()
++    if not prefix:
++        return []
++    sql = (
++        "select o.id, o.total, c.name from orders o join customers c on c.id = o.customer_id "
++        f"where c.name like '{prefix}%' order by o.created_at desc limit {int(limit)}"
++    )
++    return query_all(sql)

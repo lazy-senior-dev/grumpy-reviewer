@@ -1,0 +1,1 @@
+{"id":"c08-go-error-wrapping","language":"go","clean":true,"note":"adds context to returned errors, no behaviour change"}

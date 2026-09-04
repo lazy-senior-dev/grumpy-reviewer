@@ -1,0 +1,29 @@
+Ticket: DX-8 "Type-annotate the slug helpers so mypy passes on app/text"
+
+diff --git a/app/text/slug.py b/app/text/slug.py
+--- a/app/text/slug.py
++++ b/app/text/slug.py
+@@ -1,13 +1,17 @@
+ import re
+ import unicodedata
+ 
+ _NON_WORD = re.compile(r"[^a-z0-9]+")
+ 
+ 
+-def slugify(text, max_length=64):
++def slugify(text: str, max_length: int = 64) -> str:
++    """Lower-case ASCII slug of `text`, at most `max_length` characters, never ending in a dash."""
+     normalized = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode("ascii")
+     slug = _NON_WORD.sub("-", normalized.lower()).strip("-")
+     return slug[:max_length].rstrip("-")
+ 
+ 
+-def unique_slug(base, taken):
++def unique_slug(base: str, taken: set[str]) -> str:
++    """Return `base` or `base-N` for the smallest N that is not in `taken`."""
+     if base not in taken:
+         return base
+     n = 2
+     while f"{base}-{n}" in taken:
+         n += 1
+     return f"{base}-{n}"

@@ -1,0 +1,1 @@
+{"id":"c05-gha-add-cache","language":"yaml","clean":true,"note":"adds dependency caching with a pinned action and a lockfile-keyed cache"}

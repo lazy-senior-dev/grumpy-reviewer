@@ -1,0 +1,1 @@
+{"id":"s16-ts-needless-dependency","language":"typescript","category":"dependencies","verdict":"REQUEST_CHANGES","file":"package.json","lines":[8],"defect":"a new runtime dependency is added to check whether a number is even, which is one line of arithmetic","match":["dependenc|is-even|% ?2|modulo|one line|trivial|supply|npm|package"]}

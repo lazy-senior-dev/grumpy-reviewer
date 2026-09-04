@@ -1,0 +1,42 @@
+Ticket: CHK-46 "Geocode the shipping address at checkout"
+
+diff --git a/internal/geo/client.go b/internal/geo/client.go
+--- /dev/null
++++ b/internal/geo/client.go
+@@ -0,0 +1,35 @@
++package geo
++
++import (
++	"encoding/json"
++	"fmt"
++	"net/http"
++	"net/url"
++)
++
++type Point struct {
++	Lat, Lng float64
++}
++
++type Client struct {
++	http    *http.Client
++	baseURL string
++	apiKey  string
++}
++
++func NewClient(baseURL, apiKey string) *Client {
++	return &Client{http: &http.Client{}, baseURL: baseURL, apiKey: apiKey}
++}
++
++func (c *Client) Geocode(address string) (Point, error) {
++	u := fmt.Sprintf("%s/v1/geocode?q=%s&key=%s", c.baseURL, url.QueryEscape(address), url.QueryEscape(c.apiKey))
++	resp, err := c.http.Get(u)
++	if err != nil {
++		return Point{}, fmt.Errorf("geocode: %w", err)
++	}
++	defer resp.Body.Close()
++	if resp.StatusCode != http.StatusOK {
++		return Point{}, fmt.Errorf("geocode: provider returned %d", resp.StatusCode)
++	}
++	var p Point
++	return p, json.NewDecoder(resp.Body).Decode(&p)
++}

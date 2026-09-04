@@ -1,0 +1,44 @@
+Ticket: PLAT-210 "Deploy the api service to the staging cluster"
+
+diff --git a/deploy/k8s/api-deployment.yaml b/deploy/k8s/api-deployment.yaml
+--- /dev/null
++++ b/deploy/k8s/api-deployment.yaml
+@@ -0,0 +1,38 @@
++apiVersion: apps/v1
++kind: Deployment
++metadata:
++  name: api
++  namespace: staging
++  labels:
++    app: api
++spec:
++  replicas: 2
++  selector:
++    matchLabels:
++      app: api
++  template:
++    metadata:
++      labels:
++        app: api
++    spec:
++      containers:
++        - name: api
++          image: registry.example.com/shop/api:latest
++          ports:
++            - containerPort: 8080
++          env:
++            - name: LISTEN_ADDR
++              value: ":8080"
++          resources:
++            requests:
++              cpu: 100m
++              memory: 128Mi
++            limits:
++              cpu: 500m
++              memory: 256Mi
++          readinessProbe:
++            httpGet:
++              path: /healthz
++              port: 8080
++            initialDelaySeconds: 3
++            periodSeconds: 10

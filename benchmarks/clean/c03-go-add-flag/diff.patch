@@ -1,0 +1,34 @@
+Ticket: CLI-17 "Add --shutdown-timeout so operators can tune graceful shutdown"
+
+diff --git a/cmd/api/main.go b/cmd/api/main.go
+--- a/cmd/api/main.go
++++ b/cmd/api/main.go
+@@ -12,16 +12,24 @@ import (
+ 
+ func main() {
+ 	addr := flag.String("addr", ":8080", "listen address")
++	shutdownTimeout := flag.Duration("shutdown-timeout", 15*time.Second, "how long to wait for in-flight requests on SIGTERM")
+ 	flag.Parse()
++	if *shutdownTimeout <= 0 {
++		fmt.Fprintln(os.Stderr, "--shutdown-timeout must be positive")
++		os.Exit(2)
++	}
+ 
+ 	srv := server.New(*addr)
+ 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
+ 	defer stop()
+ 
+ 	go func() {
+ 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+ 			slog.Error("server stopped", "err", err)
+ 			os.Exit(1)
+ 		}
+ 	}()
+ 	<-ctx.Done()
+-	shutdownCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
++	shutdownCtx, cancel := context.WithTimeout(context.Background(), *shutdownTimeout)
+ 	defer cancel()
+ 	if err := srv.Shutdown(shutdownCtx); err != nil {
+ 		slog.Error("graceful shutdown failed", "err", err)
+ 	}
+ }

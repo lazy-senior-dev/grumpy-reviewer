@@ -1,0 +1,36 @@
+Ticket: OBS-71 "Count requests per route for the /metrics page"
+
+diff --git a/internal/metrics/counter.go b/internal/metrics/counter.go
+--- /dev/null
++++ b/internal/metrics/counter.go
+@@ -0,0 +1,30 @@
++package metrics
++
++import (
++	"fmt"
++	"net/http"
++	"sort"
++)
++
++var routeHits = map[string]int{}
++
++// Middleware records one hit per request, keyed by method and path.
++func Middleware(next http.Handler) http.Handler {
++	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
++		routeHits[r.Method+" "+r.URL.Path]++
++		next.ServeHTTP(w, r)
++	})
++}
++
++// Handler renders the counts as text, one route per line.
++func Handler(w http.ResponseWriter, _ *http.Request) {
++	keys := make([]string, 0, len(routeHits))
++	for k := range routeHits {
++		keys = append(keys, k)
++	}
++	sort.Strings(keys)
++	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
++	for _, k := range keys {
++		fmt.Fprintf(w, "%s %d\n", k, routeHits[k])
++	}
++}

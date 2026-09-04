@@ -1,0 +1,30 @@
+Ticket: ORD-88 "Show the customer's most recent order on the account page"
+
+diff --git a/src/orders/latest.ts b/src/orders/latest.ts
+--- /dev/null
++++ b/src/orders/latest.ts
+@@ -0,0 +1,24 @@
++import type { Order } from "./types";
++import { listOrders } from "./repo";
++
++export interface LatestOrderView {
++  id: string;
++  placedAt: string;
++  totalCents: number;
++  itemCount: number;
++}
++
++export async function latestOrder(customerId: string): Promise<LatestOrderView> {
++  const orders: Order[] = await listOrders(customerId, { sort: "placedAt:desc", limit: 1 });
++  const latest = orders[0];
++  return {
++    id: latest.id,
++    placedAt: latest.placedAt.toISOString(),
++    totalCents: latest.lines.reduce((sum, line) => sum + line.priceCents * line.qty, 0),
++    itemCount: latest.lines.length,
++  };
++}
++
++export function formatTotal(view: LatestOrderView): string {
++  return (view.totalCents / 100).toFixed(2);
++}

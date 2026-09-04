@@ -1,0 +1,38 @@
+Ticket: ADM-9 "Admin user list can be sorted by any column"
+
+diff --git a/internal/store/users.go b/internal/store/users.go
+--- a/internal/store/users.go
++++ b/internal/store/users.go
+@@ -1,12 +1,30 @@
+ package store
+ 
+ import (
+ 	"context"
+ 	"database/sql"
++	"fmt"
+ )
+ 
+ type User struct {
+ 	ID    int64
+ 	Email string
+ 	Name  string
+ }
++
++// ListUsers returns up to limit users ordered by the given column, e.g. "email" or "created_at".
++func ListUsers(ctx context.Context, db *sql.DB, sortBy string, limit int) ([]User, error) {
++	q := fmt.Sprintf("select id, email, name from users order by %s limit $1", sortBy)
++	rows, err := db.QueryContext(ctx, q, limit)
++	if err != nil {
++		return nil, fmt.Errorf("list users: %w", err)
++	}
++	defer rows.Close()
++	var out []User
++	for rows.Next() {
++		var u User
++		if err := rows.Scan(&u.ID, &u.Email, &u.Name); err != nil {
++			return nil, fmt.Errorf("scan user: %w", err)
++		}
++		out = append(out, u)
++	}
++	return out, rows.Err()
++}

@@ -1,0 +1,33 @@
+Ticket: OBS-40 "Log every request with method, path, status, and duration"
+
+diff --git a/src/http/middleware/requestLog.ts b/src/http/middleware/requestLog.ts
+--- /dev/null
++++ b/src/http/middleware/requestLog.ts
+@@ -0,0 +1,26 @@
++import type { NextFunction, Request, Response } from "express";
++import { logger } from "../../logger";
++
++export function requestLog(req: Request, res: Response, next: NextFunction) {
++  const started = process.hrtime.bigint();
++  res.on("finish", () => {
++    const durationMs = Number(process.hrtime.bigint() - started) / 1e6;
++    logger.info(
++      {
++        method: req.method,
++        path: req.path,
++        status: res.statusCode,
++        durationMs: Math.round(durationMs * 10) / 10,
++        headers: req.headers,
++        query: req.query,
++        ip: req.ip,
++      },
++      "request",
++    );
++  });
++  next();
++}
++
++export function slowRequestThresholdMs(): number {
++  const raw = process.env.SLOW_REQUEST_MS;
++  return raw ? Number(raw) : 1000;
++}

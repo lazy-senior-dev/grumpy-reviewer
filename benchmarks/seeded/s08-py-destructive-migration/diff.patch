@@ -1,0 +1,28 @@
+Ticket: DATA-301 "Move phone numbers to the contacts table"
+
+diff --git a/migrations/versions/0042_drop_legacy_phone.py b/migrations/versions/0042_drop_legacy_phone.py
+--- /dev/null
++++ b/migrations/versions/0042_drop_legacy_phone.py
+@@ -0,0 +1,22 @@
++"""drop legacy phone column
++
++Revision ID: 0042
++Revises: 0041
++"""
++from alembic import op
++import sqlalchemy as sa
++
++revision = "0042"
++down_revision = "0041"
++
++
++def upgrade():
++    op.execute(
++        "insert into contacts (user_id, kind, value) "
++        "select id, 'phone', phone from users where phone is not null"
++    )
++    op.drop_column("users", "phone")
++
++
++def downgrade():
++    op.add_column("users", sa.Column("phone", sa.String(32), nullable=True))

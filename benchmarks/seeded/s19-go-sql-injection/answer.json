@@ -1,0 +1,1 @@
+{"id":"s19-go-sql-injection","language":"go","category":"injection","verdict":"BLOCK","file":"internal/store/users.go","lines":[17,18],"defect":"the sort column from the query string is formatted into the SQL statement, which allows injection through the order clause","match":["injection|Sprintf|format|order by|allow-?list|whitelist|parameter|placeholder|\\$1|sanit|validate"]}

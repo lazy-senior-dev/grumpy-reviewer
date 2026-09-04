@@ -1,0 +1,39 @@
+Ticket: CLEAN-2 "Rename fmtMoney to formatMoney for consistency with the other formatters"
+
+diff --git a/src/format/money.ts b/src/format/money.ts
+--- a/src/format/money.ts
++++ b/src/format/money.ts
+@@ -1,6 +1,6 @@
+ const formatter = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+ 
+-export function fmtMoney(cents: number): string {
++export function formatMoney(cents: number): string {
+   return formatter.format(cents / 100);
+ }
+diff --git a/src/ui/cart/summary.ts b/src/ui/cart/summary.ts
+--- a/src/ui/cart/summary.ts
++++ b/src/ui/cart/summary.ts
+@@ -1,8 +1,8 @@
+-import { fmtMoney } from "../../format/money";
++import { formatMoney } from "../../format/money";
+ import type { Cart } from "../../cart/types";
+ 
+ export function summaryLine(cart: Cart): string {
+   const total = cart.lines.reduce((sum, l) => sum + l.priceCents * l.qty, 0);
+-  return `${cart.lines.length} items, ${fmtMoney(total)}`;
++  return `${cart.lines.length} items, ${formatMoney(total)}`;
+ }
+diff --git a/src/format/money.test.ts b/src/format/money.test.ts
+--- a/src/format/money.test.ts
++++ b/src/format/money.test.ts
+@@ -1,7 +1,7 @@
+ import { expect, test } from "vitest";
+-import { fmtMoney } from "./money";
++import { formatMoney } from "./money";
+ 
+ test("formats cents as dollars", () => {
+-  expect(fmtMoney(123456)).toBe("$1,234.56");
+-  expect(fmtMoney(0)).toBe("$0.00");
++  expect(formatMoney(123456)).toBe("$1,234.56");
++  expect(formatMoney(0)).toBe("$0.00");
+ });

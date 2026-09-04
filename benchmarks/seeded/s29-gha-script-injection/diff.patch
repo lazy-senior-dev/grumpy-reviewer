@@ -1,0 +1,34 @@
+Ticket: TRI-3 "Label new issues that mention a component"
+
+diff --git a/.github/workflows/triage.yml b/.github/workflows/triage.yml
+--- /dev/null
++++ b/.github/workflows/triage.yml
+@@ -0,0 +1,27 @@
++name: triage
++
++on:
++  issues:
++    types: [opened, edited]
++
++permissions:
++  issues: write
++
++jobs:
++  label:
++    runs-on: ubuntu-latest
++    steps:
++      - name: Label by component
++        env:
++          GH_TOKEN: ${{ github.token }}
++        run: |
++          title="${{ github.event.issue.title }}"
++          for component in api web worker infra; do
++            if echo "$title" | grep -qi "\b$component\b"; then
++              gh issue edit ${{ github.event.issue.number }} --repo ${{ github.repository }} --add-label "area:$component"
++            fi
++          done
++      - name: Welcome first-timers
++        if: github.event.action == 'opened'
++        run: gh issue comment ${{ github.event.issue.number }} --repo ${{ github.repository }} --body "Thanks, we will look at this."
++        env:
++          GH_TOKEN: ${{ github.token }}

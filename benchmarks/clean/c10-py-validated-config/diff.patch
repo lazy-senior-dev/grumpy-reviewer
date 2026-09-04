@@ -1,0 +1,53 @@
+Ticket: CFG-40 "Fail at startup when MAX_UPLOAD_MB is missing or not a positive integer"
+
+diff --git a/app/settings.py b/app/settings.py
+--- a/app/settings.py
++++ b/app/settings.py
+@@ -1,8 +1,20 @@
+ import os
+ 
+ 
+ class SettingsError(RuntimeError):
+     pass
+ 
+ 
++def _positive_int(name: str) -> int:
++    raw = os.environ.get(name)
++    if raw is None or not raw.strip():
++        raise SettingsError(f"{name} is required")
++    try:
++        value = int(raw)
++    except ValueError as exc:
++        raise SettingsError(f"{name} must be an integer, got {raw!r}") from exc
++    if value <= 0:
++        raise SettingsError(f"{name} must be positive, got {value}")
++    return value
++
++
+ def load() -> dict:
+-    return {"max_upload_mb": int(os.environ.get("MAX_UPLOAD_MB", "0"))}
++    return {"max_upload_mb": _positive_int("MAX_UPLOAD_MB")}
+diff --git a/tests/test_settings.py b/tests/test_settings.py
+--- /dev/null
++++ b/tests/test_settings.py
+@@ -0,0 +1,17 @@
++import pytest
++from app.settings import SettingsError, load
++
++
++def test_missing_is_an_error(monkeypatch):
++    monkeypatch.delenv("MAX_UPLOAD_MB", raising=False)
++    with pytest.raises(SettingsError, match="required"):
++        load()
++
++
++@pytest.mark.parametrize("raw", ["abc", "0", "-5", " "])
++def test_invalid_values(monkeypatch, raw):
++    monkeypatch.setenv("MAX_UPLOAD_MB", raw)
++    with pytest.raises(SettingsError):
++        load()
++
++
++def test_valid(monkeypatch):
++    monkeypatch.setenv("MAX_UPLOAD_MB", "25")
++    assert load()["max_upload_mb"] == 25

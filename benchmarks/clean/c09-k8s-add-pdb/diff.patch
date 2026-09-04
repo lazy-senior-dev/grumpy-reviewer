@@ -1,0 +1,24 @@
+Ticket: PLAT-241 "Keep two checkout pods up during node drains"
+
+diff --git a/deploy/k8s/checkout-pdb.yaml b/deploy/k8s/checkout-pdb.yaml
+--- /dev/null
++++ b/deploy/k8s/checkout-pdb.yaml
+@@ -0,0 +1,10 @@
++apiVersion: policy/v1
++kind: PodDisruptionBudget
++metadata:
++  name: checkout
++  namespace: production
++spec:
++  minAvailable: 2
++  selector:
++    matchLabels:
++      app: checkout
+diff --git a/deploy/k8s/kustomization.yaml b/deploy/k8s/kustomization.yaml
+--- a/deploy/k8s/kustomization.yaml
++++ b/deploy/k8s/kustomization.yaml
+@@ -3,4 +3,5 @@ kind: Kustomization
+ resources:
+   - checkout-deployment.yaml
+   - checkout-service.yaml
++  - checkout-pdb.yaml

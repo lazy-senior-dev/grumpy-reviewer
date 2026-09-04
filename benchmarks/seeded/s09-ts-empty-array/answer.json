@@ -1,0 +1,1 @@
+{"id":"s09-ts-empty-array","language":"typescript","category":"inputs","verdict":"REQUEST_CHANGES","file":"src/orders/latest.ts","lines":[13,14],"defect":"orders[0] is dereferenced without checking for an empty list, so a customer with no orders crashes the request","match":["empty|no orders|orders\\[0\\]|undefined|length|zero orders|crash|TypeError"]}

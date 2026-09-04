@@ -1,0 +1,32 @@
+Ticket: JOBS-5 "Run the outbox flusher every 10 seconds"
+
+diff --git a/src/jobs/scheduler.ts b/src/jobs/scheduler.ts
+--- /dev/null
++++ b/src/jobs/scheduler.ts
+@@ -0,0 +1,26 @@
++import { flushOutbox } from "../outbox/flush";
++import { logger } from "../logger";
++
++const INTERVAL_MS = 10_000;
++let handle: NodeJS.Timeout | null = null;
++
++export function start(): void {
++  if (handle) return;
++  logger.info({ intervalMs: INTERVAL_MS }, "outbox flusher started");
++  handle = setInterval(tick, INTERVAL_MS);
++}
++
++async function tick(): Promise<void> {
++  const sent = await flushOutbox({ batchSize: 100 });
++  if (sent > 0) logger.info({ sent }, "outbox flushed");
++}
++
++export function stop(): void {
++  if (!handle) return;
++  clearInterval(handle);
++  handle = null;
++  logger.info("outbox flusher stopped");
++}
++
++process.on("SIGTERM", stop);
++process.on("SIGINT", stop);

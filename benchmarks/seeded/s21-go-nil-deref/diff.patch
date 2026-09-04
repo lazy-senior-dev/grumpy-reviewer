@@ -1,0 +1,46 @@
+Ticket: PERF-33 "Cache product lookups in Redis"
+
+diff --git a/internal/cache/redis.go b/internal/cache/redis.go
+--- /dev/null
++++ b/internal/cache/redis.go
+@@ -0,0 +1,38 @@
++package cache
++
++import (
++	"context"
++	"os"
++	"time"
++
++	"github.com/redis/go-redis/v9"
++)
++
++type Cache struct {
++	client *redis.Client
++	ttl    time.Duration
++}
++
++// New builds a cache from REDIS_URL. Callers should treat a nil client as "caching disabled".
++func New(ttl time.Duration) (*Cache, error) {
++	url := os.Getenv("REDIS_URL")
++	var client *redis.Client
++	if url != "" {
++		opts, err := redis.ParseURL(url)
++		if err != nil {
++			return nil, err
++		}
++		client = redis.NewClient(opts)
++	}
++	return &Cache{client: client, ttl: ttl}, nil
++}
++
++func (c *Cache) Get(ctx context.Context, key string) (string, bool) {
++	v, err := c.client.Get(ctx, key).Result()
++	if err != nil {
++		return "", false
++	}
++	return v, true
++}
++
++func (c *Cache) Set(ctx context.Context, key, value string) error {
++	return c.client.Set(ctx, key, value, c.ttl).Err()
++}

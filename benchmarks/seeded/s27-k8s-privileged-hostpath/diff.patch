@@ -1,0 +1,43 @@
+Ticket: OBS-90 "Ship container logs from every node"
+
+diff --git a/deploy/k8s/log-shipper.yaml b/deploy/k8s/log-shipper.yaml
+--- /dev/null
++++ b/deploy/k8s/log-shipper.yaml
+@@ -0,0 +1,38 @@
++apiVersion: apps/v1
++kind: DaemonSet
++metadata:
++  name: log-shipper
++  namespace: observability
++spec:
++  selector:
++    matchLabels:
++      app: log-shipper
++  template:
++    metadata:
++      labels:
++        app: log-shipper
++    spec:
++      serviceAccountName: log-shipper
++      containers:
++        - name: shipper
++          image: registry.example.com/obs/shipper:1.9.3
++          args: ["--config", "/etc/shipper/config.yaml"]
++          resources:
++            limits: { cpu: 200m, memory: 256Mi }
++          securityContext:
++            privileged: true
++            runAsUser: 0
++          volumeMounts:
++            - name: config
++              mountPath: /etc/shipper
++            - name: host
++              mountPath: /host
++              readOnly: false
++      volumes:
++        - name: config
++          configMap:
++            name: log-shipper-config
++        - name: host
++          hostPath:
++            path: /

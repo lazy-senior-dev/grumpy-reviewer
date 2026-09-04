@@ -1,0 +1,1 @@
+{"id":"s10-ts-wrong-http-status","language":"typescript","category":"errors","verdict":"REQUEST_CHANGES","file":"src/http/invoices.ts","lines":[16,17,18],"defect":"a missing invoice returns HTTP 200 with an error body, so clients and monitors treat the failure as success","match":["200|status|404|not found|error (in|inside) (the )?body|success|caller|monitor"]}

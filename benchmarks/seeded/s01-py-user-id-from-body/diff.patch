@@ -1,0 +1,33 @@
+Ticket: PROF-212 "Return the caller's profile with their notification settings"
+
+diff --git a/app/api/profiles.py b/app/api/profiles.py
+--- a/app/api/profiles.py
++++ b/app/api/profiles.py
+@@ -1,12 +1,27 @@
+ from flask import Blueprint, jsonify, request, session, abort
+ from app.db import query_one
++from app.notifications import settings_for
+ 
+ bp = Blueprint("profiles", __name__)
+ 
+ 
+ @bp.get("/me")
+ def me():
+-    row = query_one("select id, name, email from users where id = %s", (session["user_id"],))
++    payload = request.get_json(silent=True) or {}
++    user_id = payload.get("user_id", session.get("user_id"))
++    if user_id is None:
++        abort(401)
++    row = query_one("select id, name, email from users where id = %s", (user_id,))
+     if row is None:
+         abort(404)
+-    return jsonify(row)
++    return jsonify({**row, "notifications": settings_for(user_id)})
++
++
++@bp.get("/me/notifications")
++def my_notifications():
++    user_id = session.get("user_id")
++    if user_id is None:
++        abort(401)
++    return jsonify(settings_for(user_id))

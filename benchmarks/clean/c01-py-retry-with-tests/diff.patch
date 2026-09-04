@@ -1,0 +1,61 @@
+Ticket: NET-4 "Retry transient gateway errors up to three times"
+
+diff --git a/app/util/retry.py b/app/util/retry.py
+--- /dev/null
++++ b/app/util/retry.py
+@@ -0,0 +1,26 @@
++import random
++import time
++from collections.abc import Callable
++from typing import TypeVar
++
++T = TypeVar("T")
++
++
++class Transient(Exception):
++    """Raised by callers for errors that are safe to retry."""
++
++
++def retry(fn: Callable[[], T], *, attempts: int = 3, base_delay: float = 0.2, sleep: Callable[[float], None] = time.sleep) -> T:
++    """Call fn until it returns or raises something other than Transient. Re-raises the last Transient."""
++    if attempts < 1:
++        raise ValueError("attempts must be at least 1")
++    last: Transient | None = None
++    for attempt in range(attempts):
++        try:
++            return fn()
++        except Transient as exc:
++            last = exc
++            if attempt < attempts - 1:
++                sleep(base_delay * (2**attempt) + random.uniform(0, base_delay))
++    assert last is not None
++    raise last
+diff --git a/tests/util/test_retry.py b/tests/util/test_retry.py
+--- /dev/null
++++ b/tests/util/test_retry.py
+@@ -0,0 +1,24 @@
++import pytest
++from app.util.retry import Transient, retry
++
++
++def test_returns_first_success():
++    calls = []
++    assert retry(lambda: calls.append(1) or 7, sleep=lambda _: None) == 7
++    assert len(calls) == 1
++
++
++def test_reraises_after_last_attempt():
++    calls = []
++
++    def flaky():
++        calls.append(1)
++        raise Transient("gateway")
++
++    with pytest.raises(Transient):
++        retry(flaky, attempts=3, sleep=lambda _: None)
++    assert len(calls) == 3
++
++
++def test_non_transient_is_not_retried():
++    with pytest.raises(KeyError):
++        retry(lambda: {}["x"], sleep=lambda _: None)

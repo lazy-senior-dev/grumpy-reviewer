@@ -1,0 +1,1 @@
+{"id":"s30-gha-secret-echo","language":"yaml","category":"secrets","verdict":"BLOCK","file":".github/workflows/release.yml","lines":[24,25],"defect":"a debugging step prints the registry token into the public job log","match":["secret|token|echo|print|log|expose|leak|debug|mask"]}

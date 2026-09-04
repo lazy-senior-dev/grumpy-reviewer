@@ -1,0 +1,25 @@
+Ticket: RPT-41 "Allow tagging generated reports"
+
+diff --git a/app/reports/builder.py b/app/reports/builder.py
+--- a/app/reports/builder.py
++++ b/app/reports/builder.py
+@@ -1,14 +1,21 @@
+ from dataclasses import dataclass
+ from datetime import datetime
+ 
+ 
+ @dataclass
+ class Report:
+     title: str
+     body: str
++    tags: list[str]
+     created_at: datetime
+ 
+ 
+-def build_report(title: str, rows: list[dict]) -> Report:
++def build_report(title: str, rows: list[dict], tags: list[str] = []) -> Report:
+     body = "\n".join(",".join(str(v) for v in row.values()) for row in rows)
+-    return Report(title=title, body=body, created_at=datetime.utcnow())
++    if rows:
++        tags.append("non-empty")
++    return Report(title=title, body=body, tags=tags, created_at=datetime.utcnow())

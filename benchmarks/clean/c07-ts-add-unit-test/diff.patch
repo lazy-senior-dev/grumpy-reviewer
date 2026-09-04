@@ -1,0 +1,31 @@
+Ticket: QA-33 "Add tests for the discount calculator edge cases"
+
+diff --git a/src/pricing/discount.test.ts b/src/pricing/discount.test.ts
+--- /dev/null
++++ b/src/pricing/discount.test.ts
+@@ -0,0 +1,24 @@
++import { describe, expect, test } from "vitest";
++import { applyDiscount } from "./discount";
++
++describe("applyDiscount", () => {
++  test("zero percent leaves the price alone", () => {
++    expect(applyDiscount(1999, 0)).toBe(1999);
++  });
++
++  test("rounds half-cents down to the nearest cent", () => {
++    expect(applyDiscount(1999, 15)).toBe(1699);
++  });
++
++  test("one hundred percent is free", () => {
++    expect(applyDiscount(1999, 100)).toBe(0);
++  });
++
++  test("rejects percentages outside 0..100", () => {
++    expect(() => applyDiscount(1999, -1)).toThrow(RangeError);
++    expect(() => applyDiscount(1999, 101)).toThrow(RangeError);
++  });
++
++  test("rejects a negative price", () => {
++    expect(() => applyDiscount(-1, 10)).toThrow(RangeError);
++  });
++});

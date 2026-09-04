@@ -1,0 +1,1 @@
+{"id":"c04-k8s-scale-with-limits","language":"yaml","clean":true,"note":"replica bump with matching PodDisruptionBudget and pinned image"}

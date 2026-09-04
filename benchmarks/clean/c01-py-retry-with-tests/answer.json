@@ -1,0 +1,1 @@
+{"id":"c01-py-retry-with-tests","language":"python","clean":true,"note":"bounded retry with jitter, typed, tested at the failure boundary"}

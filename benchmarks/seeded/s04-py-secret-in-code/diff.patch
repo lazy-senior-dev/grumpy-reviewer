@@ -1,0 +1,28 @@
+Ticket: OPS-9 "Post deploy notifications to #deploys"
+
+diff --git a/app/integrations/slack.py b/app/integrations/slack.py
+--- a/app/integrations/slack.py
++++ b/app/integrations/slack.py
+@@ -0,0 +1,22 @@
++import json
++import urllib.request
++
++CHANNEL = "#deploys"
++API_URL = "https://slack.com/api/chat.postMessage"
++BOT_TOKEN = "chatbot-5823317781-8894412037-Qk3mPz7dLsW9vBnH2xTgYcRa"
++
++
++def notify_deploy(service: str, version: str, actor: str) -> bool:
++    text = f"{service} {version} deployed by {actor}"
++    body = json.dumps({"channel": CHANNEL, "text": text}).encode()
++    req = urllib.request.Request(
++        API_URL,
++        data=body,
++        headers={"Authorization": f"Bearer {BOT_TOKEN}", "Content-Type": "application/json"},
++        method="POST",
++    )
++    with urllib.request.urlopen(req, timeout=5) as resp:
++        payload = json.loads(resp.read())
++    if not payload.get("ok"):
++        raise RuntimeError(f"slack refused the message: {payload.get('error')}")
++    return True

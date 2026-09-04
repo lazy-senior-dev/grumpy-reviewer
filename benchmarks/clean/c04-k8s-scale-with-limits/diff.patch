@@ -1,0 +1,35 @@
+Ticket: PLAT-230 "Scale the api service to 4 replicas for the launch"
+
+diff --git a/deploy/k8s/api-deployment.yaml b/deploy/k8s/api-deployment.yaml
+--- a/deploy/k8s/api-deployment.yaml
++++ b/deploy/k8s/api-deployment.yaml
+@@ -6,7 +6,7 @@ metadata:
+   labels:
+     app: api
+ spec:
+-  replicas: 2
++  replicas: 4
+   selector:
+     matchLabels:
+       app: api
+@@ -17,7 +17,7 @@ spec:
+     spec:
+       containers:
+         - name: api
+-          image: registry.example.com/shop/api:2.11.0
++          image: registry.example.com/shop/api:2.11.1
+           resources:
+             requests:
+               cpu: 100m
+diff --git a/deploy/k8s/api-pdb.yaml b/deploy/k8s/api-pdb.yaml
+--- a/deploy/k8s/api-pdb.yaml
++++ b/deploy/k8s/api-pdb.yaml
+@@ -4,7 +4,7 @@ metadata:
+   name: api
+   namespace: production
+ spec:
+-  minAvailable: 1
++  minAvailable: 2
+   selector:
+     matchLabels:
+       app: api

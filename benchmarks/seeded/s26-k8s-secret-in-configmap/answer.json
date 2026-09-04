@@ -1,0 +1,1 @@
+{"id":"s26-k8s-secret-in-configmap","language":"yaml","category":"secrets","verdict":"BLOCK","file":"deploy/k8s/payments-config.yaml","lines":[9,10],"defect":"a payment provider secret key is stored in a ConfigMap in plain text and committed to the repo","match":["secret|ConfigMap|plain ?text|committed|credential|key|Secret resource|external secrets|vault|sealed"]}

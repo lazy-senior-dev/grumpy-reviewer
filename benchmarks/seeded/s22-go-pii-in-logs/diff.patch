@@ -1,0 +1,35 @@
+Ticket: SEC-58 "Log failed logins so we can alert on brute force"
+
+diff --git a/internal/auth/login.go b/internal/auth/login.go
+--- a/internal/auth/login.go
++++ b/internal/auth/login.go
+@@ -1,20 +1,29 @@
+ package auth
+ 
+ import (
+ 	"context"
+ 	"errors"
++	"log/slog"
+ 
+ 	"golang.org/x/crypto/bcrypt"
+ )
+ 
+ var ErrInvalidCredentials = errors.New("invalid credentials")
+ 
++type User struct {
++	ID           int64
++	Email        string
++	PasswordHash []byte
++}
++
+ func Login(ctx context.Context, users UserStore, email, password string) (*User, error) {
+ 	u, err := users.ByEmail(ctx, email)
+ 	if err != nil {
+ 		return nil, ErrInvalidCredentials
+ 	}
+ 	if err := bcrypt.CompareHashAndPassword(u.PasswordHash, []byte(password)); err != nil {
++		slog.WarnContext(ctx, "login failed", "user", u, "remote", RemoteAddr(ctx))
+ 		return nil, ErrInvalidCredentials
+ 	}
+ 	return u, nil
+ }

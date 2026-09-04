@@ -1,0 +1,1 @@
+{"id":"s18-go-map-race","language":"go","category":"concurrency","verdict":"REQUEST_CHANGES","file":"internal/metrics/counter.go","lines":[12,13,14],"defect":"a plain map is written from HTTP handler goroutines without a mutex; concurrent map writes crash the process","match":["race|concurrent map|mutex|sync\\.|lock|goroutine|atomic|data race|crash|fatal error"]}

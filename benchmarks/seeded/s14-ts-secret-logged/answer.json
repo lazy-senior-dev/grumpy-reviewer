@@ -1,0 +1,1 @@
+{"id":"s14-ts-secret-logged","language":"typescript","category":"secrets","verdict":"BLOCK","file":"src/http/middleware/requestLog.ts","lines":[13,14],"defect":"the full request headers, including Authorization and Cookie, are written to the log on every request","match":["authorization|cookie|header|token|credential|secret|log|redact|PII|leak"]}

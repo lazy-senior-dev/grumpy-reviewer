@@ -1,0 +1,1 @@
+{"id":"s04-py-secret-in-code","language":"python","category":"secrets","verdict":"BLOCK","file":"app/integrations/slack.py","lines":[6],"defect":"a live Slack bot token is hardcoded in source","match":["hard-?coded|secret|token|credential|environment variable|env var|secrets manager|committed"]}
