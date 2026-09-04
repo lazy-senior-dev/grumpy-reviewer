@@ -22,11 +22,19 @@ export function globToRegExp(glob) {
   return new RegExp("^" + re + "$");
 }
 
+// Split on newlines and on commas that are not inside a {a,b} group.
 export function parseGlobs(text) {
-  return String(text || "")
-    .split(/[\n,]/)
-    .map((s) => s.trim())
-    .filter((s) => s && !s.startsWith("#"));
+  const out = [];
+  for (const line of String(text || "").split("\n")) {
+    let depth = 0, cur = "";
+    for (const ch of line) {
+      if (ch === "{") depth++;
+      if (ch === "}") depth = Math.max(0, depth - 1);
+      if (ch === "," && depth === 0) { out.push(cur); cur = ""; } else cur += ch;
+    }
+    out.push(cur);
+  }
+  return out.map((s) => s.trim()).filter((s) => s && !s.startsWith("#"));
 }
 
 export function isIgnored(path, globs) {

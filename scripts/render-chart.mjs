@@ -21,14 +21,14 @@ const arms = [
   { key: "grump", label: "grumpy-reviewer", fill: "#ff8a65" },
 ];
 const metrics = [
-  { key: "caughtMedian", label: "defects caught (30 small diffs)", max: data.seeded, better: "higher" },
-  ...(data.needle && agents.some(([, a]) => a.needle && a.needle.grump) ? [{ key: "needle", label: "found in a 150-line PR (needle tier)", max: data.needle, better: "higher" }] : []),
-  { key: "falsePositivesMedian", label: "false alarms on clean diffs", max: data.clean, better: "lower" },
-  { key: "noVerdict", label: "replies without a verdict", max: data.seeded + data.clean, better: "lower" },
+  { key: "caughtMedian", label: "defects caught, 30 small diffs", sub: "higher is better", max: data.seeded, better: "higher" },
+  ...(data.needle && agents.some(([, a]) => a.needle && a.needle.grump) ? [{ key: "needle", label: "found in a 150-line PR, of 10", sub: "higher is better", max: data.needle, better: "higher" }] : []),
+  { key: "falsePositivesMedian", label: "false alarms, 10 clean diffs", sub: "lower is better", max: data.clean, better: "lower" },
+  { key: "noVerdict", label: "replies without a verdict", sub: "lower is better", max: data.seeded + data.clean, better: "lower" },
 ];
 const value = (s, m, a, armKey) => (m.key === "noVerdict" ? (s.runs ? s.unparseable / s.runs : 0) : m.key === "needle" ? (a.needle && a.needle[armKey] ? a.needle[armKey].caughtMedian ?? 0 : 0) : s[m.key] ?? 0);
 
-const colW = 215, left = 200, gapX = 30, barH = 16, gapY = 4, groupH = arms.length * (barH + gapY) + 34, top = 92;
+const colW = 230, left = 210, gapX = 26, barH = 16, gapY = 4, groupH = arms.length * (barH + gapY) + 34, top = 110;
 const W = left + metrics.length * (colW + gapX), H = top + agents.length * (groupH + 18) + 30;
 let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif">
 <rect width="${W}" height="${H}" fill="#f4efe6"/>
@@ -36,7 +36,7 @@ let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width
 <text x="24" y="60" font-size="12" fill="#7a746b">Medians over runs. ${data.seeded} seeded defects, ${data.clean} clean diffs. ${data.date}.</text>`;
 metrics.forEach((m, mi) => {
   const x = left + mi * (colW + gapX);
-  svg += `<text x="${x}" y="${top - 8}" font-size="12" font-weight="700" fill="#4a4641">${m.label} (${m.better} is better)</text>`;
+  svg += `<text x="${x}" y="${top - 22}" font-size="12" font-weight="700" fill="#4a4641">${m.label}</text><text x="${x}" y="${top - 8}" font-size="11" fill="#7a746b">${m.sub}</text>`;
 });
 agents.forEach(([, a], ai) => {
   const gy = top + ai * (groupH + 18);

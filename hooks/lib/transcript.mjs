@@ -42,7 +42,14 @@ function isHumanPrompt(entry) {
   return content.some((b) => b && b.type === "text");
 }
 
-export function assistantTextSinceLastPrompt(transcriptText, { maxMessages = 40 } = {}) {
+function isToolResult(entry) {
+  const content = entry?.message?.content;
+  return Array.isArray(content) && content.some((b) => b && b.type === "tool_result");
+}
+
+// Assistant text since the last human prompt (`sinceTool: false`) or since the last
+// tool result (`sinceTool: true`, i.e. text the model wrote after its previous tool call).
+export function assistantTextSinceLastPrompt(transcriptText, { maxMessages = 40, sinceTool = false } = {}) {
   if (!transcriptText) return "";
   const lines = transcriptText.split("\n");
   const collected = [];
@@ -59,7 +66,7 @@ export function assistantTextSinceLastPrompt(transcriptText, { maxMessages = 40 
     if (entry.type === "assistant") {
       const text = textOf(entry.message?.content);
       if (text) collected.push(text);
-    } else if (entry.type === "user" && isHumanPrompt(entry) && !entry.isMeta) {
+    } else if (entry.type === "user" && !entry.isMeta && (isHumanPrompt(entry) || (sinceTool && isToolResult(entry)))) {
       break;
     }
   }
@@ -67,6 +74,7 @@ export function assistantTextSinceLastPrompt(transcriptText, { maxMessages = 40 
 }
 
 export function recentAssistantText(transcriptPath) {
-  if (!transcriptPath) return "";
-  return assistantTextSinceLastPrompt(readTail(transcriptPath));
+  if (!transcriptPath) return { sincePrompt: "", sinceTool: "" };
+  const tail = readTail(transcriptPath);
+  return { sincePrompt: assistantTextSinceLastPrompt(tail), sinceTool: assistantTextSinceLastPrompt(tail, { sinceTool: true }) };
 }

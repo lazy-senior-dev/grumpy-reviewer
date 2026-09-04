@@ -43,10 +43,33 @@ export function isMode(value) {
   return typeof value === "string" && MODES.includes(value.toLowerCase());
 }
 
-// Resolution order: GRUMPY_MODE, then config.json, then the default.
-export function resolveMode() {
+// A repository can pin its own mode with a .grumpy.json ({"mode": "gate"}) in the
+// working directory or any parent, so one team's gate never depends on a laptop's setting.
+export function projectConfig(cwd = process.cwd()) {
+  let dir = cwd;
+  for (let i = 0; i < 40; i++) {
+    const p = join(dir, ".grumpy.json");
+    if (existsSync(p)) {
+      try {
+        const parsed = JSON.parse(readFileSync(p, "utf8"));
+        return { path: p, config: parsed && typeof parsed === "object" ? parsed : {} };
+      } catch {
+        return { path: p, config: {} };
+      }
+    }
+    const parent = join(dir, "..");
+    if (parent === dir) break;
+    dir = parent;
+  }
+  return null;
+}
+
+// Resolution order: GRUMPY_MODE, then .grumpy.json in the repository, then config.json, then the default.
+export function resolveMode(cwd = process.cwd()) {
   const env = process.env.GRUMPY_MODE;
   if (isMode(env)) return { mode: env.toLowerCase(), source: "GRUMPY_MODE" };
+  const project = projectConfig(cwd);
+  if (project && isMode(project.config.mode)) return { mode: project.config.mode.toLowerCase(), source: project.path };
   const cfg = readConfig();
   if (isMode(cfg.mode)) return { mode: cfg.mode.toLowerCase(), source: configPath() };
   return { mode: DEFAULT_MODE, source: "default" };

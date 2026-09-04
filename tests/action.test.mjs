@@ -35,6 +35,8 @@ test("globs", () => {
   assert.ok(globToRegExp("*.{png,svg}").test("x.svg"));
   assert.ok(isIgnored("vendor/x.go", parseGlobs("vendor/**, docs/**")));
   assert.deepEqual(parseGlobs("a\n# comment\nb,c"), ["a", "b", "c"]);
+  assert.deepEqual(parseGlobs("**/*.{js,ts}, docs/**"), ["**/*.{js,ts}", "docs/**"]);
+  assert.ok(isIgnored("src/a.ts", parseGlobs("**/*.{js,ts}")));
 });
 
 function fakeServer({ files, reviews = [], comments = [], issueComments = [], providerText, providerStatuses = [] }) {
@@ -187,9 +189,11 @@ test("provider retries on 429 and the model output without a verdict is reported
   const srv = fakeServer({ files: [FILES[0]], providerText: "I have no opinion.", providerStatuses: [429, 529] });
   const sleeps = [];
   const out = await run({ inputs: inputsFor(), event: event(), fetchImpl: srv.fetchImpl, sleep: async (ms) => sleeps.push(ms), log: () => {} });
-  assert.equal(out.verdict, "APPROVE");
+  assert.equal(out.verdict, "REQUEST_CHANGES", "an unreviewed file is never approved");
   assert.equal(sleeps.length, 2);
-  assert.match(srv.calls.find((c) => c.method === "POST" && c.path.endsWith("/reviews")).body.body, /could not review/);
+  const body = srv.calls.find((c) => c.method === "POST" && c.path.endsWith("/reviews")).body.body;
+  assert.match(body, /could not review/);
+  assert.match(body, /do not approve what I have not read/);
 });
 
 test("openai provider speaks chat completions", async () => {

@@ -86,9 +86,10 @@ export async function reviewFiles(files, provider, { concurrency = 3, log = () =
   return { results, usage };
 }
 
+// A file that could not be reviewed is never silently approved: it counts as REQUEST_CHANGES.
 export function overallVerdict(results) {
   let rank = 0;
-  for (const r of results) if (r.verdict) rank = Math.max(rank, severityRank(r.verdict.verdict));
+  for (const r of results) rank = Math.max(rank, r.verdict ? severityRank(r.verdict.verdict) : 1);
   return ["APPROVE", "REQUEST_CHANGES", "BLOCK"][rank];
 }
 
@@ -112,7 +113,9 @@ export function composeReview({ results, skipped, verdict, mode, usage, model, r
 
   const opening = {
     APPROVE: "Fine.",
-    REQUEST_CHANGES: `${total} finding${total === 1 ? "" : "s"}. Each one names the line, what breaks in production, and the smallest fix. Fix them; I will read it again.`,
+    REQUEST_CHANGES: total
+      ? `${total} finding${total === 1 ? "" : "s"}. Each one names the line, what breaks in production, and the smallest fix. Fix them; I will read it again.`
+      : "I could not read every file, and I do not approve what I have not read. See below, then re-run.",
     BLOCK: `${total} finding${total === 1 ? "" : "s"}, and at least one is a BLOCK: data loss, a secret, an auth hole, or something destructive. That does not merge, whatever the schedule says.`,
   }[verdict];
 

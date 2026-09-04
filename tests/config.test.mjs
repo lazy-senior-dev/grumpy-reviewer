@@ -40,6 +40,20 @@ test("malformed config is ignored", () => {
   assert.equal(lib.resolveMode().mode, "nag");
 });
 
+test("a .grumpy.json in the repository wins over the user config", () => {
+  lib.setMode("off");
+  const repo = mkdtempSync(join(tmpdir(), "grumpy-repo-"));
+  mkdirSync(join(repo, "src", "deep"), { recursive: true });
+  writeFileSync(join(repo, ".grumpy.json"), JSON.stringify({ mode: "gate" }));
+  assert.equal(lib.resolveMode(join(repo, "src", "deep")).mode, "gate");
+  assert.equal(lib.resolveMode(join(repo, "src", "deep")).source, join(repo, ".grumpy.json"));
+  process.env.GRUMPY_MODE = "nag";
+  assert.equal(lib.resolveMode(join(repo, "src")).mode, "nag", "the environment still wins");
+  delete process.env.GRUMPY_MODE;
+  writeFileSync(join(repo, ".grumpy.json"), "{broken");
+  assert.equal(lib.resolveMode(repo).mode, "off", "a broken project file is ignored");
+});
+
 test("unknown mode is rejected", () => {
   assert.throws(() => lib.setMode("shout"), /unknown mode/);
 });

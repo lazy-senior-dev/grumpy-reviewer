@@ -65,7 +65,7 @@ GRUMP: REQUEST_CHANGES
 - `gate`: writes are denied on `REQUEST_CHANGES` or `BLOCK` until the findings are fixed and re-reviewed.
 - `off`: nothing is reviewed and nothing is injected.
 
-Resolution order: the `GRUMPY_MODE` environment variable, then `mode` in `~/.config/grumpy-reviewer/config.json`, then `nag`.
+Resolution order: the `GRUMPY_MODE` environment variable, then `mode` in a `.grumpy.json` at the repository root, then `mode` in `~/.config/grumpy-reviewer/config.json`, then `nag`.
 
 ## Self-review protocol
 

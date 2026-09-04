@@ -4,7 +4,7 @@ import { execFileSync } from "node:child_process";
 import { mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { normaliseInput, classify, decide, render, bumpDenials, clearDenials } from "../hooks/lib/gate.mjs";
+import { normaliseInput, classify, decide, render, bumpDenials, clearDenials, applicableVerdict } from "../hooks/lib/gate.mjs";
 import { lastVerdict } from "../hooks/lib/verdict.mjs";
 import { assistantTextSinceLastPrompt } from "../hooks/lib/transcript.mjs";
 
@@ -111,6 +111,48 @@ test("transcript: assistant text since the last human prompt", () => {
   assert.ok(text.includes("thinking"));
   assert.ok(text.includes("GRUMP: BLOCK"));
   assert.ok(!text.includes("APPROVE"));
+});
+
+test("a verdict applies only when fresh or when it names the file", () => {
+  const forA = lastVerdict("GRUMP: REQUEST_CHANGES\n1. src/a.py:3 — x — y");
+  const fine = lastVerdict("GRUMP: APPROVE\nFine.");
+  assert.equal(applicableVerdict({ fresh: fine, earlier: forA, target: { kind: "write", file: "/repo/src/b.py" } }), fine);
+  assert.equal(applicableVerdict({ fresh: null, earlier: forA, target: { kind: "write", file: "/repo/src/a.py" } }), forA);
+  assert.equal(applicableVerdict({ fresh: null, earlier: forA, target: { kind: "write", file: "/repo/src/b.py" } }), null);
+  assert.equal(applicableVerdict({ fresh: null, earlier: fine, target: { kind: "write", file: "/repo/src/b.py" } }), null, "a stale Fine. does not cover a later unreviewed file");
+  assert.equal(applicableVerdict({ fresh: null, earlier: lastVerdict("GRUMP: OVERRIDE — user said go"), target: { kind: "write", file: "x" } }).override, true);
+});
+
+test("transcript: text since the last tool result is narrower than text since the prompt", () => {
+  const lines = [
+    { type: "user", message: { content: "do it" } },
+    { type: "assistant", message: { content: [{ type: "text", text: "GRUMP: APPROVE\nFine." }, { type: "tool_use", name: "Write" }] } },
+    { type: "user", message: { content: [{ type: "tool_result", content: "ok" }] } },
+    { type: "assistant", message: { content: [{ type: "text", text: "now the second file" }, { type: "tool_use", name: "Write" }] } },
+  ].map((e) => JSON.stringify(e)).join("\n");
+  assert.ok(assistantTextSinceLastPrompt(lines).includes("APPROVE"));
+  assert.ok(!assistantTextSinceLastPrompt(lines, { sinceTool: true }).includes("APPROVE"));
+  assert.ok(assistantTextSinceLastPrompt(lines, { sinceTool: true }).includes("second file"));
+});
+
+test("end to end: a verdict for one file does not authorise a write to another in gate mode", () => {
+  const dir = mkdtempSync(join(tmpdir(), "grumpy-e2e-"));
+  const transcript = join(dir, "t.jsonl");
+  writeFileSync(transcript, [
+    JSON.stringify({ type: "user", message: { content: "add both files" } }),
+    JSON.stringify({ type: "assistant", message: { content: [{ type: "text", text: "GRUMP: APPROVE\nFine." }, { type: "tool_use", name: "Write" }] } }),
+    JSON.stringify({ type: "user", message: { content: [{ type: "tool_result", content: "ok" }] } }),
+    JSON.stringify({ type: "assistant", message: { content: [{ type: "tool_use", name: "Write" }] } }),
+  ].join("\n"));
+  const env = { GRUMPY_CONFIG_DIR: join(dir, "cfg"), GRUMPY_MODE: "gate" };
+  const res = runGate({ session_id: "scope", tool_name: "Write", tool_input: { file_path: "src/b.py" }, transcript_path: transcript }, env);
+  assert.equal(res.hookSpecificOutput.permissionDecision, "deny");
+});
+
+test("gate mode refuses malformed hook input; nag lets the host decide", () => {
+  const dir = mkdtempSync(join(tmpdir(), "grumpy-e2e-"));
+  assert.equal(runGate("{{not json", { GRUMPY_CONFIG_DIR: dir, GRUMPY_MODE: "gate" }).hookSpecificOutput.permissionDecision, "deny");
+  assert.equal(runGate("{{not json", { GRUMPY_CONFIG_DIR: dir, GRUMPY_MODE: "nag" }), null);
 });
 
 function runGate(input, env = {}, host = "claude") {

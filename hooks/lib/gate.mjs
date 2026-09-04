@@ -47,6 +47,17 @@ export function classify(call) {
   return null;
 }
 
+// The verdict that applies to this write: one printed after the previous tool call
+// (fresh), or one printed earlier in the turn that names the target file. A verdict
+// for file A never authorises an unreviewed write to file B.
+export function applicableVerdict({ fresh, earlier, target }) {
+  if (fresh) return fresh;
+  if (!earlier || !target) return null;
+  const base = String(target.file).split(/[\\/]/).pop();
+  const names = (v) => v.override || v.findings.some((f) => f.file && f.file.split(/[\\/]/).pop() === base) || (v.reason || "").includes(base);
+  return names(earlier) ? earlier : null;
+}
+
 // Decide what the gate does. `state` is the per-session record for this file.
 export function decide({ mode, verdict, hasTranscript, denials = 0, target }) {
   const where = target?.kind === "commit" ? target.file : `write to ${target?.file ?? "file"}`;

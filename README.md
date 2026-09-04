@@ -119,6 +119,8 @@ Thirty small, realistic diffs across Python, TypeScript, Go, and YAML (Kubernete
 
 <!-- bench:table:end -->
 
+IBM Bob is not in the table yet: `bob run` needs a `BOB_API_KEY`, which the benchmark machine did not have. With the key exported, `npm run bench -- --agents bob` adds the row.
+
 What the numbers say, plainly: on a 30-line diff, current models find the seeded defect with or without help. The value of a reviewer persona is not that it finds more; it is that it stops crying wolf on clean changes, always ends with a verdict a hook can act on, gets the severity right, and does it in fewer tokens and less time. A gate is only useful if it is both parseable and quiet on good code; those are the two columns that move.
 
 Method, per-diff table, limitations, the pilot run that led to one calibration pass, and every raw reply: [benchmarks/results](benchmarks/results). Reproduce: `npm run bench && npm run bench:report`. Add your own case: [CONTRIBUTING](CONTRIBUTING.md).
@@ -151,7 +153,9 @@ GRUMP: APPROVE | REQUEST_CHANGES | BLOCK
 
 **The gate.** On hosts with lifecycle hooks, a `PreToolUse` hook runs before `Edit`, `Write`, `MultiEdit`, and any `git commit` or `git push`. It reads the verdict the agent just printed and decides: `BLOCK` denies in every mode; `REQUEST_CHANGES` denies in `gate` mode; `APPROVE` goes through; no verdict means "review first" (denied in `gate`, a reminder in `nag`). Every decision is written to a per-session scorecard.
 
-**Modes.** `nag` (default) reviews and prints findings; writes proceed unless the verdict is `BLOCK`. `gate` denies writes until the verdict is `APPROVE`. `off` does nothing. Set it with `/grumpy gate`, persist it in `~/.config/grumpy-reviewer/config.json`, or override for one session with `GRUMPY_MODE=gate`.
+**Modes.** `nag` (default) reviews and prints findings; writes proceed unless the verdict is `BLOCK`. `gate` denies writes until the verdict is `APPROVE`. `off` does nothing. Set it with `/grumpy gate`, persist it for yourself in `~/.config/grumpy-reviewer/config.json`, pin it for a repository with a `.grumpy.json` at its root (`{"mode": "gate"}` wins over the user setting, so a team's gate never depends on a laptop), or override one session with `GRUMPY_MODE=gate`.
+
+**Scope.** A verdict covers one write: the gate accepts a verdict printed after the agent's previous tool call, or an earlier one in the same turn that names the file being written. A `Fine.` for file A never lets an unreviewed file B through.
 
 ## Install
 
