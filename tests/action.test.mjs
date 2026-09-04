@@ -1,9 +1,13 @@
 import { test } from "node:test";
+import { readFileSync } from "node:fs";
 import assert from "node:assert/strict";
 import { anchorLine, rightSideLines, numberedPatch } from "../action/lib/diff.mjs";
 import { globToRegExp, isIgnored, parseGlobs } from "../action/lib/glob.mjs";
 import { makeProvider } from "../action/lib/providers.mjs";
 import { selectFiles, composeReview, overallVerdict, run, readInputs, MARKER } from "../action/review.mjs";
+const P_ = JSON.parse(readFileSync(new URL("../persona.json", import.meta.url), "utf8"));
+const T = (s) => s.replace(/GRUMP:/g, P_.verdictPrefix + ":").replace(/\bREQUEST_CHANGES\b/g, P_.verdicts.changes).replace(/\bAPPROVE\b/g, P_.verdicts.approve).replace(/\bBLOCK\b/g, P_.verdicts.block).replace(/Fine\./g, P_.approveWord);
+
 
 const PATCH = `@@ -10,6 +10,9 @@ def get_user(request):
      session = request.session
@@ -83,7 +87,7 @@ function fakeServer({ files, reviews = [], comments = [], issueComments = [], pr
       state.issueComments.push(c);
       return json(201, c);
     }
-    return json(404, { message: `unhandled ${method} ${p}` });
+    return json(404, { message: `unhandled ${method} ${p}T(` });
   };
   return { fetchImpl, calls, state };
 }
@@ -104,8 +108,8 @@ const event = (fork = false) => ({
 
 const VERDICT_FOR = (body) =>
   body.messages[0].content.includes("users.py")
-    ? "GRUMP: BLOCK\n1. src/api/users.py:11 — user_id comes from the body, so any caller can read any user — take it from the session\n2. src/api/users.py:99 — outside the diff — none"
-    : "GRUMP: APPROVE\nFine.";
+    ? T("GRUMP: BLOCK\n1. src/api/users.py:11 — user_id comes from the body, so any caller can read any user — take it from the session\n2. src/api/users.py:99 — outside the diff — none")
+    : T("GRUMP: APPROVE\nFine.");
 
 test("selectFiles drops ignored and patch-less files and keeps the largest first", () => {
   const { reviewed, skipped } = selectFiles(FILES, { maxFiles: 1, ignore: [] });
@@ -124,7 +128,7 @@ test("first run: one review, anchored comments, unanchored findings in the summa
   assert.equal(create.body.commit_id, "abc123");
   assert.equal(create.body.comments.length, 1);
   assert.equal(create.body.comments[0].line, 11);
-  assert.match(create.body.body, /GRUMP: BLOCK/);
+  assert.match(create.body.body, new RegExp(T("GRUMP: BLOCK")));
   assert.match(create.body.body, /outside the diff/);
   assert.ok(create.body.body.startsWith(MARKER));
   assert.equal(srv.calls.filter((c) => c.method === "POST" && c.path.endsWith("/reviews")).length, 1);
@@ -135,19 +139,19 @@ test("gate mode requests changes and fails the check; APPROVE passes", async () 
   const out = await run({ inputs: inputsFor({ INPUT_MODE: "gate" }), event: event(), fetchImpl: srv.fetchImpl, log: () => {} });
   assert.equal(out.failed, true);
   assert.equal(srv.calls.find((c) => c.method === "POST" && c.path.endsWith("/reviews")).body.event, "REQUEST_CHANGES");
-  const ok = fakeServer({ files: FILES, providerText: "GRUMP: APPROVE\nFine." });
+  const ok = fakeServer({ files: FILES, providerText: T("GRUMP: APPROVE\nFine.") });
   const out2 = await run({ inputs: inputsFor({ INPUT_MODE: "gate" }), event: event(), fetchImpl: ok.fetchImpl, log: () => {} });
   assert.equal(out2.verdict, "APPROVE");
   assert.equal(out2.failed, false);
-  assert.match(ok.calls.find((c) => c.method === "POST" && c.path.endsWith("/reviews")).body.body, /Fine\./);
+  assert.ok(ok.calls.find((c) => c.method === "POST" && c.path.endsWith("/reviews")).body.body.includes(P_.approveWord));
 });
 
 test("re-run updates the existing review and replaces stale inline comments", async () => {
   const srv = fakeServer({
     files: FILES,
     providerText: VERDICT_FOR,
-    reviews: [{ id: 1, body: `${MARKER}\nold`, state: "COMMENTED" }, { id: 2, body: "human review", state: "APPROVED" }],
-    comments: [{ id: 50, body: `${MARKER}\nstale`, path: "src/api/users.py", line: 3 }, { id: 51, body: "human comment" }],
+    reviews: [{ id: 1, body: `)${MARKER}\nold`, state: "COMMENTED" }, { id: 2, body: "human review", state: "APPROVED" }],
+    comments: [{ id: 50, body: `${MARKER}\nstaleT(`, path: "src/api/users.py", line: 3 }, { id: 51, body: "human comment" }],
   });
   await run({ inputs: inputsFor(), event: event(), fetchImpl: srv.fetchImpl, log: () => {} });
   assert.ok(srv.calls.some((c) => c.method === "DELETE" && c.path.endsWith("/comments/50")));
@@ -160,7 +164,7 @@ test("re-run updates the existing review and replaces stale inline comments", as
 });
 
 test("re-run that changes the review state dismisses the old one and creates a new one", async () => {
-  const srv = fakeServer({ files: FILES, providerText: "GRUMP: APPROVE\nFine.", reviews: [{ id: 1, body: `${MARKER}\nold`, state: "CHANGES_REQUESTED" }] });
+  const srv = fakeServer({ files: FILES, providerText: T("GRUMP: APPROVE\nFine."), reviews: [{ id: 1, body: `)${MARKER}\nold`, state: "CHANGES_REQUESTED" }] });
   await run({ inputs: inputsFor({ INPUT_MODE: "gate" }), event: event(), fetchImpl: srv.fetchImpl, log: () => {} });
   assert.ok(srv.calls.some((c) => c.method === "PUT" && c.path.endsWith("/reviews/1/dismissals")));
   assert.equal(srv.calls.filter((c) => c.method === "POST" && c.path.endsWith("/reviews")).length, 1);
@@ -197,10 +201,10 @@ test("provider retries on 429 and the model output without a verdict is reported
 });
 
 test("openai provider speaks chat completions", async () => {
-  const srv = fakeServer({ files: [FILES[0]], providerText: "GRUMP: APPROVE\nFine." });
+  const srv = fakeServer({ files: [FILES[0]], providerText: T("GRUMP: APPROVE\nFine.") });
   const p = makeProvider({ provider: "openai", apiKey: "k", fetchImpl: srv.fetchImpl });
   const res = await p.complete("sys", "user");
-  assert.equal(res.text, "GRUMP: APPROVE\nFine.");
+  assert.equal(res.text, T("GRUMP: APPROVE\nFine."));
   assert.equal(p.model, "gpt-5");
   assert.equal(srv.calls[0].body.messages[0].role, "system");
   assert.throws(() => makeProvider({ provider: "other", apiKey: "k" }), /unknown provider/);

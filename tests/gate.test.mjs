@@ -1,12 +1,15 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdtempSync, writeFileSync , readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { normaliseInput, classify, decide, render, bumpDenials, clearDenials, applicableVerdict } from "../hooks/lib/gate.mjs";
 import { lastVerdict } from "../hooks/lib/verdict.mjs";
 import { assistantTextSinceLastPrompt, latestAssistantText } from "../hooks/lib/transcript.mjs";
+const P_ = JSON.parse(readFileSync(new URL("../persona.json", import.meta.url), "utf8"));
+const T = (s) => s.replace(/GRUMP:/g, P_.verdictPrefix + ":").replace(/\bREQUEST_CHANGES\b/g, P_.verdicts.changes).replace(/\bAPPROVE\b/g, P_.verdicts.approve).replace(/\bBLOCK\b/g, P_.verdicts.block).replace(/Fine\./g, P_.approveWord);
+
 
 const write = { toolName: "Write", toolInput: { file_path: "src/a.py", content: "" } };
 
@@ -31,10 +34,10 @@ test("normaliseInput accepts claude and copilot shapes", () => {
 });
 
 const target = { kind: "write", file: "src/a.py" };
-const block = lastVerdict("GRUMP: BLOCK\n1. src/a.py:1 — secret in code — move to env");
-const changes = lastVerdict("GRUMP: REQUEST_CHANGES\n1. src/a.py:1 — unhandled error — return 404");
-const approve = lastVerdict("GRUMP: APPROVE\nFine.");
-const override = lastVerdict("GRUMP: OVERRIDE — user: proceed, I accept it");
+const block = lastVerdict(T("GRUMP: BLOCK\n1. src/a.py:1 — secret in code — move to env"));
+const changes = lastVerdict(T("GRUMP: REQUEST_CHANGES\n1. src/a.py:1 — unhandled error — return 404"));
+const approve = lastVerdict(T("GRUMP: APPROVE\nFine."));
+const override = lastVerdict(T("GRUMP: OVERRIDE — user: proceed, I accept it"));
 
 test("off mode skips everything", () => {
   assert.equal(decide({ mode: "off", verdict: block, target }).action, "skip");
@@ -100,23 +103,23 @@ test("render speaks each host's dialect", () => {
 test("transcript: assistant text since the last human prompt", () => {
   const lines = [
     { type: "user", message: { content: "first prompt" } },
-    { type: "assistant", message: { content: [{ type: "text", text: "GRUMP: APPROVE\nFine." }] } },
+    { type: "assistant", message: { content: [{ type: "text", text: T("GRUMP: APPROVE\nFine.") }] } },
     { type: "user", message: { content: [{ type: "text", text: "second prompt" }] } },
     { type: "assistant", message: { content: [{ type: "text", text: "thinking" }, { type: "tool_use", name: "Read" }] } },
     { type: "user", message: { content: [{ type: "tool_result", content: "file" }] } },
-    { type: "assistant", message: { content: [{ type: "text", text: "GRUMP: BLOCK\n1. a:1 — b — c" }] } },
+    { type: "assistant", message: { content: [{ type: "text", text: T("GRUMP: BLOCK\n1. a:1 — b — c") }] } },
     "not json",
   ].map((e) => (typeof e === "string" ? e : JSON.stringify(e))).join("\n");
   const text = assistantTextSinceLastPrompt(lines);
   assert.ok(text.includes("thinking"));
-  assert.ok(text.includes("GRUMP: BLOCK"));
+  assert.ok(text.includes(T("GRUMP: BLOCK")));
   assert.ok(!text.includes("APPROVE"));
 });
 
 test("a verdict covers the files it names; an unnamed one covers the write; earlier verdicts need the file", () => {
-  const forA = lastVerdict("GRUMP: REQUEST_CHANGES\n1. src/a.py:3 — x — y");
-  const fineA = lastVerdict("GRUMP: APPROVE — src/a.py\nFine.");
-  const fine = lastVerdict("GRUMP: APPROVE\nFine.");
+  const forA = lastVerdict(T("GRUMP: REQUEST_CHANGES\n1. src/a.py:3 — x — y"));
+  const fineA = lastVerdict(T("GRUMP: APPROVE — src/a.py\nFine."));
+  const fine = lastVerdict(T("GRUMP: APPROVE\nFine."));
   const a = { kind: "write", file: "/repo/src/a.py" }, b = { kind: "write", file: "/repo/src/b.py" };
   assert.equal(applicableVerdict({ latest: fineA, earlier: null, target: a }), fineA);
   assert.equal(applicableVerdict({ latest: fineA, earlier: null, target: b }), null, "an approval naming a.py does not cover b.py");
@@ -125,14 +128,14 @@ test("a verdict covers the files it names; an unnamed one covers the write; earl
   assert.equal(applicableVerdict({ latest: null, earlier: forA, target: a }), forA);
   assert.equal(applicableVerdict({ latest: null, earlier: forA, target: b }), null);
   assert.equal(applicableVerdict({ latest: null, earlier: fine, target: b }), null, "an old unnamed approval does not reach a later write");
-  assert.equal(applicableVerdict({ latest: lastVerdict("GRUMP: OVERRIDE — user said go"), earlier: null, target: b }).override, true);
+  assert.equal(applicableVerdict({ latest: lastVerdict(T("GRUMP: OVERRIDE — user said go")), earlier: null, target: b }).override, true);
   assert.equal(applicableVerdict({ latest: fineA, earlier: null, target: { kind: "commit", file: "(git commit)" } }), fineA, "commits are covered by any approval");
 });
 
 test("latestAssistantText returns the previous completed message, not text since the last tool result", () => {
   const lines = [
     { type: "user", message: { content: "do it" } },
-    { type: "assistant", message: { content: [{ type: "text", text: "GRUMP: APPROVE — b.py\nFine." }] } },
+    { type: "assistant", message: { content: [{ type: "text", text: T("GRUMP: APPROVE — b.py\nFine.") }] } },
     { type: "assistant", message: { content: [{ type: "tool_use", name: "Write" }] } },
     { type: "user", message: { content: [{ type: "tool_result", content: "denied" }] } },
   ].map((e) => JSON.stringify(e)).join("\n");
@@ -143,7 +146,7 @@ test("latestAssistantText returns the previous completed message, not text since
 test("transcript: text since the last tool result is narrower than text since the prompt", () => {
   const lines = [
     { type: "user", message: { content: "do it" } },
-    { type: "assistant", message: { content: [{ type: "text", text: "GRUMP: APPROVE\nFine." }, { type: "tool_use", name: "Write" }] } },
+    { type: "assistant", message: { content: [{ type: "text", text: T("GRUMP: APPROVE\nFine.") }, { type: "tool_use", name: "Write" }] } },
     { type: "user", message: { content: [{ type: "tool_result", content: "ok" }] } },
     { type: "assistant", message: { content: [{ type: "text", text: "now the second file" }, { type: "tool_use", name: "Write" }] } },
   ].map((e) => JSON.stringify(e)).join("\n");
@@ -157,7 +160,7 @@ test("end to end: a verdict for one file does not authorise a write to another i
   const transcript = join(dir, "t.jsonl");
   writeFileSync(transcript, [
     JSON.stringify({ type: "user", message: { content: "add both files" } }),
-    JSON.stringify({ type: "assistant", message: { content: [{ type: "text", text: "GRUMP: APPROVE — src/a.py\nFine." }, { type: "tool_use", name: "Write" }] } }),
+    JSON.stringify({ type: "assistant", message: { content: [{ type: "text", text: T("GRUMP: APPROVE — src/a.py\nFine.") }, { type: "tool_use", name: "Write" }] } }),
     JSON.stringify({ type: "user", message: { content: [{ type: "tool_result", content: "ok" }] } }),
   ].join("\n"));
   const env = { GRUMPY_CONFIG_DIR: join(dir, "cfg"), GRUMPY_MODE: "gate" };
@@ -185,7 +188,7 @@ test("end to end: the gate reads the transcript and denies a BLOCK", () => {
   const transcript = join(dir, "t.jsonl");
   writeFileSync(transcript, [
     JSON.stringify({ type: "user", message: { content: "add the handler" } }),
-    JSON.stringify({ type: "assistant", message: { content: [{ type: "text", text: "GRUMP: BLOCK\n1. src/a.py:3 — password logged — drop it from the log line" }] } }),
+    JSON.stringify({ type: "assistant", message: { content: [{ type: "text", text: T("GRUMP: BLOCK\n1. src/a.py:3 — password logged — drop it from the log line") }] } }),
   ].join("\n"));
   const env = { GRUMPY_CONFIG_DIR: join(dir, "cfg"), GRUMPY_MODE: "nag" };
   const res = runGate({ session_id: "e2e", tool_name: "Write", tool_input: { file_path: "src/a.py" }, transcript_path: transcript }, env);

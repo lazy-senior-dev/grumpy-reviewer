@@ -5,6 +5,9 @@ import { buildPrompt, ARMS } from "../benchmarks/lib/arms.mjs";
 import { scoreResponse, flagged, aggregate } from "../benchmarks/lib/score.mjs";
 
 import { readFileSync } from "node:fs";
+const P_ = JSON.parse(readFileSync(new URL("../persona.json", import.meta.url), "utf8"));
+const T = (s) => s.replace(/GRUMP:/g, P_.verdictPrefix + ":").replace(/\bREQUEST_CHANGES\b/g, P_.verdicts.changes).replace(/\bAPPROVE\b/g, P_.verdicts.approve).replace(/\bBLOCK\b/g, P_.verdicts.block).replace(/Fine\./g, P_.approveWord);
+
 const P = JSON.parse(readFileSync(new URL("../persona.json", import.meta.url), "utf8"));
 const cases = loadCases();
 const seededCases = cases.filter((c) => c.tier === "seeded");
@@ -46,21 +49,21 @@ test("every arm gets the same diff and a way to say pass or fail", () => {
 });
 
 test("flagged reads verdict blocks and PASS/FAIL lines, last one wins", () => {
-  assert.equal(flagged("GRUMP: APPROVE\nFine."), false);
-  assert.equal(flagged("GRUMP: BLOCK\n1. a:1 — b — c"), true);
+  assert.equal(flagged(T("GRUMP: APPROVE\nFine.")), false);
+  assert.equal(flagged(T("GRUMP: BLOCK\n1. a:1 — b — c")), true);
   assert.equal(flagged("looks fine to me\nVERDICT: PASS"), false);
   assert.equal(flagged("VERDICT: PASS\n\nactually no\nVERDICT: FAIL"), true);
   assert.equal(flagged("no opinion"), null);
 });
 
 test("scoring a seeded case: caught needs a flag and the named defect", () => {
-  const hit = "GRUMP: BLOCK\n1. app/api/profiles.py:14 — user_id comes from the body so any authenticated user can read another user's profile — read it from the session";
+  const hit = T("GRUMP: BLOCK\n1. app/api/profiles.py:14 — user_id comes from the body so any authenticated user can read another user's profile — read it from the session");
   const s = scoreResponse(s01, hit);
   assert.equal(s.caught, true);
   assert.equal(s.blocked, true);
   assert.equal(s.blockCorrect, true);
   assert.equal(s.findings, 1);
-  const wrongReason = scoreResponse(s01, "GRUMP: REQUEST_CHANGES\n1. app/api/profiles.py:20 — no test — add one");
+  const wrongReason = scoreResponse(s01, T("GRUMP: REQUEST_CHANGES\n1. app/api/profiles.py:20 — no test — add one"));
   assert.equal(wrongReason.flagged, true);
   assert.equal(wrongReason.caught, false);
   const passed = scoreResponse(s01, "Looks good. VERDICT: PASS");
@@ -75,7 +78,7 @@ test("scoring a seeded case: caught needs a flag and the named defect", () => {
 });
 
 test("scoring a clean case: a flag is a false positive", () => {
-  assert.equal(scoreResponse(c02, "GRUMP: APPROVE\nFine.").falsePositive, false);
+  assert.equal(scoreResponse(c02, T("GRUMP: APPROVE\nFine.")).falsePositive, false);
   assert.equal(scoreResponse(c02, "VERDICT: FAIL").falsePositive, true);
   assert.equal(scoreResponse(c02, "hmm").unparseable, true);
 });
@@ -83,10 +86,10 @@ test("scoring a clean case: a flag is a false positive", () => {
 test("aggregate produces medians per arm and per-case hit counts", () => {
   const fixture = [];
   const mk = (arm, c, run, text, extra = {}) => ({ arm, case: c.id, run, model: "m", score: scoreResponse(c, text), usage: { input: 100 + run, output: 10 }, durationMs: 1000, ...extra });
-  const hit = "GRUMP: BLOCK\n1. app/api/profiles.py:14 — user_id from the body lets any user read another user — use the session";
+  const hit = T("GRUMP: BLOCK\n1. app/api/profiles.py:14 — user_id from the body lets any user read another user — use the session");
   for (const run of [1, 2, 3]) {
-    fixture.push(mk("grump", s01, run, run === 2 ? "GRUMP: APPROVE\nFine." : hit));
-    fixture.push(mk("grump", c02, run, run === 3 ? "GRUMP: REQUEST_CHANGES\n1. x:1 — y — z" : "GRUMP: APPROVE\nFine."));
+    fixture.push(mk("grump", s01, run, run === 2 ? T("GRUMP: APPROVE\nFine.") : hit));
+    fixture.push(mk("grump", c02, run, run === 3 ? T("GRUMP: REQUEST_CHANGES\n1. x:1 — y — z") : T("GRUMP: APPROVE\nFine.")));
     fixture.push(mk("bare", s01, run, "VERDICT: PASS"));
     fixture.push(mk("bare", c02, run, "VERDICT: PASS"));
   }
