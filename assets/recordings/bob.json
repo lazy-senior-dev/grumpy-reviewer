@@ -1,0 +1,17 @@
+{
+  "persona": "grumpy-reviewer",
+  "agent": "bob",
+  "case": "s01-py-user-id-from-body",
+  "command": "npx github:lazy-senior-dev/grumpy-reviewer review --staged --agent bob",
+  "durationMs": 12636,
+  "exitCode": 1,
+  "stderr": [
+    "Reading the staged changes (34 lines) with IBM Bob Shell. The Grump does not skim; give it a moment.",
+    "13 s · $0.0106"
+  ],
+  "stdout": [
+    "GRUMP: BLOCK",
+    "1. app/api/profiles.py:9 — any authenticated user supplies {\"user_id\": <victim>} in the body and reads any other user's profile and notification settings — remove the body lookup entirely; take user_id from session only, as the original code did"
+  ],
+  "recordedAt": "2026-09-04T18:47:01.231Z"
+}

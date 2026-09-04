@@ -19,7 +19,7 @@
 <meta name="twitter:image" content="https://lazy-senior-dev.github.io/grumpy-reviewer/assets/social-card.png">
 <meta name="theme-color" content="#fff6d6">
 <!-- Custom domain: create a CNAME file containing only the bare domain in this Pages folder, then set it under Settings > Pages. -->
-<link rel="stylesheet" href="assets/site.css?v=eb00b0ca">
+<link rel="stylesheet" href="assets/site.css?v=cc4a5711">
 </head>
 <body>
 <header class="top">
@@ -308,8 +308,8 @@
   </g>
   <text x="258" y="286" font-family="Menlo, Consolas, monospace" font-size="8.5" font-weight="700" text-anchor="middle" fill="#000">NOT LGTM</text>
 </svg></span></div>
-  <h1 class="display">The Grump<br><span class="g">blocks the merge.</span></h1>
-  <p class="lede">Your agent's code, reviewed by the staff engineer who has rejected 4,000 pull requests, <strong>before it ever reaches your branch</strong>. Ten questions, one verdict, and a hook that denies the write when the answer is <code>BLOCK</code>. He never writes code. He approves with one word.</p>
+  <h1 class="display">Your agent writes fast.<br><span class="g">The Grump reads first.</span></h1>
+  <p class="lede">The staff engineer who has rejected 4,000 pull requests, inside your coding agent. Ten questions, one verdict, and a hook that <strong>denies the write</strong> when the answer is <code>BLOCK</code>. Fourteen agents and a GitHub Action. Zero false alarms in the benchmark. He approves with one word.</p>
   <div class="ctas">
     <a class="btn primary" href="#try">Try it in 60 seconds →</a>
     <a class="btn" href="#install">Install</a>
@@ -331,6 +331,18 @@
   <h2>What getting grumped looks like</h2>
   <div class="term" aria-live="polite"><div class="bar"><i></i><i></i><i></i></div><pre id="term-body"></pre></div>
   <p class="sub" style="margin-top:.8rem">A <code>PreToolUse</code> hook reads the verdict the agent just printed. <code>BLOCK</code> denies the write in every mode. <code>REQUEST_CHANGES</code> denies only in <code>gate</code> mode. <code>APPROVE</code> goes through.</p>
+</section>
+
+<section class="wrap reveal" id="recordings">
+  <div class="eyebrow">Recorded</div>
+  <h2>Watch him work on every agent</h2>
+  <p class="sub">The same staged diff, one CLI, 4 agents. Real runs captured from the terminal transcript and rendered frame by frame, nothing typed by hand and nothing cut. Captions come from the recording itself. Captured 2026-09-04.</p>
+  <div class="recs">
+    <figure class="rec"><img src="assets/recordings/claude.gif" loading="lazy" width="1000" height="420" alt="Terminal recording of the Grump reviewing a staged diff with Claude Code: GRUMP: BLOCK"><figcaption><strong>Claude Code</strong><span>GRUMP: BLOCK · 1 finding · 7 s · $0.02</span></figcaption></figure>
+    <figure class="rec"><img src="assets/recordings/codex.gif" loading="lazy" width="1000" height="420" alt="Terminal recording of the Grump reviewing a staged diff with Codex CLI: GRUMP: BLOCK"><figcaption><strong>Codex CLI</strong><span>GRUMP: BLOCK · 1 finding · 7 s</span></figcaption></figure>
+    <figure class="rec"><img src="assets/recordings/agy.gif" loading="lazy" width="1000" height="420" alt="Terminal recording of the Grump reviewing a staged diff with Antigravity CLI: GRUMP: REQUEST_CHANGES"><figcaption><strong>Antigravity CLI</strong><span>GRUMP: REQUEST_CHANGES · 1 finding · 269 s</span></figcaption></figure>
+    <figure class="rec"><img src="assets/recordings/bob.gif" loading="lazy" width="1000" height="420" alt="Terminal recording of the Grump reviewing a staged diff with IBM Bob Shell: GRUMP: BLOCK"><figcaption><strong>IBM Bob Shell</strong><span>GRUMP: BLOCK · 1 finding · 13 s · $0.01</span></figcaption></figure>
+  </div>
 </section>
 
 <section class="wrap reveal" id="try">
@@ -430,7 +442,7 @@ Fine.</pre></div></div>
   <div class="eyebrow">Same desk</div>
   <h2>The rest of the cast</h2>
   <div class="grid c3">
-    <a class="card" href="https://lazy-senior-dev.github.io/paranoid-sre/" style="display:block"><span class="sketch dim" style="animation:none;filter:none"><svg viewBox="0 0 320 320" aria-hidden="true" style="width:120px">
+    <a class="card" href="https://lazy-senior-dev.github.io/paranoid-sre/" style="display:block"><span class="sketch" style="animation:none"><svg viewBox="0 0 320 320" aria-hidden="true" style="width:120px">
   <title id="t">The Paranoid SRE</title>
   <desc id="d">Line sketch of an on-call engineer with her hair in a bun, a headset, wide alert eyes, and a pager clipped to her collar.</desc>
   <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -487,8 +499,8 @@ Fine.</pre></div></div>
     <!-- lanyard -->
     <path d="M 150 250 L 200 262" stroke-width="2"/>
   </g>
-</svg></span><h3>Paranoid SRE <small style="color:var(--faint);font-weight:500">coming soon</small></h3><p><em>It works. Now tell me how it fails.</em> Reviews the deploy: limits, probes, rollouts, rollbacks, alerts.</p></a>
-    <a class="card" href="https://lazy-senior-dev.github.io/tenured/" style="display:block"><span class="sketch dim" style="animation:none;filter:none"><svg viewBox="0 0 320 320" aria-hidden="true" style="width:120px">
+</svg></span><h3>Paranoid SRE</h3><p><em>It works. Now tell me how it fails.</em> Reviews the deploy: limits, probes, rollouts, rollbacks, alerts.</p></a>
+    <a class="card" href="https://lazy-senior-dev.github.io/tenured/" style="display:block"><span class="sketch" style="animation:none"><svg viewBox="0 0 320 320" aria-hidden="true" style="width:120px">
   <title id="t">Tenured</title>
   <desc id="d">Line sketch of a veteran engineer: bald on top with hair at the sides, thick round glasses, a calm half-smile, a cardigan, and a notebook marked 2017 in the pocket.</desc>
   <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -548,7 +560,7 @@ Fine.</pre></div></div>
     <path d="M 194 170 C 196 178, 194 186, 188 192" stroke-width="1.5"/>
   </g>
   <text x="90" y="300" font-family="Menlo, Consolas, monospace" font-size="7" font-weight="700" text-anchor="middle" fill="currentColor">2017</text>
-</svg></span><h3>Tenured <small style="color:var(--faint);font-weight:500">coming soon</small></h3><p><em>We tried that in 2017.</em> Reviews the change against the repository's own history.</p></a>
+</svg></span><h3>Tenured</h3><p><em>We tried that in 2017.</em> Reviews the change against the repository's own history.</p></a>
     <a class="card" href="https://lazy-senior-dev.github.io/" style="display:block"><h3>All personas</h3><p>One persona per plugin, each measured on the number that engineer cares about. Watch the org for the next one.</p></a>
   </div>
 </section>

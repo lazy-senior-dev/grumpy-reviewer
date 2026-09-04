@@ -26,6 +26,22 @@
 
 <p align="center"><img src="assets/demo.gif" alt="Terminal recording: the agent writes a handler, the Grump prints GRUMP: BLOCK with the line and the fix, the write is denied, the agent fixes it, the Grump prints GRUMP: APPROVE, Fine." width="860"></p>
 
+<!-- recordings:start -->
+## Watch him work on every agent
+
+The same staged diff, one CLI, 4 agents. Each recording is a real run captured with `node scripts/capture-run.mjs --agent <name>` and rendered frame by frame from the transcript, nothing typed by hand and nothing cut. The captions come from the recording itself. Captured 2026-09-04.
+
+| **Claude Code** | **Codex CLI** |
+|---|---|
+| <img src="assets/recordings/claude.gif" alt="Terminal recording of the Grump reviewing a staged diff with Claude Code: GRUMP: BLOCK with 1 numbered findings" width="440"> | <img src="assets/recordings/codex.gif" alt="Terminal recording of the Grump reviewing a staged diff with Codex CLI: GRUMP: BLOCK with 1 numbered findings" width="440"> |
+| GRUMP: BLOCK · 1 finding · 7 s · $0.02 | GRUMP: BLOCK · 1 finding · 7 s |
+| **Antigravity CLI** | **IBM Bob Shell** |
+| <img src="assets/recordings/agy.gif" alt="Terminal recording of the Grump reviewing a staged diff with Antigravity CLI: GRUMP: REQUEST_CHANGES with 1 numbered findings" width="440"> | <img src="assets/recordings/bob.gif" alt="Terminal recording of the Grump reviewing a staged diff with IBM Bob Shell: GRUMP: BLOCK with 1 numbered findings" width="440"> |
+| GRUMP: REQUEST_CHANGES · 1 finding · 269 s | GRUMP: BLOCK · 1 finding · 13 s · $0.01 |
+
+Agents that narrate the whole checklist before the verdict (Bob does) are shown from the verdict block down; the CLI prints it the same way. Re-capture any of them with `--agent claude|codex|agy|bob`; Bob needs `BOB_API_KEY`.
+<!-- recordings:end -->
+
 ## Try him in 60 seconds, install nothing
 
 You already have a coding agent signed in. Point the Grump at your working tree with it:

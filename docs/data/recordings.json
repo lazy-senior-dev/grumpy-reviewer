@@ -1,0 +1,38 @@
+[
+  {
+    "agent": "claude",
+    "label": "Claude Code",
+    "verdict": "BLOCK",
+    "findings": 1,
+    "seconds": 7,
+    "cost": 0.0239,
+    "recordedAt": "2026-09-04"
+  },
+  {
+    "agent": "codex",
+    "label": "Codex CLI",
+    "verdict": "BLOCK",
+    "findings": 1,
+    "seconds": 7,
+    "cost": null,
+    "recordedAt": "2026-09-04"
+  },
+  {
+    "agent": "agy",
+    "label": "Antigravity CLI",
+    "verdict": "REQUEST_CHANGES",
+    "findings": 1,
+    "seconds": 269,
+    "cost": null,
+    "recordedAt": "2026-09-04"
+  },
+  {
+    "agent": "bob",
+    "label": "IBM Bob Shell",
+    "verdict": "BLOCK",
+    "findings": 1,
+    "seconds": 13,
+    "cost": 0.0106,
+    "recordedAt": "2026-09-04"
+  }
+]

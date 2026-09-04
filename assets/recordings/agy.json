@@ -1,0 +1,17 @@
+{
+  "persona": "grumpy-reviewer",
+  "agent": "agy",
+  "case": "s01-py-user-id-from-body",
+  "command": "npx github:lazy-senior-dev/grumpy-reviewer review --staged --agent agy",
+  "durationMs": 269179,
+  "exitCode": 1,
+  "stderr": [
+    "Reading the staged changes (34 lines) with Antigravity CLI. The Grump does not skim; give it a moment.",
+    "269 s · 66177 in / 124662 out tokens"
+  ],
+  "stdout": [
+    "GRUMP: REQUEST_CHANGES",
+    "1. app/api/profiles.py:11 — user_id comes from the request body, so any caller can read any user — take user_id from the session, not the body"
+  ],
+  "recordedAt": "2026-09-04T18:42:13.985Z"
+}

@@ -1,0 +1,17 @@
+{
+  "persona": "grumpy-reviewer",
+  "agent": "claude",
+  "case": "s01-py-user-id-from-body",
+  "command": "npx github:lazy-senior-dev/grumpy-reviewer review --staged --agent claude",
+  "durationMs": 6622,
+  "exitCode": 1,
+  "stderr": [
+    "Reading the staged changes (34 lines) with Claude Code (claude-sonnet-5). The Grump does not skim; give it a moment.",
+    "7 s · 7886 in / 350 out tokens · $0.0239"
+  ],
+  "stdout": [
+    "GRUMP: BLOCK",
+    "1. app/api/profiles.py:11 — user_id is taken from the request body, so any authenticated caller can read any other user's profile and notification settings by passing a different user_id — always use session[\"user_id\"], never accept user_id from the request"
+  ],
+  "recordedAt": "2026-09-04T18:50:57.654Z"
+}

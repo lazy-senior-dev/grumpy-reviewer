@@ -123,3 +123,17 @@ npm run bench                 # uses claude, codex, and agy if installed
 npm run bench:report          # results md, latest.json, chart, site data, README block
 git add -A benchmarks assets docs README.md && git commit -m "bench: results $(date +%F)"
 ```
+
+## 11. Recordings refresh (after a CLI or ruleset change)
+
+```sh
+node scripts/capture-run.mjs --agent claude     # stages a seeded case in a scratch repo, runs the CLI, saves the transcript
+node scripts/capture-run.mjs --agent codex
+node scripts/capture-run.mjs --agent agy
+BOB_API_KEY=... node scripts/capture-run.mjs --agent bob
+for a in claude codex agy bob; do python3 scripts/render-recording.py assets/recordings/$a.json assets/recordings/$a.gif; done
+npm run recordings            # README gallery between the recordings markers, GIFs and data into docs/
+git add -A assets/recordings docs README.md && git commit -m "docs: recordings $(date +%F)"
+```
+
+Every caption in the gallery is read from the recording; nothing is typed in. Keep the key in the environment, never in a file.

@@ -1,0 +1,17 @@
+{
+  "persona": "grumpy-reviewer",
+  "agent": "codex",
+  "case": "s01-py-user-id-from-body",
+  "command": "npx github:lazy-senior-dev/grumpy-reviewer review --staged --agent codex",
+  "durationMs": 6950,
+  "exitCode": 1,
+  "stderr": [
+    "Reading the staged changes (34 lines) with Codex CLI. The Grump does not skim; give it a moment.",
+    "7 s · 15580 in / 309 out tokens"
+  ],
+  "stdout": [
+    "GRUMP: BLOCK",
+    "1. app/api/profiles.py:11 — request-controlled `user_id` bypasses authentication and exposes any user’s profile and notification settings — take `user_id` exclusively from the session"
+  ],
+  "recordedAt": "2026-09-04T18:27:42.620Z"
+}
