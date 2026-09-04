@@ -10,7 +10,7 @@ At 2 a.m. an agent shipped me a `/me` endpoint that read `user_id` from the requ
 
 grumpy-reviewer is that question, asked ten times. It installs into Claude Code, Codex, Copilot CLI and others as a plugin, injects a reviewer persona every turn, and a PreToolUse hook reads the agent's own verdict before each write: BLOCK denies, REQUEST_CHANGES denies in gate mode, APPROVE goes through. He never writes code. He approves with one word.
 
-It also runs as a GitHub Action. Benchmark: 30 seeded defects, three agents, with and without him; raw replies are in the repo. MIT.
+It also runs as a GitHub Action. Benchmark: 30 seeded defects, three agents, with and without him; raw replies are in the repo. Apache-2.0.
 
 ## X / LinkedIn
 
@@ -18,7 +18,7 @@ Your AI agent writes code faster than anyone can read it. Nobody reviews it befo
 
 Meet the Grump: a staff-engineer persona for Claude Code, Codex, Copilot CLI and friends. Ten questions, one verdict, and a hook that denies the write when the answer is BLOCK. He never writes code. He approves with one word: Fine.
 
-Benchmark with and without him, on three agents, raw replies included. MIT.
+Benchmark with and without him, on three agents, raw replies included. Apache-2.0.
 
 https://github.com/lazy-senior-dev/grumpy-reviewer
 
