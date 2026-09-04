@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "type": "command",
+        "bash": "node \"$HOME/.grumpy-reviewer/hooks/grumpy-context.mjs\" --host copilot 2>/dev/null || true",
+        "timeoutSec": 10
+      }
+    ],
+    "preToolUse": [
+      {
+        "type": "command",
+        "bash": "node \"$HOME/.grumpy-reviewer/hooks/grumpy-gate.mjs\" --host copilot 2>/dev/null || true",
+        "timeoutSec": 15
+      }
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "lazy-senior-dev",
+  "owner": {
+    "name": "sandeepbazar",
+    "email": "5602033+sandeepbazar@users.noreply.github.com"
+  },
+  "metadata": {
+    "description": "Senior engineers your AI agent can be. One persona per plugin.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "grumpy-reviewer",
+      "description": "Your agent's code, reviewed by the staff engineer who has rejected 4,000 pull requests, before it ever reaches your branch.",
+      "version": "0.1.0",
+      "source": "./"
+    }
+  ]
+}
