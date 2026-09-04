@@ -143,8 +143,6 @@ Thirty small, realistic diffs across Python, TypeScript, Go, and YAML (Kubernete
 
 <!-- bench:table:end -->
 
-IBM Bob is not in the table yet: `bob run` needs a `BOB_API_KEY`, which the benchmark machine did not have. With the key exported, `npm run bench -- --agents bob` adds the row.
-
 What the numbers say, plainly: on a 30-line diff, current models find the seeded defect with or without help. The value of a reviewer persona is not that it finds more; it is that it stops crying wolf on clean changes, always ends with a verdict a hook can act on, gets the severity right, and does it in fewer tokens and less time. A gate is only useful if it is both parseable and quiet on good code; those are the two columns that move.
 
 Method, per-diff table, limitations, the pilot run that led to one calibration pass, and every raw reply: [benchmarks/results](benchmarks/results). Reproduce: `npm run bench && npm run bench:report`. Add your own case: [CONTRIBUTING](CONTRIBUTING.md).
