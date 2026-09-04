@@ -107,7 +107,9 @@ Fine.
 
 Total cost: one denied write and eleven seconds. The alternative was a disclosure notice.
 
-## Numbers
+## Numbers: reviewing a change someone else wrote
+
+The tier above measures what The Grump changes about code the agent writes. This one measures the review itself, on diffs the agent did not author.
 
 Most add-ons for coding agents are measured in lines of code saved. The Grump is measured in **defects caught**.
 
