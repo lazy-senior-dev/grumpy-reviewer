@@ -6,7 +6,9 @@
     "findings": 1,
     "seconds": 7,
     "cost": 0.0239,
-    "recordedAt": "2026-09-04"
+    "recordedAt": "2026-09-04",
+    "width": 1000,
+    "height": 280
   },
   {
     "agent": "codex",
@@ -15,7 +17,9 @@
     "findings": 1,
     "seconds": 7,
     "cost": null,
-    "recordedAt": "2026-09-04"
+    "recordedAt": "2026-09-04",
+    "width": 1000,
+    "height": 236
   },
   {
     "agent": "agy",
@@ -24,7 +28,9 @@
     "findings": 1,
     "seconds": 269,
     "cost": null,
-    "recordedAt": "2026-09-04"
+    "recordedAt": "2026-09-04",
+    "width": 1000,
+    "height": 236
   },
   {
     "agent": "bob",
@@ -33,6 +39,8 @@
     "findings": 1,
     "seconds": 13,
     "cost": 0.0106,
-    "recordedAt": "2026-09-04"
+    "recordedAt": "2026-09-04",
+    "width": 1000,
+    "height": 258
   }
 ]
