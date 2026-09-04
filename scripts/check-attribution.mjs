@@ -28,7 +28,7 @@ const ASSISTANT_PATHS = [
   /^\.github\/copilot-instructions\.md$/,
   /^README(\.[a-z]{2})?\.md$/, /^docs\//, /^action\.yml$/, /^action\//, /^examples\//,
   /^benchmarks\//, /^scripts\//, /^tests\//, /^package\.json$/, /^CHANGELOG\.md$/, /^CONTRIBUTING\.md$/,
-  /^\.github\/workflows\//, /^\.github\/ISSUE_TEMPLATE\//, /^\.github\/PULL_REQUEST_TEMPLATE\.md$/,
+  /^\.github\/workflows\//, /^\.github\/ISSUE_TEMPLATE\//, /^\.github\/PULL_REQUEST_TEMPLATE\.md$/, /^assets\//,
 ];
 const BINARY = /\.(png|gif|jpg|jpeg|ico|woff2?|ttf|zip|tgz)$/i;
 
