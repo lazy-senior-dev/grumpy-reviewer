@@ -63,7 +63,7 @@ Org site (served from the root):
 - Settings, Pages, Source: Deploy from a branch, Branch: `main`, Folder: `/ (root)`, Save.
 - `gh api -X POST repos/lazy-senior-dev/lazy-senior-dev.github.io/pages -f 'source[branch]=main' -f 'source[path]=/'`
 
-Both repos also carry `.github/workflows/pages.yml` for the "GitHub Actions" source; pick one source per repo and delete the other. Custom domain later: add a `CNAME` file containing only the bare domain (`docs/CNAME` for the project site, `CNAME` at the root of the org site).
+`/ (root)` also works for the three persona repos: each has a root `index.html` that redirects to `docs/` and a root `.nojekyll`. `/docs` is the cleaner choice because the canonical URL then serves the page directly. Both repos also carry `.github/workflows/pages.yml` for the "GitHub Actions" source; pick one source per repo and delete the other. Custom domain later: add a `CNAME` file containing only the bare domain (`docs/CNAME` for the project site, `CNAME` at the root of the org site).
 
 ## 6. Protect main with a ruleset
 
