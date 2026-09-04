@@ -19,7 +19,7 @@
 **Your agent's code, reviewed by the staff engineer who has rejected 4,000 pull requests, before it ever reaches your branch.**
 
 <!-- bench:hero:start -->
-**On Claude Code (`claude-sonnet-5`), the Grump catches 30 of 30 seeded defects, the same as the agent alone. What changes is discipline: false alarms on 10 clean diffs, 0 with him, 4 without; replies with no usable verdict per run, 0 with him, 3 without; 94% of his BLOCK verdicts land on BLOCK-class defects; median review time 7 s with him, 11 s without at 229 output tokens with him, 685 output tokens without.** Median of 3 runs, measured 2026-09-04; [method, per-diff table, raw replies](benchmarks/results).
+**On Claude Code (`claude-sonnet-5`), the Grump catches 30 of 30 seeded defects, the same as the agent alone. What changes is discipline: false alarms on 10 clean diffs, 0 with him, 4 without; replies with no usable verdict per run, 0 with him, 3 without; 94% of his BLOCK verdicts land on BLOCK-class defects; median review time 7 s with him, 11 s without at 229 output tokens with him, 685 output tokens without.** Median of 3 runs, measured 2026-09-04; [method, per-diff table, raw replies](benchmarks/results). **In the needle tier, where the same defect hides in a four-file, 150-line pull request, Claude Code finds 10 of 10 with the Grump, 9 without, 10 with the generic prompt.**
 <!-- bench:hero:end -->
 
 <p align="center"><img src="assets/demo.gif" alt="Terminal recording: the agent writes a handler, the Grump prints GRUMP: BLOCK with the line and the fix, the write is denied, the agent fixes it, the Grump prints GRUMP: APPROVE, Fine." width="860"></p>
@@ -107,6 +107,15 @@ Thirty small, realistic diffs across Python, TypeScript, Go, and YAML (Kubernete
 | Antigravity CLI | `agy-default` (n=1) | no skill | 22 | 0 | 18 | n/a | 19553 | 2909 | 47 s |
 | Antigravity CLI | `agy-default` (n=1) | generic review prompt | 27 | 2 | 8 | n/a | 19613 | 8160 | 56 s |
 | Antigravity CLI | `agy-default` (n=1) | **grumpy-reviewer** | **25** | **0** | **5** | **100%** | 28979 | 26207 | 84 s |
+
+
+**Needle tier** (one defect in a four-file pull request of about 150 lines):
+
+| Agent | Model | No skill | Generic prompt | **Grump** |
+|---|---|---|---|---|
+| Claude Code | `claude-sonnet-5` (n=3) | 9/10 | 10/10 | **10/10** |
+| Codex CLI | `codex-default` (n=3) | 10/10 | 10/10 | **10/10** |
+| Antigravity CLI | `agy-default` (n=1) | 2/10 | 1/10 | **8/10** |
 
 <!-- bench:table:end -->
 
