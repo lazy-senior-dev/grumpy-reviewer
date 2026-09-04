@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>grumpy-reviewer: the staff engineer who blocks the merge, inside your AI agent</title>
+<meta name="description" content="Your agent's code, reviewed by the staff engineer who has rejected 4,000 pull requests, before it ever reaches your branch. Works with Claude Code, Codex, Copilot CLI, Gemini CLI, OpenCode, Cursor and more, plus a GitHub Action.">
+<link rel="icon" href="assets/grump.svg" type="image/svg+xml">
+<link rel="canonical" href="https://lazy-senior-dev.github.io/grumpy-reviewer/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="grumpy-reviewer">
+<meta property="og:description" content="Your agent's code, reviewed by the staff engineer who has rejected 4,000 pull requests, before it ever reaches your branch.">
+<meta property="og:url" content="https://lazy-senior-dev.github.io/grumpy-reviewer/">
+<meta property="og:image" content="https://lazy-senior-dev.github.io/grumpy-reviewer/assets/social-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="grumpy-reviewer">
+<meta name="twitter:description" content="Show me where it breaks. A reviewer persona for AI coding agents that blocks bad writes before they land.">
+<meta name="twitter:image" content="https://lazy-senior-dev.github.io/grumpy-reviewer/assets/social-card.png">
+<!-- Custom domain: create docs/CNAME containing only the bare domain, then set it under Settings > Pages. -->
+<link rel="stylesheet" href="assets/site.css">
+<style>
+  .hero { display: grid; grid-template-columns: 260px 1fr; gap: 2.5rem; align-items: center; padding: 3.5rem 0 3rem; }
+  .hero img { width: 100%; height: auto; }
+  .hero .tag { font: italic 1.35rem/1.3 var(--serif); color: var(--ink-2); margin: .25rem 0 1.25rem; }
+  .hero .pitch { font-size: 1.2rem; max-width: 34em; }
+  .install { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+  .cmd { background: var(--term); color: var(--term-fg); border-radius: 10px; padding: .9rem 1rem; display: grid; grid-template-columns: 1fr auto; gap: .75rem; align-items: start; }
+  .cmd .label { grid-column: 1 / -1; color: #9a958c; font: 600 .75rem/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; }
+  .cmd pre { font-size: .85rem; white-space: pre-wrap; word-break: break-word; }
+  .cmd button { background: #2e2e2e; color: var(--term-fg); border: 1px solid #444; border-radius: 6px; padding: .35rem .6rem; font: 600 .75rem var(--sans); cursor: pointer; }
+  .cmd button:hover { background: #3a3a3a; }
+  .ba { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  .ba pre, #term-body { font-size: .82rem; white-space: pre-wrap; word-break: break-word; }
+  .numbers { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+  .stat { background: #fff; border: 1px solid var(--rule); border-radius: 12px; padding: 1.1rem 1.25rem; }
+  .stat b { display: block; font: 700 2.4rem/1.1 var(--serif); }
+  .stat span { color: var(--ink-3); font-size: .9rem; }
+  ol.check { counter-reset: q; list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: .75rem 1.5rem; }
+  ol.check li { counter-increment: q; padding-left: 2.4rem; position: relative; }
+  ol.check li::before { content: counter(q); position: absolute; left: 0; top: .05rem; width: 1.7rem; height: 1.7rem; border-radius: 50%; background: var(--ink); color: var(--paper); font: 700 .9rem/1.7rem var(--mono); text-align: center; }
+  .promise { background: var(--ink); color: var(--paper); border-radius: 14px; padding: 2rem 2.2rem; }
+  .promise h2 { color: #fff; }
+  .promise a { color: var(--warn); }
+  .cursor::after { content: "▍"; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  @media (max-width: 760px) { .hero { grid-template-columns: 1fr; text-align: left; } .hero img { max-width: 200px; } .ba { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main class="wrap">
+
+<section class="hero">
+  <img src="assets/grump.svg" alt="Line sketch of the Grump: grey stubble, reading glasses pushed up into his hair, a mug that says OKAYEST" width="260" height="260">
+  <div>
+    <div class="eyebrow">lazy-senior-dev / grumpy-reviewer</div>
+    <h1>The Grump</h1>
+    <p class="tag">Show me where it breaks.</p>
+    <p class="pitch">Your agent's code, reviewed by the staff engineer who has rejected 4,000 pull requests, <strong>before it ever reaches your branch.</strong> Every write and every commit gets a ten-question checklist and a verdict. He never writes code. He approves with one word.</p>
+    <p class="small muted">Plugin for Claude Code, Codex, Copilot CLI, Gemini CLI, OpenCode and any AGENTS.md host. Also a GitHub Action. MIT.</p>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">Live</div>
+  <h2>What getting grumped looks like</h2>
+  <div class="term" id="term" aria-live="polite">
+    <div class="bar"><i></i><i></i><i></i></div>
+    <pre id="term-body"></pre>
+  </div>
+  <p class="small muted" style="margin-top:.75rem">A <code>PreToolUse</code> hook reads the verdict the agent just printed. <code>BLOCK</code> denies the write in every mode. <code>REQUEST_CHANGES</code> denies only in <code>gate</code> mode. <code>APPROVE</code> goes through.</p>
+</section>
+
+<section>
+  <div class="eyebrow">Install</div>
+  <h2>Two commands, then forget he is there</h2>
+  <div class="install">
+    <div class="cmd"><span class="label">Claude Code</span><pre>/plugin marketplace add lazy-senior-dev/grumpy-reviewer
+/plugin install grumpy-reviewer@lazy-senior-dev</pre><button data-copy>Copy</button></div>
+    <div class="cmd"><span class="label">Codex</span><pre>git clone https://github.com/lazy-senior-dev/grumpy-reviewer ~/.codex/plugins/grumpy-reviewer
+# then add it to ~/.agents/plugins/marketplace.json and enable it in /plugins</pre><button data-copy>Copy</button></div>
+    <div class="cmd"><span class="label">GitHub Action</span><pre>- uses: lazy-senior-dev/grumpy-reviewer@v1
+  env:
+    ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}</pre><button data-copy>Copy</button></div>
+  </div>
+  <p class="small muted" style="margin-top:1rem">Copilot CLI, Gemini CLI, OpenCode, Cursor, Windsurf, Cline, Kiro, OpenClaw, Devin, Qoder and Antigravity: see the <a href="https://github.com/lazy-senior-dev/grumpy-reviewer#install">install table</a>. Uninstall is one command on every host.</p>
+</section>
+
+<section>
+  <div class="eyebrow">Before / after</div>
+  <h2>The 2 a.m. handler</h2>
+  <div class="ba">
+    <div>
+      <h3>The agent wrote</h3>
+      <div class="term"><pre><span class="dim"># app/api/profiles.py</span>
+@bp.get("/me")
+def me():
+    payload = request.get_json(silent=True) or {}
+    <span class="warn">user_id = payload.get("user_id", session.get("user_id"))</span>
+    if user_id is None:
+        abort(401)
+    row = query_one("select id, name, email from users where id = %s", (user_id,))
+    if row is None:
+        abort(404)
+    return jsonify({**row, "notifications": settings_for(user_id)})</pre></div>
+    </div>
+    <div>
+      <h3>The Grump said</h3>
+      <div class="term"><pre><span class="block">GRUMP: BLOCK</span>
+1. app/api/profiles.py:14 — user_id is read from the request body, so any logged-in caller can read any profile by changing one number — take user_id from the session and ignore the body
+
+<span class="dim">write denied</span></pre></div>
+      <h3 style="margin-top:1rem">The three-line fix</h3>
+      <div class="term"><pre>-    payload = request.get_json(silent=True) or {}
+-    user_id = payload.get("user_id", session.get("user_id"))
++    user_id = session.get("user_id")
+<span class="ok">GRUMP: APPROVE</span>
+Fine.</pre></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">Numbers</div>
+  <h2>Defects caught, not lines saved</h2>
+  <p>Thirty small diffs, each with exactly one seeded defect, plus ten clean diffs to count false alarms. The same diff goes to the same agent three ways: no skill, a generic "review carefully" prompt, and the Grump. Same ticket, same diff, same model. The only thing that changes is who is reading.</p>
+  <div class="numbers" id="numbers">
+    <div class="stat"><b id="n-bare">TBD</b><span>defects caught with no skill</span></div>
+    <div class="stat"><b id="n-generic">TBD</b><span>with a generic review prompt</span></div>
+    <div class="stat"><b id="n-grump">TBD</b><span>with the Grump</span></div>
+    <div class="stat"><b id="n-fp">TBD</b><span>false alarms on 10 clean diffs</span></div>
+  </div>
+  <div class="table-wrap"><table id="bench-table"><thead><tr><th>Agent</th><th>Model</th><th>No skill</th><th>Generic prompt</th><th>Grump</th><th>False positives (Grump)</th><th>BLOCK precision</th></tr></thead><tbody><tr><td colspan="7" class="muted">Results load from <code>data/latest.json</code>. If this row is still here, run <code>npm run bench</code> and <code>npm run bench:report</code>.</td></tr></tbody></table></div>
+  <p class="small muted" id="bench-note" style="margin-top:.75rem">Method, per-diff table, raw replies and limitations: <a href="https://github.com/lazy-senior-dev/grumpy-reviewer/tree/main/benchmarks/results">benchmarks/results</a>. Reproduce with <code>npm run bench</code>.</p>
+</section>
+
+<section>
+  <div class="eyebrow">How it works</div>
+  <h2>Ten questions, in order, with a stop rule</h2>
+  <ol class="check">
+    <li><strong>Scope.</strong> Does it do what the ticket asked and nothing else?</li>
+    <li><strong>Inputs.</strong> Empty, absent, oversized, malformed, duplicated, concurrent. Where does each go?</li>
+    <li><strong>Errors.</strong> Where does each error go, and does the caller find out?</li>
+    <li><strong>Off-diff changes.</strong> Schema, config, env, permissions, flags: in the change or in the runbook?</li>
+    <li><strong>Dependencies.</strong> Is every new one earning its place?</li>
+    <li><strong>Trust boundaries.</strong> Secrets, PII, authn and authz, injection at every crossing.</li>
+    <li><strong>Tests.</strong> At the boundary where it breaks, not where it is convenient.</li>
+    <li><strong>Rollback.</strong> Revert and deploy, or a migration and a prayer?</li>
+    <li><strong>Observability.</strong> Would on-call understand the log line at 3 a.m.?</li>
+    <li><strong>Naming and dead code.</strong> Last. Never first.</li>
+  </ol>
+  <p style="margin-top:1.5rem">Then one fixed block: <code>GRUMP: APPROVE | REQUEST_CHANGES | BLOCK</code> followed by numbered <code>file:line — what fails in production — smallest fix</code> lines. Three modes: <code>nag</code> (default, findings only), <code>gate</code> (writes denied until fixed), <code>off</code>.</p>
+</section>
+
+<section>
+  <div class="promise">
+    <div class="eyebrow" style="color:#bdb6aa">The promise</div>
+    <h2>Grumpy, not negligent</h2>
+    <p>He never rewrites your code, never expands scope, never bikesheds style while a correctness finding exists, and never blocks on taste. A <code>BLOCK</code> is reserved for data loss, secrets, auth holes, injection, and destructive operations, and no mode, schedule, or diff size can downgrade one. He can be wrong: say so, in your own words, and he logs the override to the <a href="https://github.com/lazy-senior-dev/grumpy-reviewer#commands">scorecard</a> instead of pretending he was right.</p>
+  </div>
+</section>
+
+<footer>
+  <nav>
+    <a href="https://github.com/lazy-senior-dev/grumpy-reviewer">GitHub</a>
+    <a href="https://github.com/lazy-senior-dev/grumpy-reviewer/blob/main/docs/agent-portability.md">Which agents</a>
+    <a href="https://github.com/lazy-senior-dev/grumpy-reviewer/discussions">Discussions</a>
+    <a href="https://github.com/sponsors/sandeepbazar">Sponsors</a>
+    <a href="https://lazy-senior-dev.github.io/">All personas</a>
+  </nav>
+  <p>Coming soon from the same desk: <strong>paranoid-sre</strong>, who reviews what happens when it is deployed, and <strong>tenured</strong>, who has seen this exact outage before. Watch the <a href="https://github.com/lazy-senior-dev">org</a> or say hello in <a href="https://github.com/lazy-senior-dev/grumpy-reviewer/discussions">Discussions</a>.</p>
+  <p class="small">Ponytail taught agents to write less. The Grump makes sure what is left is right. MIT, Sandeep Bazar, 2026.</p>
+</footer>
+
+</main>
+<script>
+(function () {
+  // Copy buttons.
+  document.querySelectorAll("[data-copy]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var text = btn.parentElement.querySelector("pre").textContent;
+      navigator.clipboard.writeText(text).then(function () {
+        btn.textContent = "Copied";
+        setTimeout(function () { btn.textContent = "Copy"; }, 1400);
+      });
+    });
+  });
+
+  // Terminal animation: pure JS typing, no library.
+  var body = document.getElementById("term-body");
+  var script = [
+    { t: "$ claude", c: "" , type: true },
+    { t: "> add a /me endpoint that returns the profile and notification settings", c: "dim", type: true },
+    { t: "", c: "" },
+    { t: "Writing app/api/profiles.py ...", c: "dim" },
+    { t: "GRUMP: BLOCK", c: "block" },
+    { t: "1. app/api/profiles.py:14 — user_id is read from the request body, so any caller can read any profile — take it from the session", c: "" },
+    { t: "write denied until fixed", c: "dim" },
+    { t: "", c: "" },
+    { t: "Taking user_id from the session instead. Reviewing again ...", c: "dim" },
+    { t: "GRUMP: APPROVE", c: "ok" },
+    { t: "Fine.", c: "" },
+    { t: "Writing app/api/profiles.py ... done", c: "dim" }
+  ];
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+  function render(lines, typing) {
+    body.innerHTML = lines.map(function (l, i) {
+      var cls = l.c ? ' class="' + l.c + '"' : "";
+      var cur = typing && i === lines.length - 1 ? ' cursor' : "";
+      return "<span" + (cls || cur ? ' class="' + (l.c || "") + (cur ? " cursor" : "") + '"' : "") + ">" + esc(l.t) + "</span>";
+    }).join("\n");
+  }
+  function play() {
+    var shown = [];
+    var i = 0;
+    function step() {
+      if (i >= script.length) { setTimeout(function () { shown = []; i = 0; step(); }, 6000); return; }
+      var line = script[i];
+      if (line.type) {
+        var k = 0;
+        shown.push({ t: "", c: line.c });
+        (function typeChar() {
+          shown[shown.length - 1].t = line.t.slice(0, ++k);
+          render(shown, true);
+          if (k < line.t.length) setTimeout(typeChar, 28); else { i++; setTimeout(step, 500); }
+        })();
+      } else {
+        shown.push(line);
+        render(shown, false);
+        i++;
+        setTimeout(step, line.t === "" ? 250 : line.c === "block" || line.c === "ok" ? 900 : 650);
+      }
+    }
+    step();
+  }
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) { render(script, false); } else { play(); }
+
+  // Benchmark numbers from data/latest.json, TBD until a run exists.
+  fetch("data/latest.json").then(function (r) { return r.ok ? r.json() : null; }).then(function (data) {
+    if (!data || !data.agents) return;
+    var tbody = document.querySelector("#bench-table tbody");
+    tbody.innerHTML = "";
+    var first = null;
+    Object.keys(data.agents).forEach(function (key) {
+      var a = data.agents[key];
+      var arms = a.arms || {};
+      var g = arms.grump || {}, b = arms.bare || {}, ge = arms.generic || {};
+      if (!first && g.caughtMedian != null) first = { b: b, ge: ge, g: g };
+      var n = data.seeded;
+      var cell = function (arm) { return arm.caughtMedian == null ? "n/a" : arm.caughtMedian + " / " + n; };
+      var tr = document.createElement("tr");
+      tr.innerHTML = "<td>" + esc(a.label) + "</td><td><code>" + esc(String(g.model || b.model || "")) + "</code></td><td>" + cell(b) + "</td><td>" + cell(ge) + "</td><td><strong>" + cell(g) + "</strong></td><td>" + (g.falsePositivesMedian == null ? "n/a" : g.falsePositivesMedian + " / " + data.clean) + "</td><td>" + (g.blockPrecision == null ? "n/a" : Math.round(g.blockPrecision * 100) + "%") + "</td>";
+      tbody.appendChild(tr);
+    });
+    if (first) {
+      document.getElementById("n-bare").textContent = first.b.caughtMedian == null ? "n/a" : first.b.caughtMedian + "/" + data.seeded;
+      document.getElementById("n-generic").textContent = first.ge.caughtMedian == null ? "n/a" : first.ge.caughtMedian + "/" + data.seeded;
+      document.getElementById("n-grump").textContent = first.g.caughtMedian + "/" + data.seeded;
+      document.getElementById("n-fp").textContent = first.g.falsePositivesMedian == null ? "n/a" : first.g.falsePositivesMedian + "/" + data.clean;
+      document.getElementById("bench-note").insertAdjacentHTML("afterbegin", "Measured " + esc(data.date) + ". Headline numbers are the first agent in the table; medians over runs. ");
+    }
+  }).catch(function () {});
+})();
+</script>
+</body>
+</html>
