@@ -12,7 +12,7 @@ You will get an acknowledgement within 72 hours and a fix or a clear answer with
 
 ## Scope
 
-In scope: the hook scripts, the Action, the generated adapters, the benchmark runner, and this repository's workflows. Out of scope: the behaviour of the underlying model, and the hosts (Claude Code, Codex, and so on) themselves, which have their own programmes.
+In scope: the hook scripts, the Action, the generated adapters, the benchmark runner, and this repository's workflows. Out of scope: the behaviour of the underlying model, and the agent hosts themselves, which have their own programmes.
 
 ## Supported versions
 

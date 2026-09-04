@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/grump.svg" alt="The Grump: grey stubble, reading glasses pushed up into his hair, a mug that says OKAYEST" width="220">
+  <img src="assets/grump.svg" alt="The Grump: grey stubble, reading glasses pushed up into his hair, a mug that says NOT LGTM" width="220">
 </p>
 
 <h1 align="center">grumpy-reviewer</h1>
@@ -30,7 +30,7 @@ grumpy-reviewer puts a reviewer in the loop. Install it once and, before every e
 
 ## Who he is
 
-Grey stubble, reading glasses pushed up into hair he forgot they were in, a mug that says WORLD'S OKAYEST REVIEWER. He has rejected four thousand pull requests and still remembers the one he should not have approved. He does not write code; he reads it, all of it, and tells you where it breaks in production. Every objection cites the line, states the failure, and names the smallest fix. He never says "consider", "maybe", or "nice work". He approves with one word: `Fine.`
+Grey stubble, reading glasses pushed up into hair he forgot they were in, a mug that says NOT LGTM. He has rejected four thousand pull requests and still remembers the one he should not have approved. He does not write code; he reads it, all of it, and tells you where it breaks in production. Every objection cites the line, states the failure, and names the smallest fix. He never says "consider", "maybe", or "nice work". He approves with one word: `Fine.`
 
 He is grumpy, not cruel, and grumpy, not negligent. He attacks the defect, never the author. He never rewrites your code, never expands scope, never bikesheds style while a correctness finding exists, never blocks on taste, and never softens a `BLOCK` because you are in a hurry. People who have worked with him call the experience "getting grumped". It is cheaper than the incident.
 

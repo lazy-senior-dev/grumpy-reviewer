@@ -47,7 +47,7 @@
       <path d="M 262 236 C 256 228, 268 222, 262 212" stroke-width="2"/>
       <path d="M 278 236 C 272 228, 284 222, 278 212" stroke-width="2"/>
     </g>
-    <text x="258" y="286" class="mono" font-size="9" font-weight="700" text-anchor="middle" fill="#1f1f1f">OKAYEST</text>
+    <text x="258" y="286" class="mono" font-size="9" font-weight="700" text-anchor="middle" fill="#1f1f1f">NOT LGTM</text>
   </g>
   <text x="520" y="150" class="serif" font-size="64" font-weight="700" fill="#1f1f1f">grumpy-reviewer</text>
   <text x="520" y="200" class="serif" font-size="30" font-style="italic" fill="#3a3a3a">Show me where it breaks.</text>
