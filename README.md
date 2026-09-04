@@ -129,9 +129,9 @@ Thirty small, realistic diffs across Python, TypeScript, Go, and YAML (Kubernete
 | IBM Bob Shell | `bob-default` (n=3) | no skill | 30 | 4 | 0 | n/a | 0 | 0 | 14 s |
 | IBM Bob Shell | `bob-default` (n=3) | generic review prompt | 30 | 6 | 0 | n/a | 0 | 0 | 17 s |
 | IBM Bob Shell | `bob-default` (n=3) | **grumpy-reviewer** | **30** | **2** | **0** | **71%** | 0 | 0 | 16 s |
-| Antigravity CLI | `agy-default` (n=1) | no skill | 22 | 0 | 18 | n/a | 19553 | 2909 | 47 s |
+| Antigravity CLI | `agy-default` (n=1) | no skill | 22 | 0 | 17 | n/a | 19548 | 2779 | 48 s |
 | Antigravity CLI | `agy-default` (n=1) | generic review prompt | 27 | 2 | 8 | n/a | 19613 | 8160 | 56 s |
-| Antigravity CLI | `agy-default` (n=1) | **grumpy-reviewer** | **25** | **0** | **5** | **100%** | 28979 | 26207 | 84 s |
+| Antigravity CLI | `agy-default` (n=1) | **grumpy-reviewer** | **25** | **0** | **5** | **100%** | 28935 | 27678 | 85 s |
 
 
 **Needle tier** (one defect in a four-file pull request of about 150 lines):
