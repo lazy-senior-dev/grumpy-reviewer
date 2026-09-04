@@ -65,6 +65,8 @@ export function aggregate(records, cases) {
   const byArm = {};
   const seeded = cases.filter((c) => !c.clean);
   const clean = cases.filter((c) => c.clean);
+  const ids = new Set(cases.map((c) => c.id));
+  records = records.filter((r) => ids.has(r.case));
   const caseById = Object.fromEntries(cases.map((c) => [c.id, c]));
   for (const r of records) {
     if (r.error || !caseById[r.case]) continue;

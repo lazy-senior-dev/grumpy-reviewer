@@ -8,9 +8,9 @@
 
 <p align="center">
   <a href="https://github.com/lazy-senior-dev/grumpy-reviewer/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/lazy-senior-dev/grumpy-reviewer?style=flat&color=1f1f1f"></a>
-  <a href="https://github.com/lazy-senior-dev/grumpy-reviewer/releases"><img alt="Release" src="https://img.shields.io/github/v/release/lazy-senior-dev/grumpy-reviewer?style=flat&color=1f1f1f"></a>
+  <a href="CHANGELOG.md"><img alt="Version 0.1.0" src="https://img.shields.io/badge/version-0.1.0-1f1f1f"></a>
   <img alt="Works with 13 agents" src="https://img.shields.io/badge/works%20with-13%20agents-1f1f1f">
-  <a href="https://github.com/marketplace/actions/grumpy-reviewer"><img alt="GitHub Action" src="https://img.shields.io/badge/GitHub%20Action-v1-1f1f1f"></a>
+  <a href="#github-action"><img alt="GitHub Action" src="https://img.shields.io/badge/GitHub%20Action-v1-1f1f1f"></a>
   <a href="LICENSE"><img alt="Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-1f1f1f"></a>
   <!-- npm badge once published: <a href="https://www.npmjs.com/package/grumpy-reviewer"><img alt="npm" src="https://img.shields.io/npm/v/grumpy-reviewer?style=flat&color=1f1f1f"></a> -->
   <!-- Trendshift badge slot: <a href="https://trendshift.io/repositories/XXXXX"><img src="https://trendshift.io/api/badge/repositories/XXXXX" alt="trendshift" height="55"></a> -->
@@ -21,6 +21,20 @@
 <!-- bench:hero:start -->
 **On Claude Code (`claude-sonnet-5`), the Grump catches 30 of 30 seeded defects, the same as the agent alone. What changes is discipline: false alarms on 10 clean diffs, 0 with him, 4 without; replies with no usable verdict per run, 0 with him, 3 without; 94% of his BLOCK verdicts land on BLOCK-class defects; median review time 7 s with him, 11 s without at 229 output tokens with him, 685 output tokens without.** Median of 3 runs, measured 2026-09-04; [method, per-diff table, raw replies](benchmarks/results).
 <!-- bench:hero:end -->
+
+<p align="center"><img src="assets/demo.gif" alt="Terminal recording: the agent writes a handler, the Grump prints GRUMP: BLOCK with the line and the fix, the write is denied, the agent fixes it, the Grump prints GRUMP: APPROVE, Fine." width="860"></p>
+
+## Try him in 60 seconds, install nothing
+
+You already have a coding agent signed in. Point the Grump at your working tree with it:
+
+```
+npx github:lazy-senior-dev/grumpy-reviewer review            # unstaged and staged changes
+npx github:lazy-senior-dev/grumpy-reviewer review --staged   # only what is staged
+npx github:lazy-senior-dev/grumpy-reviewer pr 123            # a pull request, via gh
+```
+
+It finds `claude`, `codex`, or `agy` on your PATH (or `ANTHROPIC_API_KEY`), sends the diff to that agent with the Grump's ruleset, prints the verdict block, and exits 1 on anything but `APPROVE`, so it drops straight into a pre-commit hook or a CI step. Nothing is installed and nothing leaves your machine except the diff going to the agent you already trust. Add `--agent codex` to choose.
 
 ## The thirty-second version
 
@@ -96,7 +110,7 @@ Thirty small, realistic diffs across Python, TypeScript, Go, and YAML (Kubernete
 
 <!-- bench:table:end -->
 
-What the numbers say, plainly: current models find these seeded defects with or without help. The value of a reviewer persona is not that it finds more; it is that it stops crying wolf on clean changes, always ends with a verdict a hook can act on, gets the severity right, and does it in fewer tokens and less time. A gate is only useful if it is both parseable and quiet on good code; those are the two columns that move.
+What the numbers say, plainly: on a 30-line diff, current models find the seeded defect with or without help. The value of a reviewer persona is not that it finds more; it is that it stops crying wolf on clean changes, always ends with a verdict a hook can act on, gets the severity right, and does it in fewer tokens and less time. A gate is only useful if it is both parseable and quiet on good code; those are the two columns that move.
 
 Method, per-diff table, limitations, the pilot run that led to one calibration pass, and every raw reply: [benchmarks/results](benchmarks/results). Reproduce: `npm run bench && npm run bench:report`. Add your own case: [CONTRIBUTING](CONTRIBUTING.md).
 
@@ -263,8 +277,7 @@ In Claude Code both `/grumpy-review` and the namespaced `/grumpy-reviewer:grumpy
 
 ## Related
 
-- **agent-bill** prints a cost, tokens, and tool-call receipt after every agent session. See what the Grump saved you. [agentcost/agent-bill](https://github.com/agentcost/agent-bill)
-- **Coming from the same desk:** [paranoid-sre](https://github.com/lazy-senior-dev/paranoid-sre), who reviews what happens when it is deployed, and [tenured](https://github.com/lazy-senior-dev/tenured), who has seen this exact outage before. Watch [lazy-senior-dev](https://github.com/lazy-senior-dev) or say hello in [Discussions](https://github.com/lazy-senior-dev/grumpy-reviewer/discussions). More in [docs/RELATED.md](docs/RELATED.md).
+- **Coming from the same desk:** [paranoid-sre](https://github.com/lazy-senior-dev/paranoid-sre), who reviews what happens when it is deployed, and [tenured](https://github.com/lazy-senior-dev/tenured), who has seen this exact outage before. Watch [lazy-senior-dev](https://github.com/lazy-senior-dev) or open an [issue](https://github.com/lazy-senior-dev/grumpy-reviewer/issues). More in [docs/RELATED.md](docs/RELATED.md).
 
 ## Contributing
 

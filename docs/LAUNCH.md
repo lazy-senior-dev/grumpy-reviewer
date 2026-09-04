@@ -36,7 +36,7 @@ Then add `![demo](assets/demo.gif)` under the before/after section of the README
 ## Launch checklist
 
 1. `docs/SETUP.md` done end to end: history re-signed, both repos pushed, Pages live, ruleset on, `v0.1.0` tagged.
-2. Enable Discussions on the repo (Settings, Features) and pin a "What did he catch?" thread.
+2. Enable Discussions on the repo (Settings, General, Features) and pin a "What did he catch?" thread; then switch the Issues links in the README and site to Discussions.
 3. Turn on private vulnerability reporting (Settings, Security).
 4. Run the benchmark once more on launch morning if a model changed; regenerate the chart.
 5. Post Show HN between 8 and 10 a.m. US Eastern on a weekday. Reply to every comment for the first three hours; the Grump's voice is for code, not for people.

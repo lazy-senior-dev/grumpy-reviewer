@@ -1,97 +1,377 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>grumpy-reviewer: the staff engineer who blocks the merge, inside your AI agent</title>
-<meta name="description" content="Your agent's code, reviewed by the staff engineer who has rejected 4,000 pull requests, before it ever reaches your branch. Works with Claude Code, Codex, Copilot CLI, Gemini CLI, OpenCode, Cursor and more, plus a GitHub Action.">
+<meta name="description" content="Your agent's code, reviewed by the staff engineer who has rejected 4,000 pull requests, before it ever reaches your branch. Plugin for 13 agents and a GitHub Action.">
+<meta name="author" content="Sandeep Bazar">
 <link rel="icon" href="assets/grump.svg" type="image/svg+xml">
 <link rel="canonical" href="https://lazy-senior-dev.github.io/grumpy-reviewer/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="grumpy-reviewer">
-<meta property="og:description" content="Your agent's code, reviewed by the staff engineer who has rejected 4,000 pull requests, before it ever reaches your branch.">
+<meta property="og:title" content="grumpy-reviewer: the staff engineer who blocks the merge, inside your AI agent">
+<meta property="og:description" content="Your agent's code, reviewed by the staff engineer who has rejected 4,000 pull requests, before it ever reaches your branch. Plugin for 13 agents and a GitHub Action.">
 <meta property="og:url" content="https://lazy-senior-dev.github.io/grumpy-reviewer/">
 <meta property="og:image" content="https://lazy-senior-dev.github.io/grumpy-reviewer/assets/social-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="grumpy-reviewer">
-<meta name="twitter:description" content="Show me where it breaks. A reviewer persona for AI coding agents that blocks bad writes before they land.">
+<meta name="twitter:title" content="grumpy-reviewer: the staff engineer who blocks the merge, inside your AI agent">
+<meta name="twitter:description" content="Your agent's code, reviewed by the staff engineer who has rejected 4,000 pull requests, before it ever reaches your branch. Plugin for 13 agents and a GitHub Action.">
 <meta name="twitter:image" content="https://lazy-senior-dev.github.io/grumpy-reviewer/assets/social-card.png">
-<!-- Custom domain: create docs/CNAME containing only the bare domain, then set it under Settings > Pages. -->
+<meta name="theme-color" content="#0a0f1e">
+<!-- Custom domain: create a CNAME file containing only the bare domain in this Pages folder, then set it under Settings > Pages. -->
 <link rel="stylesheet" href="assets/site.css">
-<style>
-  .hero { display: grid; grid-template-columns: 260px 1fr; gap: 2.5rem; align-items: center; padding: 3.5rem 0 3rem; }
-  .hero img { width: 100%; height: auto; }
-  .hero .tag { font: italic 1.35rem/1.3 var(--serif); color: var(--ink-2); margin: .25rem 0 1.25rem; }
-  .hero .pitch { font-size: 1.2rem; max-width: 34em; }
-  .install { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
-  .cmd { background: var(--term); color: var(--term-fg); border-radius: 10px; padding: .9rem 1rem; display: grid; grid-template-columns: 1fr auto; gap: .75rem; align-items: start; }
-  .cmd .label { grid-column: 1 / -1; color: #9a958c; font: 600 .75rem/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; }
-  .cmd pre { font-size: .85rem; white-space: pre-wrap; word-break: break-word; }
-  .cmd button { background: #2e2e2e; color: var(--term-fg); border: 1px solid #444; border-radius: 6px; padding: .35rem .6rem; font: 600 .75rem var(--sans); cursor: pointer; }
-  .cmd button:hover { background: #3a3a3a; }
-  .ba { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
-  .ba pre, #term-body { font-size: .82rem; white-space: pre-wrap; word-break: break-word; }
-  .numbers { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
-  .stat { background: #fff; border: 1px solid var(--rule); border-radius: 12px; padding: 1.1rem 1.25rem; }
-  .stat b { display: block; font: 700 2.4rem/1.1 var(--serif); }
-  .stat span { color: var(--ink-3); font-size: .9rem; }
-  ol.check { counter-reset: q; list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: .75rem 1.5rem; }
-  ol.check li { counter-increment: q; padding-left: 2.4rem; position: relative; }
-  ol.check li::before { content: counter(q); position: absolute; left: 0; top: .05rem; width: 1.7rem; height: 1.7rem; border-radius: 50%; background: var(--ink); color: var(--paper); font: 700 .9rem/1.7rem var(--mono); text-align: center; }
-  .promise { background: var(--ink); color: var(--paper); border-radius: 14px; padding: 2rem 2.2rem; }
-  .promise h2 { color: #fff; }
-  .promise a { color: var(--warn); }
-  .cursor::after { content: "▍"; animation: blink 1s steps(1) infinite; }
-  @keyframes blink { 50% { opacity: 0; } }
-  @media (max-width: 760px) { .hero { grid-template-columns: 1fr; text-align: left; } .hero img { max-width: 200px; } .ba { grid-template-columns: 1fr; } }
-</style>
 </head>
 <body>
-<main class="wrap">
-
-<section class="hero">
-  <img src="assets/grump.svg" alt="Line sketch of the Grump: grey stubble, reading glasses pushed up into his hair, a mug that says NOT LGTM" width="260" height="260">
-  <div>
-    <div class="eyebrow">lazy-senior-dev / grumpy-reviewer</div>
-    <h1>The Grump</h1>
-    <p class="tag">Show me where it breaks.</p>
-    <p class="pitch">Your agent's code, reviewed by the staff engineer who has rejected 4,000 pull requests, <strong>before it ever reaches your branch.</strong> Every write and every commit gets a ten-question checklist and a verdict. He never writes code. He approves with one word.</p>
-    <p class="small muted">Plugin for Claude Code, Codex, Copilot CLI, Gemini CLI, OpenCode and any AGENTS.md host. Also a GitHub Action. Apache-2.0.</p>
+<header class="top">
+  <div class="wrap">
+    <a class="back" href="https://github.com/sandeepbazar" title="Sandeep Bazar on GitHub">‹ <span>Sandeep Bazar</span></a>
+    <a class="brand" href="https://lazy-senior-dev.github.io/"><span class="mark">lsd</span> lazy-senior-dev</a>
+    <nav class="nav">
+      <a href="https://lazy-senior-dev.github.io/" data-nav="home">Home</a>
+      <a href="https://lazy-senior-dev.github.io/grumpy-reviewer/" data-nav="grump" aria-current="page">The Grump</a>
+      <a href="https://lazy-senior-dev.github.io/paranoid-sre/" data-nav="sre">Paranoid SRE</a>
+      <a href="https://lazy-senior-dev.github.io/tenured/" data-nav="tenured">Tenured</a>
+    </nav>
+    <div class="right">
+      <button class="iconbtn" id="theme" type="button" aria-label="Toggle light and dark theme">☀</button>
+      <button class="iconbtn menubtn" id="menu" type="button" aria-label="Menu">☰</button>
+      <a class="ghbtn" href="https://github.com/lazy-senior-dev/grumpy-reviewer">GitHub</a>
+    </div>
   </div>
+</header>
+
+<main>
+<section class="hero wrap">
+  <div class="pill"><i></i> v0.1.0 · plugin for 13 agents · GitHub Action · Apache-2.0</div>
+  <div style="margin:1.6rem 0 .4rem"><span class="sketch"><svg viewBox="0 0 320 320" aria-hidden="true">
+  <title id="t">The Grump</title>
+  <desc id="d">Line sketch of a grey-stubbled reviewer with reading glasses pushed up into his hair, frowning over a mug that says NOT LGTM.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <!-- shoulders and collar -->
+    <path d="M 22 318 C 40 262, 92 250, 118 226"/>
+    <path d="M 202 226 C 212 234, 220 240, 226 246"/>
+    <path d="M 293 302 C 296 308, 297 313, 298 318"/>
+    <path d="M 118 226 L 138 262 L 160 236 L 182 262 L 202 226"/>
+    <!-- head -->
+    <path d="M 104 96 C 106 46, 214 46, 216 96 L 218 168 C 220 214, 100 214, 102 168 Z"/>
+    <!-- ears -->
+    <path d="M 103 128 C 88 124, 86 152, 102 158"/>
+    <path d="M 217 128 C 232 124, 234 152, 218 158"/>
+    <!-- thinning hair -->
+    <path d="M 118 72 C 124 60, 132 56, 140 58" stroke-width="2.5"/>
+    <path d="M 128 62 C 134 52, 142 50, 150 52" stroke-width="2.5"/>
+    <path d="M 196 68 C 192 56, 186 54, 178 56" stroke-width="2.5"/>
+    <path d="M 206 84 C 212 76, 214 70, 212 64" stroke-width="2.5"/>
+    <!-- reading glasses pushed up on the forehead -->
+    <circle cx="137" cy="78" r="17" stroke-width="2.5"/>
+    <circle cx="183" cy="78" r="17" stroke-width="2.5"/>
+    <path d="M 154 78 C 158 73, 162 73, 166 78" stroke-width="2.5"/>
+    <path d="M 120 78 C 112 80, 106 88, 104 100" stroke-width="2.5"/>
+    <path d="M 200 78 C 208 80, 214 88, 216 100" stroke-width="2.5"/>
+    <!-- brows: heavy, pinched inward -->
+    <path d="M 116 110 L 150 121" stroke-width="5.5"/>
+    <path d="M 204 110 L 170 121" stroke-width="5.5"/>
+    <path d="M 156 112 L 158 120 M 164 112 L 162 120" stroke-width="2"/>
+    <!-- half-lidded eyes (open / closed for the blink) -->
+    <g class="eye-open">
+      <path d="M 124 134 C 130 126, 144 126, 150 134"/>
+      <path d="M 126 135 C 132 140, 142 140, 148 135" stroke-width="2"/>
+      <circle cx="137" cy="134" r="2.5" fill="currentColor" stroke="none"/>
+      <path d="M 170 134 C 176 126, 190 126, 196 134"/>
+      <path d="M 172 135 C 178 140, 188 140, 194 135" stroke-width="2"/>
+      <circle cx="183" cy="134" r="2.5" fill="currentColor" stroke="none"/>
+    </g>
+    <g class="eye-closed">
+      <path d="M 125 135 L 149 135"/>
+      <path d="M 171 135 L 195 135"/>
+    </g>
+    <!-- nose -->
+    <path d="M 161 132 L 153 163 C 156 168, 166 168, 169 163"/>
+    <!-- mouth: down at both corners -->
+    <path d="M 136 188 C 148 178, 172 178, 184 188" stroke-width="3.5"/>
+    <path d="M 136 188 L 133 193 M 184 188 L 187 193" stroke-width="2.5"/>
+    <!-- frown lines -->
+    <path d="M 128 172 C 126 178, 128 184, 132 190" stroke-width="2"/>
+    <path d="M 192 172 C 194 178, 192 184, 188 190" stroke-width="2"/>
+  </g>
+  <!-- stubble -->
+  <g fill="currentColor" stroke="none">
+    <circle cx="138.9" cy="201.8" r="1.2"/>
+    <circle cx="200.4" cy="181.5" r="1.2"/>
+    <circle cx="162.0" cy="200.9" r="1.2"/>
+    <circle cx="156.9" cy="203.7" r="1.2"/>
+    <circle cx="128.5" cy="184.9" r="1.2"/>
+    <circle cx="119.7" cy="182.1" r="1.2"/>
+    <circle cx="169.9" cy="194.4" r="1.2"/>
+    <circle cx="146.9" cy="204.6" r="1.2"/>
+    <circle cx="128.4" cy="184.5" r="1.2"/>
+    <circle cx="170.3" cy="198.3" r="1.2"/>
+    <circle cx="157.6" cy="204.4" r="1.2"/>
+    <circle cx="168.5" cy="196.4" r="1.2"/>
+    <circle cx="203.3" cy="176.7" r="1.2"/>
+    <circle cx="114.9" cy="173.4" r="1.2"/>
+    <circle cx="211.4" cy="170.2" r="1.2"/>
+    <circle cx="205.0" cy="182.5" r="1.2"/>
+    <circle cx="184.4" cy="188.5" r="1.2"/>
+    <circle cx="210.3" cy="172.1" r="1.2"/>
+    <circle cx="122.7" cy="178.6" r="1.2"/>
+    <circle cx="152.3" cy="203.4" r="1.2"/>
+    <circle cx="172.9" cy="205.6" r="1.2"/>
+    <circle cx="180.1" cy="195.3" r="1.2"/>
+    <circle cx="199.5" cy="182.0" r="1.2"/>
+    <circle cx="151.6" cy="195.0" r="1.2"/>
+    <circle cx="160.9" cy="204.6" r="1.2"/>
+    <circle cx="109.4" cy="175.2" r="1.2"/>
+    <circle cx="196.6" cy="189.6" r="1.2"/>
+    <circle cx="143.3" cy="196.2" r="1.2"/>
+    <circle cx="146.2" cy="198.5" r="1.2"/>
+    <circle cx="115.9" cy="178.0" r="1.2"/>
+    <circle cx="123.5" cy="182.8" r="1.2"/>
+    <circle cx="167.3" cy="201.8" r="1.2"/>
+    <circle cx="200.5" cy="177.9" r="1.2"/>
+    <circle cx="160.3" cy="203.4" r="1.2"/>
+    <circle cx="163.7" cy="204.0" r="1.2"/>
+    <circle cx="206.0" cy="179.4" r="1.2"/>
+    <circle cx="121.8" cy="175.4" r="1.2"/>
+    <circle cx="181.4" cy="198.0" r="1.2"/>
+    <circle cx="196.6" cy="185.9" r="1.2"/>
+    <circle cx="202.4" cy="178.3" r="1.2"/>
+    <circle cx="161.0" cy="204.5" r="1.2"/>
+    <circle cx="115.2" cy="171.0" r="1.2"/>
+    <circle cx="201.8" cy="182.2" r="1.2"/>
+    <circle cx="188.8" cy="192.5" r="1.2"/>
+    <circle cx="200.5" cy="181.0" r="1.2"/>
+    <circle cx="137.1" cy="189.3" r="1.2"/>
+    <circle cx="188.8" cy="195.1" r="1.2"/>
+    <circle cx="177.2" cy="196.9" r="1.2"/>
+    <circle cx="131.3" cy="193.8" r="1.2"/>
+    <circle cx="159.7" cy="198.7" r="1.2"/>
+    <circle cx="155.4" cy="203.2" r="1.2"/>
+    <circle cx="159.0" cy="200.3" r="1.2"/>
+    <circle cx="117.2" cy="175.7" r="1.2"/>
+    <circle cx="195.4" cy="184.9" r="1.2"/>
+    <circle cx="166.7" cy="204.2" r="1.2"/>
+    <circle cx="190.6" cy="190.7" r="1.2"/>
+    <circle cx="115.7" cy="174.9" r="1.2"/>
+    <circle cx="147.3" cy="203.0" r="1.2"/>
+    <circle cx="161.3" cy="194.1" r="1.2"/>
+    <circle cx="148.1" cy="203.8" r="1.2"/>
+    <circle cx="197.9" cy="177.6" r="1.2"/>
+    <circle cx="185.3" cy="196.4" r="1.2"/>
+    <circle cx="135.6" cy="197.1" r="1.2"/>
+    <circle cx="151.3" cy="199.4" r="1.2"/>
+    <circle cx="153.6" cy="196.4" r="1.2"/>
+    <circle cx="191.6" cy="195.3" r="1.2"/>
+    <circle cx="191.8" cy="188.1" r="1.2"/>
+    <circle cx="172.8" cy="205.8" r="1.2"/>
+    <circle cx="198.6" cy="174.8" r="1.2"/>
+    <circle cx="204.6" cy="179.4" r="1.2"/>
+    <circle cx="122.8" cy="185.2" r="1.2"/>
+    <circle cx="188.2" cy="191.1" r="1.2"/>
+    <circle cx="124.6" cy="183.9" r="1.2"/>
+    <circle cx="139.2" cy="201.3" r="1.2"/>
+    <circle cx="197.3" cy="189.6" r="1.2"/>
+    <circle cx="168.8" cy="196.2" r="1.2"/>
+    <circle cx="200.2" cy="180.4" r="1.2"/>
+    <circle cx="144.8" cy="202.4" r="1.2"/>
+    <circle cx="206.1" cy="171.6" r="1.2"/>
+    <circle cx="119.4" cy="179.1" r="1.2"/>
+    <circle cx="142.5" cy="194.5" r="1.2"/>
+    <circle cx="198.1" cy="189.4" r="1.2"/>
+    <circle cx="166.9" cy="194.3" r="1.2"/>
+    <circle cx="194.5" cy="181.6" r="1.2"/>
+    <circle cx="121.8" cy="186.6" r="1.2"/>
+    <circle cx="187.6" cy="186.9" r="1.2"/>
+    <circle cx="114.8" cy="171.8" r="1.2"/>
+    <circle cx="198.9" cy="183.4" r="1.2"/>
+    <circle cx="142.6" cy="196.7" r="1.2"/>
+    <circle cx="125.9" cy="192.2" r="1.2"/>
+    <circle cx="162.8" cy="196.1" r="1.2"/>
+    <circle cx="157.0" cy="198.0" r="1.2"/>
+    <circle cx="182.0" cy="189.4" r="1.2"/>
+    <circle cx="120.0" cy="174.9" r="1.2"/>
+    <circle cx="160.8" cy="208.0" r="1.2"/>
+    <circle cx="161.2" cy="199.1" r="1.2"/>
+    <circle cx="160.8" cy="200.7" r="1.2"/>
+    <circle cx="132.9" cy="195.8" r="1.2"/>
+    <circle cx="193.4" cy="192.3" r="1.2"/>
+    <circle cx="143.5" cy="199.4" r="1.2"/>
+    <circle cx="203.9" cy="179.8" r="1.2"/>
+    <circle cx="157.1" cy="201.5" r="1.2"/>
+    <circle cx="136.3" cy="186.6" r="1.2"/>
+    <circle cx="172.8" cy="204.1" r="1.2"/>
+    <circle cx="165.1" cy="198.3" r="1.2"/>
+    <circle cx="176.5" cy="203.1" r="1.2"/>
+    <circle cx="119.0" cy="185.1" r="1.2"/>
+    <circle cx="116.3" cy="172.0" r="1.2"/>
+    <circle cx="180.7" cy="202.4" r="1.2"/>
+    <circle cx="160.1" cy="202.3" r="1.2"/>
+    <circle cx="116.5" cy="173.4" r="1.2"/>
+    <circle cx="201.1" cy="174.4" r="1.2"/>
+    <circle cx="167.8" cy="205.5" r="1.2"/>
+    <circle cx="177.8" cy="199.8" r="1.2"/>
+    <circle cx="173.5" cy="197.0" r="1.2"/>
+    <circle cx="159.7" cy="200.4" r="1.2"/>
+    <circle cx="182.2" cy="197.5" r="1.2"/>
+    <circle cx="147.5" cy="194.2" r="1.2"/>
+    <circle cx="114.4" cy="175.0" r="1.2"/>
+    <circle cx="174.1" cy="194.5" r="1.2"/>
+    <circle cx="168.2" cy="195.5" r="1.2"/>
+    <circle cx="141.9" cy="197.0" r="1.2"/>
+    <circle cx="209.9" cy="175.0" r="1.2"/>
+    <circle cx="118.4" cy="179.3" r="1.2"/>
+    <circle cx="158.7" cy="195.8" r="1.2"/>
+    <circle cx="150.8" cy="199.9" r="1.2"/>
+    <circle cx="182.3" cy="190.7" r="1.2"/>
+    <circle cx="198.9" cy="188.0" r="1.2"/>
+    <circle cx="130.3" cy="193.0" r="1.2"/>
+    <circle cx="147.6" cy="199.5" r="1.2"/>
+    <circle cx="177.2" cy="204.1" r="1.2"/>
+    <circle cx="208.0" cy="173.4" r="1.2"/>
+    <circle cx="111.6" cy="173.6" r="1.2"/>
+    <circle cx="164.2" cy="206.8" r="1.2"/>
+    <circle cx="181.1" cy="198.3" r="1.2"/>
+    <circle cx="151.1" cy="197.1" r="1.2"/>
+    <circle cx="199.4" cy="178.8" r="1.2"/>
+    <circle cx="117.6" cy="183.1" r="1.2"/>
+    <circle cx="105.8" cy="170.3" r="1.2"/>
+    <circle cx="184.0" cy="196.6" r="1.2"/>
+    <circle cx="175.0" cy="205.0" r="1.2"/>
+    <circle cx="190.0" cy="185.1" r="1.2"/>
+    <circle cx="192.0" cy="183.1" r="1.2"/>
+    <circle cx="149.5" cy="202.6" r="1.2"/>
+    <circle cx="205.6" cy="172.3" r="1.2"/>
+    <circle cx="112.4" cy="175.3" r="1.2"/>
+    <circle cx="202.9" cy="184.3" r="1.2"/>
+    <circle cx="154.7" cy="194.5" r="1.2"/>
+    <circle cx="192.9" cy="180.4" r="1.2"/>
+    <circle cx="172.6" cy="202.8" r="1.2"/>
+    <circle cx="193.7" cy="192.8" r="1.2"/>
+    <circle cx="152.5" cy="196.7" r="1.2"/>
+    <circle cx="186.4" cy="184.6" r="1.2"/>
+    <circle cx="136.1" cy="195.3" r="1.2"/>
+    <circle cx="131.3" cy="184.3" r="1.2"/>
+    <circle cx="132.0" cy="186.1" r="1.2"/>
+    <circle cx="207.6" cy="178.4" r="1.2"/>
+    <circle cx="213.2" cy="171.3" r="1.2"/>
+    <circle cx="165.3" cy="201.5" r="1.2"/>
+    <circle cx="115.5" cy="181.2" r="1.2"/>
+    <circle cx="185.8" cy="191.7" r="1.2"/>
+    <circle cx="151.9" cy="198.1" r="1.2"/>
+    <circle cx="191.0" cy="184.5" r="1.2"/>
+    <circle cx="211.7" cy="170.6" r="1.2"/>
+    <circle cx="166.3" cy="203.7" r="1.2"/>
+    <circle cx="206.1" cy="171.7" r="1.2"/>
+    <circle cx="120.3" cy="185.7" r="1.2"/>
+    <circle cx="177.0" cy="199.0" r="1.2"/>
+    <circle cx="159.2" cy="198.3" r="1.2"/>
+    <circle cx="212.2" cy="173.7" r="1.2"/>
+    <circle cx="150.8" cy="202.1" r="1.2"/>
+    <circle cx="121.1" cy="183.4" r="1.2"/>
+    <circle cx="141.8" cy="202.0" r="1.2"/>
+    <circle cx="156.9" cy="194.4" r="1.2"/>
+    <circle cx="147.8" cy="200.9" r="1.2"/>
+    <circle cx="183.2" cy="200.2" r="1.2"/>
+    <circle cx="200.8" cy="175.9" r="1.2"/>
+    <circle cx="180.6" cy="196.9" r="1.2"/>
+    <circle cx="113.1" cy="173.2" r="1.2"/>
+    <circle cx="207.7" cy="176.3" r="1.2"/>
+    <circle cx="184.3" cy="187.9" r="1.2"/>
+    <circle cx="189.9" cy="186.8" r="1.2"/>
+    <circle cx="181.3" cy="196.8" r="1.2"/>
+    <circle cx="204.8" cy="178.2" r="1.2"/>
+    <circle cx="135.6" cy="196.0" r="1.2"/>
+    <circle cx="132.0" cy="198.0" r="1.2"/>
+    <circle cx="170.4" cy="195.4" r="1.2"/>
+    <circle cx="205.6" cy="173.6" r="1.2"/>
+    <circle cx="118.4" cy="183.4" r="1.2"/>
+    <circle cx="144.3" cy="194.3" r="1.2"/>
+    <circle cx="152.9" cy="200.4" r="1.2"/>
+    <circle cx="134.7" cy="188.7" r="1.2"/>
+    <circle cx="159.9" cy="204.4" r="1.2"/>
+    <circle cx="147.8" cy="198.7" r="1.2"/>
+    <circle cx="140.3" cy="197.2" r="1.2"/>
+    <circle cx="164.1" cy="201.2" r="1.2"/>
+    <circle cx="125.1" cy="190.1" r="1.2"/>
+    <circle cx="191.7" cy="194.2" r="1.2"/>
+    <circle cx="157.0" cy="199.3" r="1.2"/>
+    <circle cx="124.5" cy="179.9" r="1.2"/>
+    <circle cx="124.7" cy="181.1" r="1.2"/>
+    <circle cx="162.7" cy="203.7" r="1.2"/>
+    <circle cx="145.9" cy="198.9" r="1.2"/>
+    <circle cx="110.1" cy="173.9" r="1.2"/>
+    <circle cx="155.8" cy="198.9" r="1.2"/>
+  </g>
+  <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <!-- the mug -->
+    <path d="M 226 246 L 226 296 C 226 304, 234 306, 242 306 L 274 306 C 282 306, 290 304, 290 296 L 290 246 Z"/>
+    <path d="M 290 258 C 308 256, 308 288, 290 288" stroke-width="3"/>
+    <path d="M 226 246 C 240 252, 276 252, 290 246" stroke-width="2"/>
+    <!-- steam -->
+    <g class="steam">
+      <path d="M 246 236 C 240 228, 252 222, 246 212" stroke-width="2"/>
+      <path d="M 262 236 C 256 228, 268 222, 262 212" stroke-width="2"/>
+      <path d="M 278 236 C 272 228, 284 222, 278 212" stroke-width="2"/>
+    </g>
+  </g>
+  <text x="258" y="286" font-family="Menlo, Consolas, monospace" font-size="8.5" font-weight="700" text-anchor="middle" fill="currentColor">NOT LGTM</text>
+</svg></span></div>
+  <h1 class="display">The Grump<br><span class="g">blocks the merge.</span></h1>
+  <p class="lede">Your agent's code, reviewed by the staff engineer who has rejected 4,000 pull requests, <strong>before it ever reaches your branch</strong>. Ten questions, one verdict, and a hook that denies the write when the answer is <code>BLOCK</code>. He never writes code. He approves with one word.</p>
+  <div class="ctas">
+    <a class="btn primary" href="#try">Try it in 60 seconds →</a>
+    <a class="btn" href="#install">Install</a>
+    <a class="btn" href="#numbers">See the numbers</a>
+    <a class="btn" href="https://github.com/lazy-senior-dev/grumpy-reviewer">Repository</a>
+  </div>
+  <div class="pipe reveal">
+    <div class="node"><small>Agent</small><b>about to write</b><em>Edit · Write · git commit</em></div>
+    <div class="node"><small>Checklist</small><b>ten questions</b><em>answered in writing</em></div>
+    <div class="node hot"><small>Verdict</small><b>GRUMP: BLOCK</b><em>file:line — failure — fix</em></div>
+    <div class="node"><small>Gate</small><b>PreToolUse hook</b><em>deny · nag · allow</em></div>
+    <div class="node ok"><small>Branch</small><b>only what passed</b><em>APPROVE → Fine.</em></div>
+  </div>
+  <p class="pipe-note">BLOCK is never downgraded. That is the promise.</p>
 </section>
 
-<section>
+<section class="wrap reveal" id="live">
   <div class="eyebrow">Live</div>
   <h2>What getting grumped looks like</h2>
-  <div class="term" id="term" aria-live="polite">
-    <div class="bar"><i></i><i></i><i></i></div>
-    <pre id="term-body"></pre>
-  </div>
-  <p class="small muted" style="margin-top:.75rem">A <code>PreToolUse</code> hook reads the verdict the agent just printed. <code>BLOCK</code> denies the write in every mode. <code>REQUEST_CHANGES</code> denies only in <code>gate</code> mode. <code>APPROVE</code> goes through.</p>
+  <div class="term" aria-live="polite"><div class="bar"><i></i><i></i><i></i></div><pre id="term-body"></pre></div>
+  <p class="sub" style="margin-top:.8rem">A <code>PreToolUse</code> hook reads the verdict the agent just printed. <code>BLOCK</code> denies the write in every mode. <code>REQUEST_CHANGES</code> denies only in <code>gate</code> mode. <code>APPROVE</code> goes through.</p>
 </section>
 
-<section>
+<section class="wrap reveal" id="try">
+  <div class="eyebrow">Try it</div>
+  <h2>Sixty seconds, nothing installed</h2>
+  <p class="sub">You already have a coding agent signed in. Point the Grump at your working tree with it. Exits 1 on anything but <code>APPROVE</code>, so it drops straight into a pre-commit hook.</p>
+  <div class="grid c3" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr))">
+    <div class="cmd"><span class="label">Any repo, any agent you have</span><pre>npx github:lazy-senior-dev/grumpy-reviewer review</pre><button data-copy>Copy</button></div>
+    <div class="cmd"><span class="label">A pull request, via gh</span><pre>npx github:lazy-senior-dev/grumpy-reviewer pr 123</pre><button data-copy>Copy</button></div>
+  </div>
+  <p class="sub" style="margin-top:.8rem">Finds <code>claude</code>, <code>codex</code>, or <code>agy</code> on your PATH; add <code>--agent codex</code> to choose. Nothing leaves your machine except the diff, sent to the agent you already trust.</p>
+</section>
+
+<section class="wrap reveal" id="install">
   <div class="eyebrow">Install</div>
   <h2>Two commands, then forget he is there</h2>
-  <div class="install">
+  <div class="grid c3">
     <div class="cmd"><span class="label">Claude Code</span><pre>/plugin marketplace add lazy-senior-dev/grumpy-reviewer
 /plugin install grumpy-reviewer@lazy-senior-dev</pre><button data-copy>Copy</button></div>
-    <div class="cmd"><span class="label">Codex</span><pre>git clone https://github.com/lazy-senior-dev/grumpy-reviewer ~/.codex/plugins/grumpy-reviewer
-# then add it to ~/.agents/plugins/marketplace.json and enable it in /plugins</pre><button data-copy>Copy</button></div>
+    <div class="cmd"><span class="label">Antigravity CLI</span><pre>git clone https://github.com/lazy-senior-dev/grumpy-reviewer ~/.grumpy-reviewer
+agy plugin install ~/.grumpy-reviewer</pre><button data-copy>Copy</button></div>
     <div class="cmd"><span class="label">GitHub Action</span><pre>- uses: lazy-senior-dev/grumpy-reviewer@v1
   env:
     ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}</pre><button data-copy>Copy</button></div>
   </div>
-  <p class="small muted" style="margin-top:1rem">Copilot CLI, Gemini CLI, OpenCode, Cursor, Windsurf, Cline, Kiro, OpenClaw, Devin, Qoder and Antigravity: see the <a href="https://github.com/lazy-senior-dev/grumpy-reviewer#install">install table</a>. Uninstall is one command on every host.</p>
+  <p class="sub" style="margin-top:1rem">Codex, Copilot CLI, OpenCode, Cursor, Windsurf, Cline, Kiro, OpenClaw, Devin, Qoder and any AGENTS.md host: <a href="https://github.com/lazy-senior-dev/grumpy-reviewer#install">install table</a> · <a href="https://github.com/lazy-senior-dev/grumpy-reviewer/blob/main/docs/agent-portability.md">what each host enforces</a>. Uninstall is one command everywhere.</p>
 </section>
 
-<section>
+<section class="wrap reveal" id="before-after">
   <div class="eyebrow">Before / after</div>
   <h2>The 2 a.m. handler</h2>
-  <div class="ba">
-    <div>
-      <h3>The agent wrote</h3>
-      <div class="term"><pre><span class="dim"># app/api/profiles.py</span>
+  <div class="grid c3" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr))">
+    <div><h3 style="margin:.2rem 0 .6rem">The agent wrote</h3><div class="term"><pre><span class="dim"># app/api/profiles.py</span>
 @bp.get("/me")
 def me():
     payload = request.get_json(silent=True) or {}
@@ -101,39 +381,34 @@ def me():
     row = query_one("select id, name, email from users where id = %s", (user_id,))
     if row is None:
         abort(404)
-    return jsonify({**row, "notifications": settings_for(user_id)})</pre></div>
-    </div>
-    <div>
-      <h3>The Grump said</h3>
-      <div class="term"><pre><span class="block">GRUMP: BLOCK</span>
+    return jsonify({**row, "notifications": settings_for(user_id)})</pre></div></div>
+    <div><h3 style="margin:.2rem 0 .6rem">The Grump said</h3><div class="term"><pre><span class="block">GRUMP: BLOCK</span>
 1. app/api/profiles.py:14 — user_id is read from the request body, so any logged-in caller can read any profile by changing one number — take user_id from the session and ignore the body
 
 <span class="dim">write denied</span></pre></div>
-      <h3 style="margin-top:1rem">The three-line fix</h3>
-      <div class="term"><pre>-    payload = request.get_json(silent=True) or {}
+    <h3 style="margin:1rem 0 .6rem">The three-line fix</h3><div class="term"><pre>-    payload = request.get_json(silent=True) or {}
 -    user_id = payload.get("user_id", session.get("user_id"))
 +    user_id = session.get("user_id")
 <span class="ok">GRUMP: APPROVE</span>
-Fine.</pre></div>
-    </div>
+Fine.</pre></div></div>
   </div>
 </section>
 
-<section>
+<section class="wrap reveal" id="numbers">
   <div class="eyebrow">Numbers</div>
   <h2>Defects caught, not lines saved</h2>
-  <p>Thirty small diffs, each with exactly one seeded defect, plus ten clean diffs to count false alarms. The same diff goes to the same agent three ways: no skill, a generic "review carefully" prompt, and the Grump. Same ticket, same diff, same model. The only thing that changes is who is reading.</p>
-  <div class="numbers" id="numbers">
-    <div class="stat"><b id="n-caught">TBD</b><span id="l-caught">defects caught, with him and without</span></div>
-    <div class="stat"><b id="n-fp">TBD</b><span id="l-fp">false alarms on 10 clean diffs, with him vs without</span></div>
-    <div class="stat"><b id="n-nov">TBD</b><span id="l-nov">replies without a verdict, with him vs without</span></div>
-    <div class="stat"><b id="n-lat">TBD</b><span id="l-lat">median review time, with him vs without</span></div>
+  <p class="sub">Thirty small diffs, each with one seeded defect, plus ten clean diffs to count false alarms. Same diff, same agent, same model, three ways: no skill, a generic "review carefully" prompt, and the Grump. Current models find the seeded bugs either way; what changes is discipline.</p>
+  <div class="grid c4" style="margin-bottom:1.2rem">
+    <div class="stat"><b id="n-caught">TBD</b><span id="l-caught">defects caught, with him / without</span></div>
+    <div class="stat"><b id="n-fp">TBD</b><span id="l-fp">false alarms on 10 clean diffs, with / without</span></div>
+    <div class="stat"><b id="n-nov">TBD</b><span id="l-nov">replies without a verdict, with / without</span></div>
+    <div class="stat"><b id="n-lat">TBD</b><span id="l-lat">median review time, with / without</span></div>
   </div>
-  <div class="table-wrap"><table id="bench-table"><thead><tr><th>Agent</th><th>Model</th><th>Arm</th><th>Defects caught</th><th>False alarms</th><th>No verdict (per run)</th><th>BLOCK precision</th><th>Median latency</th></tr></thead><tbody><tr><td colspan="8" class="muted">Results load from <code>data/latest.json</code>. If this row is still here, run <code>npm run bench</code> and <code>npm run bench:report</code>.</td></tr></tbody></table></div>
-  <p class="small muted" id="bench-note" style="margin-top:.75rem">Method, per-diff table, raw replies and limitations: <a href="https://github.com/lazy-senior-dev/grumpy-reviewer/tree/main/benchmarks/results">benchmarks/results</a>. Reproduce with <code>npm run bench</code>.</p>
+  <div class="table-wrap"><table id="bench-table"><thead><tr><th>Agent</th><th>Model</th><th>Arm</th><th>Defects caught</th><th>False alarms</th><th>No verdict (per run)</th><th>BLOCK precision</th><th>Median latency</th></tr></thead><tbody><tr><td colspan="8" style="color:var(--muted)">Results load from <code>data/latest.json</code>. If this row is still here, run <code>npm run bench</code> and <code>npm run bench:report</code>.</td></tr></tbody></table></div>
+  <p class="sub" id="bench-note" style="margin-top:.8rem">Method, per-diff table, raw replies and limitations: <a href="https://github.com/lazy-senior-dev/grumpy-reviewer/tree/main/benchmarks/results">benchmarks/results</a>. Reproduce with <code>npm run bench</code>.</p>
 </section>
 
-<section>
+<section class="wrap reveal" id="how">
   <div class="eyebrow">How it works</div>
   <h2>Ten questions, in order, one verdict</h2>
   <ol class="check">
@@ -148,112 +423,176 @@ Fine.</pre></div>
     <li><strong>Observability.</strong> Would on-call understand the log line at 3 a.m.?</li>
     <li><strong>Naming and dead code.</strong> Last. Never first.</li>
   </ol>
-  <p style="margin-top:1.5rem">Then one fixed block: <code>GRUMP: APPROVE | REQUEST_CHANGES | BLOCK</code> followed by numbered <code>file:line — what fails in production — smallest fix</code> lines. Three modes: <code>nag</code> (default, findings only), <code>gate</code> (writes denied until fixed), <code>off</code>.</p>
+  <p class="sub" style="margin-top:1.4rem">Then one fixed block: <code>GRUMP: APPROVE | REQUEST_CHANGES | BLOCK</code> with numbered <code>file:line — what fails in production — smallest fix</code> lines. Modes: <code>nag</code> (default), <code>gate</code>, <code>off</code>. The whole ruleset is one file: <a href="https://github.com/lazy-senior-dev/grumpy-reviewer/blob/main/rules/grump.md">rules/grump.md</a>.</p>
 </section>
 
-<section>
-  <div class="promise">
-    <div class="eyebrow" style="color:#bdb6aa">The promise</div>
+<section class="wrap reveal">
+  <div class="band">
+    <div class="eyebrow">The promise</div>
     <h2>Grumpy, not negligent</h2>
-    <p>He never rewrites your code, never expands scope, never bikesheds style while a correctness finding exists, and never blocks on taste. A <code>BLOCK</code> is reserved for data loss, secrets, auth holes, injection, and destructive operations, and no mode, schedule, or diff size can downgrade one. He can be wrong: say so, in your own words, and he logs the override to the <a href="https://github.com/lazy-senior-dev/grumpy-reviewer#commands">scorecard</a> instead of pretending he was right.</p>
+    <p class="sub" style="margin:0">He never rewrites your code, never expands scope, never bikesheds style while a correctness finding exists, and never blocks on taste. A <code>BLOCK</code> is reserved for data loss, secrets, auth holes, injection, and destructive operations, and no mode, schedule, or diff size can downgrade one. He can be wrong: say so in your own words, and the override is logged to the scorecard instead of pretended away.</p>
   </div>
 </section>
 
-<footer>
-  <nav>
-    <a href="https://github.com/lazy-senior-dev/grumpy-reviewer">GitHub</a>
-    <a href="https://github.com/lazy-senior-dev/grumpy-reviewer/blob/main/docs/agent-portability.md">Which agents</a>
-    <a href="https://github.com/lazy-senior-dev/grumpy-reviewer/discussions">Discussions</a>
-    <a href="https://github.com/sponsors/sandeepbazar">Sponsors</a>
-    <a href="https://lazy-senior-dev.github.io/">All personas</a>
-  </nav>
-  <p>Coming soon from the same desk: <a href="https://github.com/lazy-senior-dev/paranoid-sre">paranoid-sre</a>, who reviews what happens when it is deployed, and <a href="https://github.com/lazy-senior-dev/tenured">tenured</a>, who has seen this exact outage before. Watch the <a href="https://github.com/lazy-senior-dev">org</a> or say hello in <a href="https://github.com/lazy-senior-dev/grumpy-reviewer/discussions">Discussions</a>.</p>
-  <p class="small">He never writes code. He makes sure what gets written is right. Apache-2.0. Built by <a href="https://www.linkedin.com/in/sandeepbazar/">Sandeep Bazar</a>, 2026.</p>
-</footer>
-
+<section class="wrap reveal" id="cast">
+  <div class="eyebrow">Same desk</div>
+  <h2>The rest of the cast</h2>
+  <div class="grid c3">
+    <a class="card" href="https://lazy-senior-dev.github.io/paranoid-sre/" style="display:block"><span class="sketch dim" style="animation:none;filter:none"><svg viewBox="0 0 320 320" aria-hidden="true" style="width:120px">
+  <title id="t">The Paranoid SRE</title>
+  <desc id="d">Line sketch of an on-call engineer with her hair in a bun, a headset, wide alert eyes, and a pager clipped to her collar.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <!-- shoulders and collar -->
+    <path d="M 22 318 C 40 262, 92 250, 118 226"/>
+    <path d="M 298 318 C 280 262, 228 250, 202 226"/>
+    <path d="M 118 226 C 130 244, 150 250, 160 250 C 170 250, 190 244, 202 226"/>
+    <!-- rolled sleeve seam hints -->
+    <path d="M 44 296 L 70 304" stroke-width="2"/>
+    <path d="M 276 296 L 250 304" stroke-width="2"/>
+    <!-- head -->
+    <path d="M 108 100 C 108 52, 212 52, 212 100 L 214 166 C 214 210, 106 210, 106 166 Z"/>
+    <!-- hair: pulled back, bun on top -->
+    <path d="M 108 100 C 112 70, 140 58, 160 58 C 180 58, 208 70, 212 100" stroke-width="3.5"/>
+    <path d="M 120 92 C 130 78, 145 72, 160 72" stroke-width="2"/>
+    <path d="M 200 92 C 190 78, 175 72, 160 72" stroke-width="2"/>
+    <circle cx="160" cy="46" r="16"/>
+    <path d="M 150 40 C 156 34, 166 34, 170 40" stroke-width="2"/>
+    <!-- ears -->
+    <path d="M 107 128 C 92 124, 90 152, 106 158"/>
+    <path d="M 213 128 C 228 124, 230 152, 214 158"/>
+    <!-- headset band and earpiece with mic -->
+    <path d="M 104 118 C 96 84, 224 84, 216 118" stroke-width="3.5"/>
+    <rect x="86" y="126" width="18" height="28" rx="6"/>
+    <path d="M 95 154 C 92 176, 112 190, 134 192" stroke-width="2.5"/>
+    <circle cx="138" cy="192" r="4"/>
+    <!-- brows: raised, alert -->
+    <path d="M 122 104 C 132 96, 146 98, 152 104" stroke-width="4.5"/>
+    <path d="M 198 104 C 188 96, 174 98, 168 104" stroke-width="4.5"/>
+    <!-- wide eyes (open / closed for the blink) -->
+    <g class="eye-open">
+      <circle cx="137" cy="126" r="10"/>
+      <circle cx="183" cy="126" r="10"/>
+      <circle cx="137" cy="127" r="3.5" fill="currentColor" stroke="none"/>
+      <circle cx="183" cy="127" r="3.5" fill="currentColor" stroke="none"/>
+    </g>
+    <g class="eye-closed">
+      <path d="M 127 127 L 147 127"/>
+      <path d="M 173 127 L 193 127"/>
+    </g>
+    <!-- tired lines under the eyes -->
+    <path d="M 128 140 C 134 144, 142 144, 148 140" stroke-width="1.5"/>
+    <path d="M 172 140 C 178 144, 186 144, 192 140" stroke-width="1.5"/>
+    <!-- nose -->
+    <path d="M 161 130 L 156 158 C 158 162, 164 162, 166 158"/>
+    <!-- mouth: small, tight -->
+    <path d="M 148 182 L 172 182" stroke-width="3.5"/>
+    <!-- pager clipped at the collar -->
+    <rect x="196" y="238" width="44" height="26" rx="4"/>
+    <rect x="202" y="244" width="24" height="12" rx="2" stroke-width="2"/>
+    <rect class="led" x="234" y="243" width="4" height="4" rx="1" fill="currentColor" stroke="none"/>
+    <path d="M 232 244 L 232 256" stroke-width="2"/>
+    <path d="M 240 246 L 246 240" stroke-width="2"/>
+    <!-- lanyard -->
+    <path d="M 150 250 L 200 262" stroke-width="2"/>
+  </g>
+</svg></span><h3>Paranoid SRE <small style="color:var(--faint);font-weight:500">coming soon</small></h3><p><em>It works. Now tell me how it fails.</em> Reviews the deploy: limits, probes, rollouts, rollbacks, alerts.</p></a>
+    <a class="card" href="https://lazy-senior-dev.github.io/tenured/" style="display:block"><span class="sketch dim" style="animation:none;filter:none"><svg viewBox="0 0 320 320" aria-hidden="true" style="width:120px">
+  <title id="t">Tenured</title>
+  <desc id="d">Line sketch of a veteran engineer: bald on top with hair at the sides, thick round glasses, a calm half-smile, a cardigan, and a notebook marked 2017 in the pocket.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <!-- shoulders and cardigan -->
+    <path d="M 22 318 C 40 262, 92 250, 118 226"/>
+    <path d="M 298 318 C 280 262, 228 250, 202 226"/>
+    <path d="M 118 226 L 150 268 L 160 260 L 170 268 L 202 226"/>
+    <path d="M 160 260 L 160 318" stroke-width="2"/>
+    <circle cx="160" cy="280" r="2.5" fill="currentColor" stroke="none"/>
+    <circle cx="160" cy="300" r="2.5" fill="currentColor" stroke="none"/>
+    <!-- pocket with a notebook -->
+    <path d="M 70 292 L 70 318 M 70 292 L 108 292" stroke-width="2"/>
+    <rect x="78" y="274" width="24" height="30" rx="2" stroke-width="2"/>
+    <path d="M 82 282 L 98 282 M 82 288 L 98 288" stroke-width="1.5"/>
+    <!-- head -->
+    <path d="M 104 100 C 106 48, 214 48, 216 100 L 218 168 C 220 212, 100 212, 102 168 Z"/>
+    <!-- bald top, hair at the sides -->
+    <path d="M 104 100 C 100 118, 98 132, 100 146" stroke-width="5"/>
+    <path d="M 216 100 C 220 118, 222 132, 220 146" stroke-width="5"/>
+    <path d="M 96 108 C 90 118, 88 130, 92 142" stroke-width="2"/>
+    <path d="M 224 108 C 230 118, 232 130, 228 142" stroke-width="2"/>
+    <!-- ears -->
+    <path d="M 103 130 C 88 126, 86 154, 102 160"/>
+    <path d="M 217 130 C 232 126, 234 154, 218 160"/>
+    <!-- bushy brows -->
+    <path d="M 118 108 C 128 100, 142 102, 152 108" stroke-width="6"/>
+    <path d="M 202 108 C 192 100, 178 102, 168 108" stroke-width="6"/>
+    <!-- round glasses worn on the nose -->
+    <circle cx="137" cy="130" r="18" stroke-width="3.5"/>
+    <circle cx="183" cy="130" r="18" stroke-width="3.5"/>
+    <path d="M 155 128 C 158 124, 162 124, 165 128" stroke-width="3"/>
+    <path d="M 119 128 L 106 124" stroke-width="2.5"/>
+    <path d="M 201 128 L 214 124" stroke-width="2.5"/>
+    <!-- calm half-lidded eyes (open / closed for the blink) -->
+    <g class="eye-open">
+      <path d="M 128 130 C 133 125, 141 125, 146 130" stroke-width="2.5"/>
+      <path d="M 174 130 C 179 125, 187 125, 192 130" stroke-width="2.5"/>
+      <circle cx="137" cy="131" r="2.5" fill="currentColor" stroke="none"/>
+      <circle cx="183" cy="131" r="2.5" fill="currentColor" stroke="none"/>
+    </g>
+    <g class="eye-closed">
+      <path d="M 128 131 L 146 131" stroke-width="2.5"/>
+      <path d="M 174 131 L 192 131" stroke-width="2.5"/>
+    </g>
+    <!-- a glint across the lenses -->
+    <g class="glint" stroke-width="2">
+      <path d="M 126 120 L 146 140"/>
+      <path d="M 172 120 L 192 140"/>
+    </g>
+    <!-- nose -->
+    <path d="M 161 136 L 154 164 C 157 168, 165 168, 168 164"/>
+    <!-- moustache and the knowing half-smile -->
+    <path d="M 140 176 C 150 170, 170 170, 180 176" stroke-width="4"/>
+    <path d="M 142 190 C 152 196, 172 196, 184 186" stroke-width="3"/>
+    <!-- laugh lines -->
+    <path d="M 126 170 C 124 178, 126 186, 132 192" stroke-width="1.5"/>
+    <path d="M 194 170 C 196 178, 194 186, 188 192" stroke-width="1.5"/>
+  </g>
+  <text x="90" y="300" font-family="Menlo, Consolas, monospace" font-size="7" font-weight="700" text-anchor="middle" fill="currentColor">2017</text>
+</svg></span><h3>Tenured <small style="color:var(--faint);font-weight:500">coming soon</small></h3><p><em>We tried that in 2017.</em> Reviews the change against the repository's own history.</p></a>
+    <a class="card" href="https://lazy-senior-dev.github.io/" style="display:block"><h3>All personas</h3><p>One persona per plugin, each measured on the number that engineer cares about. Watch the org for the next one.</p></a>
+  </div>
+</section>
 </main>
 <script>
+window.TERM_SCRIPT = [
+  { t: "$ claude", c: "", type: true },
+  { t: "> add a /me endpoint that returns the profile and notification settings", c: "dim", type: true },
+  { t: "", c: "" },
+  { t: "Writing app/api/profiles.py ...", c: "dim" },
+  { t: "GRUMP: BLOCK", c: "block" },
+  { t: "1. app/api/profiles.py:14 — user_id is read from the request body, so any caller can read any profile — take it from the session", c: "" },
+  { t: "write denied until fixed", c: "dim" },
+  { t: "", c: "" },
+  { t: "Taking user_id from the session instead. Reviewing again ...", c: "dim" },
+  { t: "GRUMP: APPROVE", c: "ok" },
+  { t: "Fine.", c: "" },
+  { t: "Writing app/api/profiles.py ... done", c: "dim" }
+];
 (function () {
-  // Copy buttons.
-  document.querySelectorAll("[data-copy]").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      var text = btn.parentElement.querySelector("pre").textContent;
-      navigator.clipboard.writeText(text).then(function () {
-        btn.textContent = "Copied";
-        setTimeout(function () { btn.textContent = "Copy"; }, 1400);
-      });
-    });
-  });
-
-  // Terminal animation: pure JS typing, no library.
-  var body = document.getElementById("term-body");
-  var script = [
-    { t: "$ claude", c: "" , type: true },
-    { t: "> add a /me endpoint that returns the profile and notification settings", c: "dim", type: true },
-    { t: "", c: "" },
-    { t: "Writing app/api/profiles.py ...", c: "dim" },
-    { t: "GRUMP: BLOCK", c: "block" },
-    { t: "1. app/api/profiles.py:14 — user_id is read from the request body, so any caller can read any profile — take it from the session", c: "" },
-    { t: "write denied until fixed", c: "dim" },
-    { t: "", c: "" },
-    { t: "Taking user_id from the session instead. Reviewing again ...", c: "dim" },
-    { t: "GRUMP: APPROVE", c: "ok" },
-    { t: "Fine.", c: "" },
-    { t: "Writing app/api/profiles.py ... done", c: "dim" }
-  ];
-  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
-  function render(lines, typing) {
-    body.innerHTML = lines.map(function (l, i) {
-      var cls = l.c ? ' class="' + l.c + '"' : "";
-      var cur = typing && i === lines.length - 1 ? ' cursor' : "";
-      return "<span" + (cls || cur ? ' class="' + (l.c || "") + (cur ? " cursor" : "") + '"' : "") + ">" + esc(l.t) + "</span>";
-    }).join("\n");
-  }
-  function play() {
-    var shown = [];
-    var i = 0;
-    function step() {
-      if (i >= script.length) { setTimeout(function () { shown = []; i = 0; step(); }, 6000); return; }
-      var line = script[i];
-      if (line.type) {
-        var k = 0;
-        shown.push({ t: "", c: line.c });
-        (function typeChar() {
-          shown[shown.length - 1].t = line.t.slice(0, ++k);
-          render(shown, true);
-          if (k < line.t.length) setTimeout(typeChar, 28); else { i++; setTimeout(step, 500); }
-        })();
-      } else {
-        shown.push(line);
-        render(shown, false);
-        i++;
-        setTimeout(step, line.t === "" ? 250 : line.c === "block" || line.c === "ok" ? 900 : 650);
-      }
-    }
-    step();
-  }
-  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) { render(script, false); } else { play(); }
-
-  // Benchmark numbers from data/latest.json, TBD until a run exists.
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
   fetch("data/latest.json").then(function (r) { return r.ok ? r.json() : null; }).then(function (data) {
     if (!data || !data.agents) return;
-    var tbody = document.querySelector("#bench-table tbody");
-    tbody.innerHTML = "";
+    var tbody = document.querySelector("#bench-table tbody"); tbody.innerHTML = "";
     var first = null;
     var perRun = function (arm) { return arm.runs ? (arm.unparseable / arm.runs).toFixed(0) : "n/a"; };
     var secs = function (ms) { return ms == null ? "n/a" : (ms / 1000).toFixed(0) + " s"; };
     Object.keys(data.agents).forEach(function (key) {
-      var a = data.agents[key];
-      var arms = a.arms || {};
+      var a = data.agents[key], arms = a.arms || {};
       if (!arms.grump || !arms.bare) return;
       if (!first) first = { a: a, b: arms.bare, g: arms.grump };
       ["bare", "generic", "grump"].forEach(function (k) {
-        var s = arms[k];
-        if (!s) return;
+        var s = arms[k]; if (!s) return;
+        var strong = k === "grump", w = function (x) { return strong ? "<strong>" + x + "</strong>" : x; };
         var tr = document.createElement("tr");
-        var strong = k === "grump";
-        var w = function (x) { return strong ? "<strong>" + x + "</strong>" : x; };
-        tr.innerHTML = "<td>" + esc(a.label) + "</td><td><code>" + esc(String(s.model || "")) + "</code> (n=" + s.runs + ")</td><td>" + w(esc(s.label)) + "</td><td>" + w(s.caughtMedian + " / " + data.seeded) + "</td><td>" + w(s.falsePositivesMedian + " / " + data.clean) + "</td><td>" + w(perRun(s)) + "</td><td>" + (k === "grump" ? w(s.blockPrecision == null ? "n/a" : Math.round(s.blockPrecision * 100) + "%") : "n/a") + "</td><td>" + secs(s.latencyMedianMs) + "</td>";
+        tr.innerHTML = "<td>" + esc(a.label) + "</td><td><code>" + esc(s.model || "") + "</code> (n=" + s.runs + ")</td><td>" + w(esc(s.label)) + "</td><td>" + w(s.caughtMedian + " / " + data.seeded) + "</td><td>" + w(s.falsePositivesMedian + " / " + data.clean) + "</td><td>" + w(perRun(s)) + "</td><td>" + (k === "grump" ? w(s.blockPrecision == null ? "n/a" : Math.round(s.blockPrecision * 100) + "%") : "n/a") + "</td><td>" + secs(s.latencyMedianMs) + "</td>";
         tbody.appendChild(tr);
       });
     });
@@ -263,10 +602,40 @@ Fine.</pre></div>
       document.getElementById("n-fp").textContent = first.g.falsePositivesMedian + " / " + first.b.falsePositivesMedian;
       document.getElementById("n-nov").textContent = perRun(first.g) + " / " + perRun(first.b);
       document.getElementById("n-lat").textContent = secs(first.g.latencyMedianMs) + " / " + secs(first.b.latencyMedianMs);
-      document.getElementById("bench-note").insertAdjacentHTML("afterbegin", "Measured " + esc(data.date) + " on " + esc(first.a.label) + " (" + esc(String(first.g.model)) + "); medians over runs. ");
+      document.getElementById("bench-note").insertAdjacentHTML("afterbegin", "Measured " + esc(data.date) + " on " + esc(first.a.label) + " (" + esc(first.g.model) + "); medians over runs. ");
     }
   }).catch(function () {});
 })();
 </script>
+
+<footer>
+  <div class="wrap">
+    <div class="cols">
+      <div><h4>The cast</h4><ul>
+        <li><a href="https://lazy-senior-dev.github.io/grumpy-reviewer/">The Grump</a>, reviews the diff</li>
+        <li><a href="https://lazy-senior-dev.github.io/paranoid-sre/">Paranoid SRE</a>, reviews the deploy</li>
+        <li><a href="https://lazy-senior-dev.github.io/tenured/">Tenured</a>, reviews against history</li>
+        <li><a href="https://lazy-senior-dev.github.io/">All personas</a></li>
+      </ul></div>
+      <div><h4>This project</h4><ul>
+        <li><a href="https://github.com/lazy-senior-dev/grumpy-reviewer">Repository</a></li>
+        <li><a href="https://github.com/lazy-senior-dev/grumpy-reviewer/issues">Issues and ideas</a></li>
+        <li><a href="https://github.com/lazy-senior-dev/grumpy-reviewer/blob/main/README.md">README</a></li>
+        <li><a href="https://github.com/lazy-senior-dev/grumpy-reviewer/blob/main/LICENSE">Apache-2.0 license</a></li>
+      </ul></div>
+      <div><h4>The org</h4><ul>
+        <li><a href="https://github.com/lazy-senior-dev">github.com/lazy-senior-dev</a></li>
+        <li><a href="https://github.com/sponsors/sandeepbazar">Sponsor the desk</a></li>
+        <li><a href="https://github.com/sandeepbazar">@sandeepbazar</a></li>
+      </ul></div>
+    </div>
+    <div class="by">
+      <span>Built by <strong><a href="https://www.linkedin.com/in/sandeepbazar/">Sandeep Bazar</a></strong> · <a href="https://www.linkedin.com/in/sandeepbazar/">LinkedIn</a> · <a href="https://github.com/sandeepbazar">GitHub</a></span>
+      <span>Apache-2.0 · 2026 · No tracker, no framework, one HTML file.</span>
+    </div>
+  </div>
+</footer>
+<script src="assets/site.js"></script>
+
 </body>
 </html>

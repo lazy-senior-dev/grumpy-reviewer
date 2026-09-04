@@ -8,9 +8,17 @@ const cases = loadCases();
 const s01 = cases.find((c) => c.id === "s01-py-user-id-from-body");
 const c02 = cases.find((c) => c.id === "c02-ts-rename-helper");
 
-test("the corpus is 30 seeded plus 10 clean, each with a ticket line and a diff", () => {
-  assert.equal(cases.filter((c) => !c.clean).length, 30);
-  assert.equal(cases.filter((c) => c.clean).length, 10);
+test("the corpus is 30 seeded plus 10 clean plus 10 needle cases, each with a ticket line and a diff", () => {
+  assert.equal(cases.filter((c) => c.tier === "seeded").length, 30);
+  assert.equal(cases.filter((c) => c.tier === "clean").length, 10);
+  const needles = cases.filter((c) => c.tier === "needle");
+  assert.equal(needles.length, 10);
+  for (const n of needles) {
+    assert.equal(n.parts.length, 4, n.id);
+    assert.ok(n.diff.split("\n").length > 100, n.id + " is a real pull request");
+    assert.ok(n.diff.includes(n.file), n.id + " contains the seeded file");
+    assert.equal((n.diff.match(/^Ticket: /gm) || []).length, 1, n.id + " has one ticket line");
+  }
   for (const c of cases) {
     assert.ok(c.ticket, c.id + " ticket");
     assert.match(c.diff, /^diff --git|\ndiff --git/, c.id + " diff");

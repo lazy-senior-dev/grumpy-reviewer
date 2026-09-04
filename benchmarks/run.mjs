@@ -15,7 +15,7 @@ import { AGENTS, availableAgents } from "./lib/agents.mjs";
 import { scoreResponse } from "./lib/score.mjs";
 
 function parseArgs(argv) {
-  const out = { n: 3, concurrency: 3, arms: Object.keys(ARMS), models: {}, only: null, limit: 0, agents: null };
+  const out = { n: 3, concurrency: 3, arms: Object.keys(ARMS), models: {}, only: null, limit: 0, agents: null, tiers: null };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     const next = () => argv[++i];
@@ -24,6 +24,7 @@ function parseArgs(argv) {
     else if (a === "--n") out.n = Number(next());
     else if (a === "--concurrency") out.concurrency = Number(next());
     else if (a === "--only") out.only = next().split(",");
+    else if (a === "--tiers") out.tiers = next().split(",");
     else if (a === "--limit") out.limit = Number(next());
     else if (a.startsWith("--model.")) out.models[a.slice(8)] = next();
     else if (a === "--help") {
@@ -71,7 +72,7 @@ async function runAgent(agentName, cases, opts) {
     while (next < jobs.length) {
       const job = jobs[next++];
       const { system, user } = buildPrompt(job.arm, job.c);
-      const record = { ts: new Date().toISOString(), agent: agentName, model, arm: job.arm, case: job.c.id, run: job.run, clean: job.c.clean };
+      const record = { ts: new Date().toISOString(), agent: agentName, model, arm: job.arm, case: job.c.id, run: job.run, clean: job.c.clean, tier: job.c.tier };
       try {
         const res = await agent.run({ system, user, model });
         Object.assign(record, {
@@ -100,7 +101,7 @@ async function runAgent(agentName, cases, opts) {
 
 async function main() {
   const opts = parseArgs(process.argv.slice(2));
-  let cases = loadCases();
+  let cases = opts.tiers ? loadCases({ tiers: opts.tiers }) : loadCases();
   if (opts.only) cases = cases.filter((c) => opts.only.some((id) => c.id.startsWith(id)));
   if (opts.limit) cases = cases.slice(0, opts.limit);
   const agents = opts.agents || (await availableAgents());

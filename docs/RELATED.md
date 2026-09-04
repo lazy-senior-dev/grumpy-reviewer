@@ -1,9 +1,5 @@
 # Related
 
-## agent-bill
-
-[agentcost/agent-bill](https://github.com/agentcost/agent-bill) is a local flight recorder that prints a cost, tokens, and tool-call receipt after every agent session. Pair it with the Grump's scorecard to see what a denied write saved you.
-
 ## Coming from the same desk
 
 - [paranoid-sre](https://github.com/lazy-senior-dev/paranoid-sre): reviews what happens when it is deployed. Probes, limits, rollouts, alerts.

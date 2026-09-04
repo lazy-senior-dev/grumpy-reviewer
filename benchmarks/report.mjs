@@ -9,8 +9,10 @@ import { ARMS } from "./lib/arms.mjs";
 
 const RAW = join(BENCH_ROOT, "results", "raw");
 const cases = loadCases();
-const seeded = cases.filter((c) => !c.clean);
-const clean = cases.filter((c) => c.clean);
+const seeded = cases.filter((c) => c.tier === "seeded");
+const clean = cases.filter((c) => c.tier === "clean");
+const needle = cases.filter((c) => c.tier === "needle");
+const baseCases = [...seeded, ...clean];
 const date = process.argv[2] || new Date().toISOString().slice(0, 10);
 
 if (!existsSync(RAW)) {
@@ -25,7 +27,7 @@ for (const file of readdirSync(RAW).filter((f) => f.endsWith(".jsonl")).sort(byO
   const agent = file.replace(/\.jsonl$/, "");
   const records = readFileSync(join(RAW, file), "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l));
   const errors = records.filter((r) => r.error).length;
-  perAgent[agent] = { label: AGENTS[agent]?.label || agent, errors, calls: records.length, arms: aggregate(records, cases) };
+  perAgent[agent] = { label: AGENTS[agent]?.label || agent, errors, calls: records.length, arms: aggregate(records, baseCases), needle: aggregate(records, needle) };
 }
 
 const fmt = (x, d = 0) => (x === null || x === undefined ? "n/a" : typeof x === "number" ? x.toFixed(d) : String(x));
@@ -34,7 +36,7 @@ const armOrder = Object.keys(ARMS);
 
 let md = `# Benchmark results, ${date}
 
-**What is measured.** ${seeded.length} small diffs, each with exactly one seeded defect, plus ${clean.length} clean diffs. Each diff is shown to a headless agent three ways: with no skill, with a generic "review this carefully" prompt, and with grumpy-reviewer's persona card. Every arm gets the same ticket line and the same diff.
+**What is measured.** ${seeded.length} small diffs, each with exactly one seeded defect, plus ${clean.length} clean diffs, plus a needle tier: ${needle.length} four-file pull requests of about 150 lines with one of those defects buried among clean changes. Each diff is shown to a headless agent three ways: with no skill, with a generic "review this carefully" prompt, and with grumpy-reviewer's persona card. Every arm gets the same ticket line and the same diff.
 
 **Scores.** *Caught* means the reviewer flagged the change (a FAIL, REQUEST_CHANGES, or BLOCK verdict) and named the seeded defect (its file plus the defect's key terms). *False positives* are clean diffs that were flagged. *BLOCK precision* is, of the diffs the Grump marked BLOCK, the share whose seeded defect is a BLOCK-class defect (secrets, injection, auth, data loss, destructive or privileged operations). Medians are across runs; the per-diff table shows hits over runs.
 
@@ -49,18 +51,28 @@ for (const [agent, a] of Object.entries(perAgent)) {
     if (!s) continue;
     md += `| ${ARMS[arm].label} | \`${s.model}\` | ${s.runs} | **${fmt(s.caught.median)}** | ${fmt(s.caught.mean, 1)} | ${fmt(s.falsePositives.median)} | ${arm === "grump" ? `${pct(s.blockPrecision)} (${s.blocks} blocks)` : "n/a"} | ${s.unparseable} | ${fmt(s.tokens.inputMedian)} | ${fmt(s.tokens.outputMedian)} | ${s.latencyMedianMs === null ? "n/a" : (s.latencyMedianMs / 1000).toFixed(1) + " s"} |\n`;
   }
+  if (a.needle && a.needle.grump) {
+    md += `\n### Needle tier: one defect in a four-file pull request\n\n| Arm | Model | Runs | Defects found (median of ${needle.length}) | Mean | Unparseable | Median input tokens | Median latency |\n|---|---|---|---|---|---|---|---|\n`;
+    for (const arm of armOrder) {
+      const s = a.needle[arm];
+      if (!s) continue;
+      md += `| ${ARMS[arm].label} | \`${s.model}\` | ${s.runs} | **${fmt(s.caught.median)}** | ${fmt(s.caught.mean, 1)} | ${s.unparseable} | ${fmt(s.tokens.inputMedian)} | ${s.latencyMedianMs === null ? "n/a" : (s.latencyMedianMs / 1000).toFixed(1) + " s"} |\n`;
+    }
+    md += "\nNeedle cases are built from the seeded and clean sets (\`benchmarks/lib/cases.mjs\`): the defect's file must be named for a catch to count.\n";
+  }
   const bare = a.arms.bare;
   const grump = a.arms.grump;
   if (bare && grump && bare.tokens.inputMedian !== null && grump.tokens.inputMedian !== null) {
     md += `\nOverhead of the persona card: about ${fmt(grump.tokens.inputMedian - bare.tokens.inputMedian)} input tokens per review over the no-skill arm.\n`;
   }
   md += `\n### Per diff (hits / runs)\n\n| Diff | Category | Expected | ${armOrder.filter((x) => a.arms[x]).map((x) => ARMS[x].label).join(" | ")} |\n|---|---|---|${armOrder.filter((x) => a.arms[x]).map(() => "---").join("|")}|\n`;
-  for (const c of [...seeded, ...clean]) {
+  for (const c of [...seeded, ...clean, ...needle]) {
+    const src = c.tier === "needle" ? a.needle : a.arms;
     const cells = armOrder.filter((x) => a.arms[x]).map((x) => {
-      const pc = a.arms[x].perCase[c.id];
+      const pc = src[x] && src[x].perCase[c.id];
       return pc ? `${pc.hits}/${pc.n}` : "-";
     });
-    md += `| \`${c.id}\` | ${c.clean ? "clean" : c.category} | ${c.clean ? "no flag" : c.verdict} | ${cells.join(" | ")} |\n`;
+    md += `| \`${c.id}\` | ${c.clean ? "clean" : c.tier === "needle" ? "needle: " + c.category : c.category} | ${c.clean ? "no flag" : c.verdict} | ${cells.join(" | ")} |\n`;
   }
   md += "\nFor clean diffs the cell counts false positives, so lower is better.\n\n";
 }
@@ -85,9 +97,10 @@ Reproduce: \`npm run bench\` then \`npm run bench:report\`. Add \`--agents claud
 
 const outMd = join(BENCH_ROOT, "results", `${date}.md`);
 writeFileSync(outMd, md);
-const latest = { date, seeded: seeded.length, clean: clean.length, agents: {} };
+const latest = { date, seeded: seeded.length, clean: clean.length, needle: needle.length, agents: {} };
 for (const [agent, a] of Object.entries(perAgent)) {
-  latest.agents[agent] = { label: a.label, calls: a.calls, errors: a.errors, arms: {} };
+  latest.agents[agent] = { label: a.label, calls: a.calls, errors: a.errors, arms: {}, needle: {} };
+  for (const [arm, s] of Object.entries(a.needle || {})) latest.agents[agent].needle[arm] = { label: ARMS[arm]?.label || arm, model: s.model, runs: s.runs, caughtMedian: s.caught.median, caughtMean: s.caught.mean, unparseable: s.unparseable, inputTokensMedian: s.tokens.inputMedian, latencyMedianMs: s.latencyMedianMs };
   for (const [arm, s] of Object.entries(a.arms)) {
     latest.agents[agent].arms[arm] = {
       label: ARMS[arm]?.label || arm,

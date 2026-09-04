@@ -21,13 +21,14 @@ const arms = [
   { key: "grump", label: "grumpy-reviewer", fill: "#ff8a65" },
 ];
 const metrics = [
-  { key: "caughtMedian", label: "defects caught", max: data.seeded, better: "higher" },
+  { key: "caughtMedian", label: "defects caught (30 small diffs)", max: data.seeded, better: "higher" },
+  ...(data.needle && agents.some(([, a]) => a.needle && a.needle.grump) ? [{ key: "needle", label: "found in a 150-line PR (needle tier)", max: data.needle, better: "higher" }] : []),
   { key: "falsePositivesMedian", label: "false alarms on clean diffs", max: data.clean, better: "lower" },
   { key: "noVerdict", label: "replies without a verdict", max: data.seeded + data.clean, better: "lower" },
 ];
-const value = (s, m) => (m.key === "noVerdict" ? (s.runs ? s.unparseable / s.runs : 0) : s[m.key] ?? 0);
+const value = (s, m, a, armKey) => (m.key === "noVerdict" ? (s.runs ? s.unparseable / s.runs : 0) : m.key === "needle" ? (a.needle && a.needle[armKey] ? a.needle[armKey].caughtMedian ?? 0 : 0) : s[m.key] ?? 0);
 
-const colW = 250, left = 210, gapX = 30, barH = 16, gapY = 4, groupH = arms.length * (barH + gapY) + 34, top = 92;
+const colW = 215, left = 200, gapX = 30, barH = 16, gapY = 4, groupH = arms.length * (barH + gapY) + 34, top = 92;
 const W = left + metrics.length * (colW + gapX), H = top + agents.length * (groupH + 18) + 30;
 let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif">
 <rect width="${W}" height="${H}" fill="#f4efe6"/>
@@ -46,7 +47,7 @@ agents.forEach(([, a], ai) => {
     arms.forEach((arm, j) => {
       const s = a.arms[arm.key];
       if (!s) return;
-      const v = value(s, m);
+      const v = value(s, m, a, arm.key);
       const y = gy + j * (barH + gapY);
       const w = Math.max(2, (v / m.max) * (colW - 60));
       svg += `<rect x="${x0}" y="${y}" width="${w}" height="${barH}" rx="3" fill="${arm.fill}"/>`;

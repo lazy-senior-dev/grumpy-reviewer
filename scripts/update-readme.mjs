@@ -37,6 +37,15 @@ function block() {
       table += `| ${a.label} | \`${s.model}\` (n=${s.runs}) | ${wrap(s.label)} | ${wrap(n(s.caughtMedian))} | ${wrap(n(s.falsePositivesMedian))} | ${wrap(perRun(s))} | ${arm === "grump" ? wrap(s.blockPrecision == null ? "n/a" : n(s.blockPrecision * 100) + "%") : "n/a"} | ${n(s.inputTokensMedian)} | ${n(s.outputTokensMedian)} | ${secs(s.latencyMedianMs)} |\n`;
     }
   }
+  const needleRows = rows.filter(([, a]) => a.needle && a.needle.grump && a.needle.bare);
+  if (needleRows.length) {
+    const [, fa] = needleRows[0];
+    const nb = fa.needle.bare, ng = fa.needle.grump, nge = fa.needle.generic;
+    const heroNeedle = ` **In the needle tier, where the same defect hides in a four-file, 150-line pull request, ${fa.label} finds ${n(ng.caughtMedian)} of ${d.needle} with the Grump, ${n(nb.caughtMedian)} without${nge ? `, ${n(nge.caughtMedian)} with the generic prompt` : ""}.**`;
+    let needleTable = `\n\n**Needle tier** (one defect in a four-file pull request of about 150 lines):\n\n| Agent | Model | No skill | Generic prompt | **Grump** |\n|---|---|---|---|---|\n`;
+    for (const [, a] of needleRows) needleTable += `| ${a.label} | \`${a.needle.grump.model}\` (n=${a.needle.grump.runs}) | ${n(a.needle.bare.caughtMedian)}/${d.needle} | ${a.needle.generic ? n(a.needle.generic.caughtMedian) + "/" + d.needle : "n/a"} | **${n(a.needle.grump.caughtMedian)}/${d.needle}** |\n`;
+    return { hero: hero + heroNeedle, table: table + needleTable };
+  }
   return { hero, table };
 }
 

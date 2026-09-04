@@ -24,7 +24,9 @@
     "AGENTS.md",
     "README.md",
     "LICENSE",
-    "NOTICE"
+    "NOTICE",
+    "bin/",
+    "benchmarks/lib/"
   ],
   "scripts": {
     "build": "node scripts/build-adapters.mjs",
@@ -44,5 +46,8 @@
     "agent-skills",
     "persona",
     "pull-request"
-  ]
+  ],
+  "bin": {
+    "grumpy": "bin/grumpy.mjs"
+  }
 }
