@@ -128,7 +128,7 @@ Pick your agent. Start a new session after installing; the Grump is there from t
 /plugin install grumpy-reviewer@lazy-senior-dev
 ```
 
-Full plugin: persona every turn, the gate on every write and commit, six slash commands (namespaced as `/grumpy-reviewer:grumpy-review` and so on).
+Full plugin: persona every turn, the gate on every write and commit, six slash commands.
 
 ### Codex
 
@@ -224,7 +224,7 @@ Inputs: `mode` (`nag` or `gate`), `provider` (`anthropic` or `openai`, with `OPE
 | `/grumpy-scorecard` | What the Grump caught this session, as a table. |
 | `/grumpy-help` | This table. |
 
-In Claude Code the commands are namespaced by plugin: `/grumpy-reviewer:grumpy-review`. Hosts without slash commands understand plain words: "review the diff as the Grump".
+In Claude Code both `/grumpy-review` and the namespaced `/grumpy-reviewer:grumpy-review` work. Hosts without slash commands understand plain words: "review the diff as the Grump".
 
 ## Uninstall
 
