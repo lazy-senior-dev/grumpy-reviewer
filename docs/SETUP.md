@@ -1,6 +1,6 @@
 # Setup: from these two clones to a live launch
 
-Run these in order. Both repositories are already on disk under `~/01.Projects/lazy-senior-dev/` with their commit history; nothing needs unpacking.
+Run these in order. Five repositories are already on disk under `~/01.Projects/lazy-senior-dev/` with their commit history: `grumpy-reviewer`, `lazy-senior-dev.github.io`, `paranoid-sre`, `tenured`, and `lazy-senior-dev` (the org profile). Nothing needs unpacking.
 
 ## 0. Make the folder-level git config apply
 
@@ -11,13 +11,13 @@ git config --global includeIf."gitdir:~/01.Projects/lazy-senior-dev/".path ~/01.
 cd ~/01.Projects/lazy-senior-dev/grumpy-reviewer && git config user.signingkey    # expect ~/.ssh/id_ed25519_signing.pub
 ```
 
-## 1. Verify identity in both repos
+## 1. Verify identity in every repo
 
 ```sh
-for r in grumpy-reviewer lazy-senior-dev.github.io; do
+for r in grumpy-reviewer lazy-senior-dev.github.io paranoid-sre tenured lazy-senior-dev; do
   (cd ~/01.Projects/lazy-senior-dev/$r && echo "$r: $(git config user.name) <$(git config user.email)>")
 done
-# expect: sandeepbazar <5602033+sandeepbazar@users.noreply.github.com> for both
+# expect: sandeepbazar <5602033+sandeepbazar@users.noreply.github.com> for all five
 ```
 
 ## 2. Run the checks
@@ -30,7 +30,7 @@ npm test && npm run check
 ## 3. Re-sign the whole history with the intended key
 
 ```sh
-for r in grumpy-reviewer lazy-senior-dev.github.io; do
+for r in grumpy-reviewer lazy-senior-dev.github.io paranoid-sre tenured lazy-senior-dev; do
   (cd ~/01.Projects/lazy-senior-dev/$r && git rebase --exec 'git commit --amend --no-edit -n -S' --root)
 done
 cd ~/01.Projects/lazy-senior-dev/grumpy-reviewer && git log --format='%an <%ae> %G?' | sort -u
@@ -42,9 +42,12 @@ If the line ends in `N` or `E`, check `gpg.ssh.allowedSignersFile` points at `~/
 ## 4. Push
 
 ```sh
-cd ~/01.Projects/lazy-senior-dev/grumpy-reviewer && git push -u origin main
-cd ~/01.Projects/lazy-senior-dev/lazy-senior-dev.github.io && git push -u origin main
+for r in grumpy-reviewer lazy-senior-dev.github.io paranoid-sre tenured lazy-senior-dev; do
+  (cd ~/01.Projects/lazy-senior-dev/$r && git push -u origin main)
+done
 ```
+
+The `lazy-senior-dev` repo carries `profile/README.md`, which GitHub shows on the org page once pushed.
 
 `gh` on this machine is logged into github.ibm.com; for the `gh` commands below log into github.com first: `gh auth login --hostname github.com`.
 
@@ -80,7 +83,7 @@ gh api -X POST repos/lazy-senior-dev/grumpy-reviewer/rulesets --input - <<'JSON'
 JSON
 ```
 
-Repeat for `lazy-senior-dev.github.io` without the status-check rule.
+Repeat for `lazy-senior-dev.github.io`, `paranoid-sre`, `tenured`, and `lazy-senior-dev` without the status-check rule.
 
 ## 7. Secrets and features
 
