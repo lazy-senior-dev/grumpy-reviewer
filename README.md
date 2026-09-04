@@ -20,6 +20,18 @@
 
 **Your agent's code, reviewed by the staff engineer who has rejected 4,000 pull requests, before it ever reaches your branch.**
 
+<!-- bench:author:start -->
+## The number that matters: what ships
+
+**When the agent is the author, the Grump changes what ships.** On IBM Bob Shell (`bob-default`), given 14 tickets that each invite a classic defect, the agent alone shipped the defect in 6 of 28 runs (21%), 1 of 28 with a generic "be careful" prompt (4%), and 2 of 28 with the Grump loaded (7%), reviewing its own change before finishing in 28 of 28 runs. A task the agent declined or solved another way counts as clean. The shipped code is scored by fixed checks written before any run, never by a model. Each task was run 2 times per arm; [method, per-task table, raw diffs](benchmarks/results/author).
+
+| Agent | Model | Arm | Made the change | Shipped the defect | Self-reviewed | Median time | Median cost |
+|---|---|---|---|---|---|---|---|
+| IBM Bob Shell | `bob-default` (n=2) | no skill | 28 of 28 | 6 of 28 (21%) | n/a | 15 s | $0.10 |
+| IBM Bob Shell | `bob-default` (n=2) | generic care prompt | 28 of 28 | 1 of 28 (4%) | n/a | 22 s | $0.14 |
+| IBM Bob Shell | `bob-default` (n=2) | **grumpy-reviewer** | **28 of 28** | **2 of 28 (7%)** | **28 of 28** | 32 s | $0.14 |
+<!-- bench:author:end -->
+
 <!-- bench:hero:start -->
 **On Claude Code (`claude-sonnet-5`), the Grump catches 30 of 30 seeded defects, the same as the agent alone. What changes is discipline: false alarms on 10 clean diffs, 0 with him, 4 without; replies with no usable verdict per run, 0 with him, 3 without; 94% of BLOCK verdicts land on BLOCK-class defects; median review time 7 s with him, 11 s without at 229 output tokens with him, 685 output tokens without.** Median of 3 runs, measured 2026-09-04; [method, per-diff table, raw replies](benchmarks/results). **In the needle tier, where the same defect hides in a four-file, 150-line pull request, Claude Code finds 10 of 10 with the Grump, 9 without, 10 with the generic prompt.**
 <!-- bench:hero:end -->

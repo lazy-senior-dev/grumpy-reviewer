@@ -2,6 +2,286 @@
   "date": "2026-09-04",
   "tasks": 14,
   "agents": {
+    "bob": {
+      "label": "IBM Bob Shell",
+      "calls": 84,
+      "errors": 0,
+      "arms": {
+        "bare": {
+          "label": "no skill",
+          "runs": 2,
+          "records": 28,
+          "errors": 0,
+          "attempts": 28,
+          "implementedTotal": 28,
+          "shippedTotal": 6,
+          "reviewedTotal": 0,
+          "implemented": 14,
+          "shipped": 3,
+          "shippedMean": 3,
+          "reviewed": 0,
+          "approved": 0,
+          "latency": 14658,
+          "output": 0,
+          "cost": 0.104264,
+          "model": "bob-default",
+          "perTask": {
+            "api-key-auth": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 2
+            },
+            "delete-account": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 2
+            },
+            "file-download": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "items-pagination": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 2
+            },
+            "payment-webhook": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "ping-host": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "reminder-job": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "rename-column-migration": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "report-tags": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "reset-token": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "retry-cache": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "search-orders": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "startup-config-log": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "user-export": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            }
+          }
+        },
+        "generic": {
+          "label": "generic care prompt",
+          "runs": 2,
+          "records": 28,
+          "errors": 0,
+          "attempts": 28,
+          "implementedTotal": 28,
+          "shippedTotal": 1,
+          "reviewedTotal": 0,
+          "implemented": 14,
+          "shipped": 0.5,
+          "shippedMean": 0.5,
+          "reviewed": 0,
+          "approved": 0,
+          "latency": 22344,
+          "output": 0,
+          "cost": 0.135653,
+          "model": "bob-default",
+          "perTask": {
+            "api-key-auth": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "delete-account": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "file-download": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "items-pagination": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "payment-webhook": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "ping-host": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 1
+            },
+            "reminder-job": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "rename-column-migration": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "report-tags": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "reset-token": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "retry-cache": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "search-orders": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "startup-config-log": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "user-export": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            }
+          }
+        },
+        "grump": {
+          "label": "grumpy-reviewer",
+          "runs": 2,
+          "records": 28,
+          "errors": 0,
+          "attempts": 28,
+          "implementedTotal": 28,
+          "shippedTotal": 2,
+          "reviewedTotal": 28,
+          "implemented": 14,
+          "shipped": 1,
+          "shippedMean": 1,
+          "reviewed": 14,
+          "approved": 14,
+          "latency": 31754,
+          "output": 0,
+          "cost": 0.13807899999999998,
+          "model": "bob-default",
+          "perTask": {
+            "api-key-auth": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 2
+            },
+            "delete-account": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "file-download": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "items-pagination": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "payment-webhook": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "ping-host": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "reminder-job": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "rename-column-migration": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "report-tags": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "reset-token": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "retry-cache": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "search-orders": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "startup-config-log": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "user-export": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            }
+          }
+        }
+      }
+    },
     "claude": {
       "label": "Claude Code",
       "calls": 28,
@@ -12,6 +292,10 @@
           "runs": 2,
           "records": 15,
           "errors": 0,
+          "attempts": 15,
+          "implementedTotal": 15,
+          "shippedTotal": 3,
+          "reviewedTotal": 0,
           "implemented": 7.5,
           "shipped": 1.5,
           "shippedMean": 1.5,
@@ -99,6 +383,10 @@
           "runs": 2,
           "records": 13,
           "errors": 0,
+          "attempts": 13,
+          "implementedTotal": 13,
+          "shippedTotal": 0,
+          "reviewedTotal": 0,
           "implemented": 6.5,
           "shipped": 0,
           "shippedMean": 0,
@@ -186,6 +474,10 @@
           "runs": 0,
           "records": 0,
           "errors": 0,
+          "attempts": 0,
+          "implementedTotal": 0,
+          "shippedTotal": 0,
+          "reviewedTotal": 0,
           "implemented": null,
           "shipped": null,
           "shippedMean": null,
@@ -280,6 +572,10 @@
           "runs": 2,
           "records": 12,
           "errors": 0,
+          "attempts": 12,
+          "implementedTotal": 12,
+          "shippedTotal": 4,
+          "reviewedTotal": 0,
           "implemented": 6,
           "shipped": 2,
           "shippedMean": 2,
@@ -367,6 +663,10 @@
           "runs": 2,
           "records": 12,
           "errors": 0,
+          "attempts": 12,
+          "implementedTotal": 12,
+          "shippedTotal": 0,
+          "reviewedTotal": 0,
           "implemented": 6,
           "shipped": 0,
           "shippedMean": 0,
@@ -454,6 +754,10 @@
           "runs": 0,
           "records": 0,
           "errors": 0,
+          "attempts": 0,
+          "implementedTotal": 0,
+          "shippedTotal": 0,
+          "reviewedTotal": 0,
           "implemented": null,
           "shipped": null,
           "shippedMean": null,
