@@ -6,7 +6,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { normaliseInput, classify, decide, render, bumpDenials, clearDenials, applicableVerdict } from "../hooks/lib/gate.mjs";
 import { lastVerdict } from "../hooks/lib/verdict.mjs";
-import { assistantTextSinceLastPrompt } from "../hooks/lib/transcript.mjs";
+import { assistantTextSinceLastPrompt, latestAssistantText } from "../hooks/lib/transcript.mjs";
 
 const write = { toolName: "Write", toolInput: { file_path: "src/a.py", content: "" } };
 
@@ -113,14 +113,31 @@ test("transcript: assistant text since the last human prompt", () => {
   assert.ok(!text.includes("APPROVE"));
 });
 
-test("a verdict applies only when fresh or when it names the file", () => {
+test("a verdict covers the files it names; an unnamed one covers the write; earlier verdicts need the file", () => {
   const forA = lastVerdict("GRUMP: REQUEST_CHANGES\n1. src/a.py:3 — x — y");
+  const fineA = lastVerdict("GRUMP: APPROVE — src/a.py\nFine.");
   const fine = lastVerdict("GRUMP: APPROVE\nFine.");
-  assert.equal(applicableVerdict({ fresh: fine, earlier: forA, target: { kind: "write", file: "/repo/src/b.py" } }), fine);
-  assert.equal(applicableVerdict({ fresh: null, earlier: forA, target: { kind: "write", file: "/repo/src/a.py" } }), forA);
-  assert.equal(applicableVerdict({ fresh: null, earlier: forA, target: { kind: "write", file: "/repo/src/b.py" } }), null);
-  assert.equal(applicableVerdict({ fresh: null, earlier: fine, target: { kind: "write", file: "/repo/src/b.py" } }), null, "a stale Fine. does not cover a later unreviewed file");
-  assert.equal(applicableVerdict({ fresh: null, earlier: lastVerdict("GRUMP: OVERRIDE — user said go"), target: { kind: "write", file: "x" } }).override, true);
+  const a = { kind: "write", file: "/repo/src/a.py" }, b = { kind: "write", file: "/repo/src/b.py" };
+  assert.equal(applicableVerdict({ latest: fineA, earlier: null, target: a }), fineA);
+  assert.equal(applicableVerdict({ latest: fineA, earlier: null, target: b }), null, "an approval naming a.py does not cover b.py");
+  assert.equal(applicableVerdict({ latest: fine, earlier: null, target: b }), fine, "an approval naming nothing covers the write");
+  assert.equal(applicableVerdict({ latest: forA, earlier: null, target: b }), null);
+  assert.equal(applicableVerdict({ latest: null, earlier: forA, target: a }), forA);
+  assert.equal(applicableVerdict({ latest: null, earlier: forA, target: b }), null);
+  assert.equal(applicableVerdict({ latest: null, earlier: fine, target: b }), null, "an old unnamed approval does not reach a later write");
+  assert.equal(applicableVerdict({ latest: lastVerdict("GRUMP: OVERRIDE — user said go"), earlier: null, target: b }).override, true);
+  assert.equal(applicableVerdict({ latest: fineA, earlier: null, target: { kind: "commit", file: "(git commit)" } }), fineA, "commits are covered by any approval");
+});
+
+test("latestAssistantText returns the previous completed message, not text since the last tool result", () => {
+  const lines = [
+    { type: "user", message: { content: "do it" } },
+    { type: "assistant", message: { content: [{ type: "text", text: "GRUMP: APPROVE — b.py\nFine." }] } },
+    { type: "assistant", message: { content: [{ type: "tool_use", name: "Write" }] } },
+    { type: "user", message: { content: [{ type: "tool_result", content: "denied" }] } },
+  ].map((e) => JSON.stringify(e)).join("\n");
+  assert.match(latestAssistantText(lines), /APPROVE — b\.py/);
+  assert.equal(latestAssistantText(JSON.stringify({ type: "user", message: { content: "hi" } })), "");
 });
 
 test("transcript: text since the last tool result is narrower than text since the prompt", () => {
@@ -140,13 +157,12 @@ test("end to end: a verdict for one file does not authorise a write to another i
   const transcript = join(dir, "t.jsonl");
   writeFileSync(transcript, [
     JSON.stringify({ type: "user", message: { content: "add both files" } }),
-    JSON.stringify({ type: "assistant", message: { content: [{ type: "text", text: "GRUMP: APPROVE\nFine." }, { type: "tool_use", name: "Write" }] } }),
+    JSON.stringify({ type: "assistant", message: { content: [{ type: "text", text: "GRUMP: APPROVE — src/a.py\nFine." }, { type: "tool_use", name: "Write" }] } }),
     JSON.stringify({ type: "user", message: { content: [{ type: "tool_result", content: "ok" }] } }),
-    JSON.stringify({ type: "assistant", message: { content: [{ type: "tool_use", name: "Write" }] } }),
   ].join("\n"));
   const env = { GRUMPY_CONFIG_DIR: join(dir, "cfg"), GRUMPY_MODE: "gate" };
-  const res = runGate({ session_id: "scope", tool_name: "Write", tool_input: { file_path: "src/b.py" }, transcript_path: transcript }, env);
-  assert.equal(res.hookSpecificOutput.permissionDecision, "deny");
+  assert.equal(runGate({ session_id: "scope", tool_name: "Write", tool_input: { file_path: "src/b.py" }, transcript_path: transcript }, env).hookSpecificOutput.permissionDecision, "deny");
+  assert.equal(runGate({ session_id: "scope", tool_name: "Write", tool_input: { file_path: "src/a.py" }, transcript_path: transcript }, env), null, "the named file is allowed");
 });
 
 test("gate mode refuses malformed hook input; nag lets the host decide", () => {

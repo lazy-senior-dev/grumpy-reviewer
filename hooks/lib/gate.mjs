@@ -47,15 +47,20 @@ export function classify(call) {
   return null;
 }
 
-// The verdict that applies to this write: one printed after the previous tool call
-// (fresh), or one printed earlier in the turn that names the target file. A verdict
-// for file A never authorises an unreviewed write to file B.
-export function applicableVerdict({ fresh, earlier, target }) {
-  if (fresh) return fresh;
+// The verdict that applies to this write. `latest` is the most recently completed
+// assistant text (the previous message); `earlier` is the last verdict anywhere in the
+// turn. A verdict that names files covers only those files: "GRUMP: APPROVE — a.py" never
+// authorises an unreviewed write to b.py. A verdict that names nothing covers the write.
+export function applicableVerdict({ latest, earlier, target }) {
+  const base = target ? String(target.file).split(/[\\/]/).pop() : "";
+  const namesFiles = (v) => v.findings.some((f) => f.file) || /[\w.-]+\.[A-Za-z0-9]+|\//.test(v.reason || "");
+  const namesThis = (v) => v.override || v.findings.some((f) => f.file && f.file.split(/[\\/]/).pop() === base) || (v.reason || "").includes(base);
+  if (latest) {
+    if (namesFiles(latest) && !namesThis(latest) && base && !base.startsWith("(")) return null;
+    return latest;
+  }
   if (!earlier || !target) return null;
-  const base = String(target.file).split(/[\\/]/).pop();
-  const names = (v) => v.override || v.findings.some((f) => f.file && f.file.split(/[\\/]/).pop() === base) || (v.reason || "").includes(base);
-  return names(earlier) ? earlier : null;
+  return namesThis(earlier) ? earlier : null;
 }
 
 // Decide what the gate does. `state` is the per-session record for this file.
@@ -105,7 +110,7 @@ export function decide({ mode, verdict, hasTranscript, denials = 0, target }) {
     return {
       action: "deny",
       logged: "no_verdict",
-      reason: `No verdict for this ${where}. Review your own change as the Grump: answer the ten checklist questions in writing, print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines), then retry the ${target?.kind === "commit" ? "command" : "write"}.`,
+      reason: `No verdict found for this ${where}. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the ${target?.kind === "commit" ? "command" : "write"} now.`,
     };
   }
   return {

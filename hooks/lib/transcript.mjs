@@ -73,8 +73,34 @@ export function assistantTextSinceLastPrompt(transcriptText, { maxMessages = 40,
   return collected.reverse().join("\n\n");
 }
 
+// The most recently completed assistant text since the last human prompt. Hosts append a
+// message to the transcript only once it completes, so at PreToolUse time this is the text
+// of the previous message, which is where the verdict for this write normally sits.
+export function latestAssistantText(transcriptText) {
+  if (!transcriptText) return "";
+  const lines = transcriptText.split("\n");
+  for (let i = lines.length - 1; i >= 0; i--) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    let entry;
+    try {
+      entry = JSON.parse(line);
+    } catch {
+      continue;
+    }
+    if (entry.isSidechain) continue;
+    if (entry.type === "assistant") {
+      const text = textOf(entry.message?.content);
+      if (text) return text;
+    } else if (entry.type === "user" && !entry.isMeta && isHumanPrompt(entry)) {
+      return "";
+    }
+  }
+  return "";
+}
+
 export function recentAssistantText(transcriptPath) {
-  if (!transcriptPath) return { sincePrompt: "", sinceTool: "" };
+  if (!transcriptPath) return { sincePrompt: "", latest: "" };
   const tail = readTail(transcriptPath);
-  return { sincePrompt: assistantTextSinceLastPrompt(tail), sinceTool: assistantTextSinceLastPrompt(tail, { sinceTool: true }) };
+  return { sincePrompt: assistantTextSinceLastPrompt(tail), latest: latestAssistantText(tail) };
 }

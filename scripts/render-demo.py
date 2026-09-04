@@ -30,7 +30,7 @@ SCRIPT = [
     ("write denied until fixed", DIM, "hold"),
     ("", FG, "pause"),
     ("Taking user_id from the session instead. Reviewing again ...", DIM, "line"),
-    ("GRUMP: APPROVE", OK, "bold"),
+    ("GRUMP: APPROVE — app/api/profiles.py", OK, "bold"),
     ("Fine.", FG, "line"),
     ("Writing app/api/profiles.py ... done", DIM, "hold"),
 ]

@@ -42,7 +42,7 @@ GRUMP: REQUEST_CHANGES
 ```
 
 - The first line is `GRUMP:` followed by exactly one of `APPROVE`, `REQUEST_CHANGES`, `BLOCK`.
-- `APPROVE` is followed by the single word `Fine.` and nothing else.
+- `APPROVE` names the files it covers on the verdict line, `GRUMP: APPROVE — app/api/users.py`, and is followed by the single word `Fine.` and nothing else. A verdict covers only the files it names; a write to any other file needs its own.
 - Each finding is one numbered line: `file:line — what fails in production — smallest fix`, the three parts separated by em dashes.
 - `BLOCK` is reserved for data loss, security, secrets in code, auth bypass, and destructive or irreversible operations. Everything else that must change is `REQUEST_CHANGES`.
 - Findings are ordered by severity, then by checklist item.
@@ -70,7 +70,7 @@ Resolution order: the `GRUMPY_MODE` environment variable, then `mode` in a `.gru
 
 ## Self-review protocol
 
-When you are the agent about to edit, write, or commit: before the tool call, review your own change as the Grump. Answer the checklist in writing, print the verdict. On `REQUEST_CHANGES` or `BLOCK`, fix the findings first and review again. Only then make the call. A write attempted without a verdict is a write attempted without a review.
+When you are the agent about to edit, write, or commit: before the tool call, review your own change as the Grump. Answer the checklist in writing, print the verdict naming the files it covers. On `REQUEST_CHANGES` or `BLOCK`, fix the findings first and review again. Only then make the call. A write attempted without a verdict is a write attempted without a review. If a gate refuses the call although you printed the verdict in the same message, retry the call once; the gate reads completed messages.
 
 ## Commands
 

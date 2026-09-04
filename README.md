@@ -81,7 +81,7 @@ The write is denied. The agent fixes it in three lines and reviews again:
 ```
 
 ```
-GRUMP: APPROVE
+GRUMP: APPROVE — app/api/profiles.py
 Fine.
 ```
 
@@ -149,13 +149,13 @@ GRUMP: APPROVE | REQUEST_CHANGES | BLOCK
 1. path/to/file.ext:LINE — what fails in production — smallest fix
 ```
 
-`APPROVE` is followed by `Fine.` and nothing else. `BLOCK` is reserved for data loss, secrets, auth bypass, injection, and destructive operations.
+`APPROVE` names the files it covers on the verdict line and is followed by `Fine.` and nothing else. `BLOCK` is reserved for data loss, secrets, auth bypass, injection, and destructive operations.
 
 **The gate.** On hosts with lifecycle hooks, a `PreToolUse` hook runs before `Edit`, `Write`, `MultiEdit`, and any `git commit` or `git push`. It reads the verdict the agent just printed and decides: `BLOCK` denies in every mode; `REQUEST_CHANGES` denies in `gate` mode; `APPROVE` goes through; no verdict means "review first" (denied in `gate`, a reminder in `nag`). Every decision is written to a per-session scorecard.
 
 **Modes.** `nag` (default) reviews and prints findings; writes proceed unless the verdict is `BLOCK`. `gate` denies writes until the verdict is `APPROVE`. `off` does nothing. Set it with `/grumpy gate`, persist it for yourself in `~/.config/grumpy-reviewer/config.json`, pin it for a repository with a `.grumpy.json` at its root (`{"mode": "gate"}` wins over the user setting, so a team's gate never depends on a laptop), or override one session with `GRUMPY_MODE=gate`.
 
-**Scope.** A verdict covers one write: the gate accepts a verdict printed after the agent's previous tool call, or an earlier one in the same turn that names the file being written. A `Fine.` for file A never lets an unreviewed file B through.
+**Scope.** A verdict covers the files it names: `GRUMP: APPROVE — a.py` never lets an unreviewed `b.py` through. Hosts append a message to the transcript only when it completes, so in `gate` mode the first write after a verdict printed in the same message is refused once and goes through on the retry; `nag` mode has no such cost.
 
 ## Install
 

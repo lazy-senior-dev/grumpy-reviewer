@@ -21,11 +21,14 @@ test("parses a request-changes block with two findings", () => {
   assert.equal(v.malformed.length, 0);
 });
 
-test("approve is one word", () => {
+test("approve is one word, optionally naming the files it covers", () => {
   const v = lastVerdict("GRUMP: APPROVE\nFine.\n");
   assert.equal(v.verdict, "APPROVE");
   assert.equal(v.approvedWord, "Fine.");
   assert.equal(v.findings.length, 0);
+  const named = lastVerdict("GRUMP: APPROVE — app/api/users.py, tests/test_users.py\nFine.");
+  assert.equal(named.verdict, "APPROVE");
+  assert.match(named.reason, /users\.py, tests/);
 });
 
 test("last verdict wins", () => {

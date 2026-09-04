@@ -381,7 +381,7 @@ def me():
     <h3 style="margin:1rem 0 .6rem">The three-line fix</h3><div class="term"><pre>-    payload = request.get_json(silent=True) or {}
 -    user_id = payload.get("user_id", session.get("user_id"))
 +    user_id = session.get("user_id")
-<span class="ok">GRUMP: APPROVE</span>
+<span class="ok">GRUMP: APPROVE — app/api/profiles.py</span>
 Fine.</pre></div></div>
   </div>
 </section>
@@ -564,7 +564,7 @@ window.TERM_SCRIPT = [
   { t: "write denied until fixed", c: "dim" },
   { t: "", c: "" },
   { t: "Taking user_id from the session instead. Reviewing again ...", c: "dim" },
-  { t: "GRUMP: APPROVE", c: "ok" },
+  { t: "GRUMP: APPROVE — app/api/profiles.py", c: "ok" },
   { t: "Fine.", c: "" },
   { t: "Writing app/api/profiles.py ... done", c: "dim" }
 ];

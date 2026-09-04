@@ -61,7 +61,7 @@ async function main() {
 
   const texts = recentAssistantText(call.transcriptPath);
   const text = texts.sincePrompt;
-  const verdict = applicableVerdict({ fresh: lastVerdict(texts.sinceTool), earlier: lastVerdict(texts.sincePrompt), target });
+  const verdict = applicableVerdict({ latest: lastVerdict(texts.latest), earlier: lastVerdict(texts.sincePrompt), target });
   let state = readState(call.sessionId);
   const denials = state.denials?.[target.file] || 0;
 

@@ -82,7 +82,7 @@ for (const record of log.split("\x1e").filter((r) => r.trim())) {
   for (const t of TRAILERS) if (t.test(body)) problems.push(`commit ${short}: message contains attribution trailer`);
   for (const name of body.match(ASSISTANTS) || []) {
     // assistant names are fine in messages that are about an adapter for that assistant
-    if (!/adapter|plugin|extension|hook|install|portab|action|provider|benchmark|skill|rule|doc/i.test(body)) {
+    if (!/adapter|plugin|extension|hook|install|portab|action|provider|bench|results|skill|rule|doc/i.test(body)) {
       problems.push(`commit ${short}: assistant name "${name}" in message`);
     }
   }
