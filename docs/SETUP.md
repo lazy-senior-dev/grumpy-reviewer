@@ -31,7 +31,7 @@ npm test && npm run check
 
 ```sh
 for r in grumpy-reviewer lazy-senior-dev.github.io paranoid-sre tenured lazy-senior-dev; do
-  (cd ~/01.Projects/lazy-senior-dev/$r && git rebase --exec 'git commit --amend --no-edit -n -S' --root)
+  (cd ~/01.Projects/lazy-senior-dev/$r && git rebase --exec 'git commit --amend --no-edit -n -S --allow-empty' --root)
 done
 cd ~/01.Projects/lazy-senior-dev/grumpy-reviewer && git log --format='%an <%ae> %G?' | sort -u
 # expect exactly one line ending in G
