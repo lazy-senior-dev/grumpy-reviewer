@@ -166,6 +166,87 @@
         }
       }
     },
+    "bob": {
+      "label": "IBM Bob Shell",
+      "calls": 451,
+      "errors": 1,
+      "arms": {
+        "bare": {
+          "label": "no skill",
+          "model": "bob-default",
+          "runs": 3,
+          "caughtMedian": 30,
+          "caughtMean": 29.666666666666668,
+          "falsePositivesMedian": 4,
+          "blockPrecision": null,
+          "blocks": 0,
+          "unparseable": 0,
+          "inputTokensMedian": 0,
+          "outputTokensMedian": 0,
+          "latencyMedianMs": 14309.5
+        },
+        "generic": {
+          "label": "generic review prompt",
+          "model": "bob-default",
+          "runs": 3,
+          "caughtMedian": 30,
+          "caughtMean": 29.666666666666668,
+          "falsePositivesMedian": 6,
+          "blockPrecision": null,
+          "blocks": 0,
+          "unparseable": 1,
+          "inputTokensMedian": 0,
+          "outputTokensMedian": 0,
+          "latencyMedianMs": 16613
+        },
+        "grump": {
+          "label": "grumpy-reviewer",
+          "model": "bob-default",
+          "runs": 3,
+          "caughtMedian": 30,
+          "caughtMean": 29.666666666666668,
+          "falsePositivesMedian": 2,
+          "blockPrecision": 0.7142857142857143,
+          "blocks": 56,
+          "unparseable": 0,
+          "inputTokensMedian": 0,
+          "outputTokensMedian": 0,
+          "latencyMedianMs": 15573
+        }
+      },
+      "needle": {
+        "bare": {
+          "label": "no skill",
+          "model": "bob-default",
+          "runs": 3,
+          "caughtMedian": 9,
+          "caughtMean": 9,
+          "unparseable": 0,
+          "inputTokensMedian": 0,
+          "latencyMedianMs": 18584
+        },
+        "generic": {
+          "label": "generic review prompt",
+          "model": "bob-default",
+          "runs": 3,
+          "caughtMedian": 9,
+          "caughtMean": 9,
+          "unparseable": 0,
+          "inputTokensMedian": 0,
+          "latencyMedianMs": 21322.5
+        },
+        "grump": {
+          "label": "grumpy-reviewer",
+          "model": "bob-default",
+          "runs": 3,
+          "caughtMedian": 9,
+          "caughtMean": 9.333333333333334,
+          "unparseable": 0,
+          "inputTokensMedian": 0,
+          "latencyMedianMs": 24147
+        }
+      }
+    },
     "agy": {
       "label": "Antigravity CLI",
       "calls": 180,
