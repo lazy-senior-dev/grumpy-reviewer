@@ -4,7 +4,7 @@ All notable changes to grumpy-reviewer. The format follows Keep a Changelog; ver
 
 ## [0.1.0] - 2026-09-04
 
-First release.
+First release. Licensed under Apache-2.0.
 
 ### Added
 

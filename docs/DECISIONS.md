@@ -28,4 +28,5 @@ One line each, in the order they were made. Anything a reader might reasonably h
 24. `vhs` is not installed on the build machine and installing it pulls in ffmpeg; `docs/demo.tape` and the command ship, the GIF does not.
 25. The README badge for npm is commented out until the package is published; the Trendshift slot is a comment.
 26. The build machine's global git config signs with an RSA key and the folder-level config was not yet included from `~/.gitconfig`; `SETUP.md` step 1 adds the include and step 3 re-signs the whole history with the intended key.
-27. No other project's rules, prompts, hook code, benchmark code, or examples were read into this repository; every file is original, and the README avoids comparisons with other projects by design.
+27. Licensed Apache-2.0 with a NOTICE file rather than MIT: equally permissive, but redistributions must keep the originator's notice and downstream users get an explicit patent grant.
+28. No other project's rules, prompts, hook code, benchmark code, or examples were read into this repository; every file is original, and the README avoids comparisons with other projects by design.

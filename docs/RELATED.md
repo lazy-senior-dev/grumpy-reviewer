@@ -6,10 +6,10 @@
 
 ## Coming from the same desk
 
-- **paranoid-sre**: reviews what happens when it is deployed. Probes, limits, rollouts, alerts.
-- **tenured**: has seen this exact outage before, and remembers the postmortem.
+- [paranoid-sre](https://github.com/lazy-senior-dev/paranoid-sre): reviews what happens when it is deployed. Probes, limits, rollouts, alerts.
+- [tenured](https://github.com/lazy-senior-dev/tenured): has seen this exact outage before, and remembers the postmortem.
 
-Both will live under [lazy-senior-dev](https://github.com/lazy-senior-dev) and install from the same marketplace.
+Both live under [lazy-senior-dev](https://github.com/lazy-senior-dev) and will install from the same marketplace.
 
 ## Everything else you already run
 

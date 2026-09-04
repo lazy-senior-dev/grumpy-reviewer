@@ -32,7 +32,7 @@ function checkPlugin(rel, { requireSkills = true } = {}) {
   expect(rel, m.version === pkg.version, `version must match package.json (${pkg.version})`);
   expect(rel, typeof m.description === "string" && m.description.length > 20, "description missing");
   expect(rel, m.author && m.author.name === "Sandeep Bazar", "author.name");
-  expect(rel, m.license === "MIT", "license");
+  expect(rel, m.license === "Apache-2.0", "license");
   if (requireSkills) expect(rel, m.skills === "./skills" && existsSync(join(ROOT, "skills")), "skills path");
   if (m.hooks) expect(rel, existsSync(join(ROOT, m.hooks)), `hooks file ${m.hooks} missing`);
   if (m.rules) expect(rel, existsSync(join(ROOT, m.rules)), `rules dir ${m.rules} missing`);

@@ -11,7 +11,7 @@
   <a href="https://github.com/lazy-senior-dev/grumpy-reviewer/releases"><img alt="Release" src="https://img.shields.io/github/v/release/lazy-senior-dev/grumpy-reviewer?style=flat&color=1f1f1f"></a>
   <img alt="Works with 13 agents" src="https://img.shields.io/badge/works%20with-13%20agents-1f1f1f">
   <a href="https://github.com/marketplace/actions/grumpy-reviewer"><img alt="GitHub Action" src="https://img.shields.io/badge/GitHub%20Action-v1-1f1f1f"></a>
-  <a href="LICENSE"><img alt="MIT" src="https://img.shields.io/badge/license-MIT-1f1f1f"></a>
+  <a href="LICENSE"><img alt="Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-1f1f1f"></a>
   <!-- npm badge once published: <a href="https://www.npmjs.com/package/grumpy-reviewer"><img alt="npm" src="https://img.shields.io/npm/v/grumpy-reviewer?style=flat&color=1f1f1f"></a> -->
   <!-- Trendshift badge slot: <a href="https://trendshift.io/repositories/XXXXX"><img src="https://trendshift.io/api/badge/repositories/XXXXX" alt="trendshift" height="55"></a> -->
 </p>
@@ -26,7 +26,7 @@
 
 You tell your AI coding agent to build something. It builds it, fast, and writes the file. Nobody reads that file before it lands on your branch, and the agent is a confident author, not a suspicious reviewer.
 
-grumpy-reviewer puts a reviewer in the loop. Install it once and, before every edit, write, or commit, the agent has to review its own change the way a staff engineer would: ten questions, in order, answered in writing, then a verdict. `APPROVE` goes through. `REQUEST_CHANGES` lists what breaks and the smallest fix. `BLOCK` (secrets, injection, auth holes, data loss) stops the write, whatever mode you are in and however late it is. Works in Claude Code, Codex, Copilot CLI, Gemini CLI, OpenCode, Cursor, and eight more. Also a GitHub Action, so it reviews human pull requests too.
+grumpy-reviewer puts a reviewer in the loop. Install it once and, before every edit, write, or commit, the agent has to review its own change the way a staff engineer would: ten questions, in order, answered in writing, then a verdict. `APPROVE` goes through. `REQUEST_CHANGES` lists what breaks and the smallest fix. `BLOCK` (secrets, injection, auth holes, data loss) stops the write, whatever mode you are in and however late it is. Works in Claude Code, Codex, Copilot CLI, Gemini CLI, OpenCode, Cursor, and eight more. Also a GitHub Action, so it reviews human pull requests too. Apache-2.0.
 
 ## Who he is
 
@@ -257,7 +257,7 @@ In Claude Code both `/grumpy-review` and the namespaced `/grumpy-reviewer:grumpy
 ## Related
 
 - **agent-bill** prints a cost, tokens, and tool-call receipt after every agent session. See what the Grump saved you. [agentcost/agent-bill](https://github.com/agentcost/agent-bill)
-- **Coming from the same desk:** *paranoid-sre*, who reviews what happens when it is deployed, and *tenured*, who has seen this exact outage before. Watch [lazy-senior-dev](https://github.com/lazy-senior-dev) or say hello in [Discussions](https://github.com/lazy-senior-dev/grumpy-reviewer/discussions). More in [docs/RELATED.md](docs/RELATED.md).
+- **Coming from the same desk:** [paranoid-sre](https://github.com/lazy-senior-dev/paranoid-sre), who reviews what happens when it is deployed, and [tenured](https://github.com/lazy-senior-dev/tenured), who has seen this exact outage before. Watch [lazy-senior-dev](https://github.com/lazy-senior-dev) or say hello in [Discussions](https://github.com/lazy-senior-dev/grumpy-reviewer/discussions). More in [docs/RELATED.md](docs/RELATED.md).
 
 ## Contributing
 
@@ -267,4 +267,4 @@ If the Grump saved you an incident, [sponsor the desk](https://github.com/sponso
 
 ## License
 
-[MIT](LICENSE). Copyright (c) 2026 Sandeep Bazar.
+[Apache-2.0](LICENSE). Copyright 2026 Sandeep Bazar. Keep the [NOTICE](NOTICE) file with any redistribution; that is the whole ask.

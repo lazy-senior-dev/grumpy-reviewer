@@ -8,7 +8,7 @@
   },
   "homepage": "https://lazy-senior-dev.github.io/grumpy-reviewer",
   "repository": "https://github.com/lazy-senior-dev/grumpy-reviewer",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "keywords": [
     "code-review",
     "ai-agents",
