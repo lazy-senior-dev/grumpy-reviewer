@@ -1,0 +1,6 @@
+{
+  "name": "grumpy-reviewer",
+  "version": "0.1.0",
+  "description": "Your agent's code, reviewed by the staff engineer who has rejected 4,000 pull requests, before it ever reaches your branch.",
+  "contextFileName": "GEMINI.md"
+}

@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "BeforeAgent": [
+      {
+        "hooks": [
+          {
+            "name": "grumpy-context",
+            "type": "command",
+            "command": "node \"$HOME/.grumpy-reviewer/hooks/grumpy-context.mjs\" --host gemini 2>/dev/null || true",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "BeforeTool": [
+      {
+        "matcher": "write_file|replace|edit|run_shell_command",
+        "hooks": [
+          {
+            "name": "grumpy-gate",
+            "type": "command",
+            "command": "node \"$HOME/.grumpy-reviewer/hooks/grumpy-gate.mjs\" --host gemini 2>/dev/null || true",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}
