@@ -1,0 +1,270 @@
+<p align="center">
+  <img src="assets/grump.svg" alt="The Grump: grey stubble, reading glasses pushed up into his hair, a mug that says OKAYEST" width="220">
+</p>
+
+<h1 align="center">grumpy-reviewer</h1>
+
+<p align="center"><em>Show me where it breaks.</em></p>
+
+<p align="center">
+  <a href="https://github.com/lazy-senior-dev/grumpy-reviewer/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/lazy-senior-dev/grumpy-reviewer?style=flat&color=1f1f1f"></a>
+  <a href="https://github.com/lazy-senior-dev/grumpy-reviewer/releases"><img alt="Release" src="https://img.shields.io/github/v/release/lazy-senior-dev/grumpy-reviewer?style=flat&color=1f1f1f"></a>
+  <img alt="Works with 13 agents" src="https://img.shields.io/badge/works%20with-13%20agents-1f1f1f">
+  <a href="https://github.com/marketplace/actions/grumpy-reviewer"><img alt="GitHub Action" src="https://img.shields.io/badge/GitHub%20Action-v1-1f1f1f"></a>
+  <a href="LICENSE"><img alt="MIT" src="https://img.shields.io/badge/license-MIT-1f1f1f"></a>
+  <!-- npm badge once published: <a href="https://www.npmjs.com/package/grumpy-reviewer"><img alt="npm" src="https://img.shields.io/npm/v/grumpy-reviewer?style=flat&color=1f1f1f"></a> -->
+  <!-- Trendshift badge slot: <a href="https://trendshift.io/repositories/XXXXX"><img src="https://trendshift.io/api/badge/repositories/XXXXX" alt="trendshift" height="55"></a> -->
+</p>
+
+**Your agent's code, reviewed by the staff engineer who has rejected 4,000 pull requests, before it ever reaches your branch.**
+
+<!-- bench:hero:start -->
+**Numbers: TBD.** Run `npm run bench` and `npm run bench:report` with a headless agent installed (`claude`, `codex`, or `agy`) or an `ANTHROPIC_API_KEY`; the table below fills in from `benchmarks/results/latest.json`.
+<!-- bench:hero:end -->
+
+## The thirty-second version
+
+You tell your AI coding agent to build something. It builds it, fast, and writes the file. Nobody reads that file before it lands on your branch, and the agent is a confident author, not a suspicious reviewer.
+
+grumpy-reviewer puts a reviewer in the loop. Install it once and, before every edit, write, or commit, the agent has to review its own change the way a staff engineer would: ten questions, in order, answered in writing, then a verdict. `APPROVE` goes through. `REQUEST_CHANGES` lists what breaks and the smallest fix. `BLOCK` (secrets, injection, auth holes, data loss) stops the write, whatever mode you are in and however late it is. Works in Claude Code, Codex, Copilot CLI, Gemini CLI, OpenCode, Cursor, and eight more. Also a GitHub Action, so it reviews human pull requests too.
+
+## Who he is
+
+Grey stubble, reading glasses pushed up into hair he forgot they were in, a mug that says WORLD'S OKAYEST REVIEWER. He has rejected four thousand pull requests and still remembers the one he should not have approved. He does not write code; he reads it, all of it, and tells you where it breaks in production. Every objection cites the line, states the failure, and names the smallest fix. He never says "consider", "maybe", or "nice work". He approves with one word: `Fine.`
+
+He is grumpy, not cruel, and grumpy, not negligent. He attacks the defect, never the author. He never rewrites your code, never expands scope, never bikesheds style while a correctness finding exists, never blocks on taste, and never softens a `BLOCK` because you are in a hurry. People who have worked with him call the experience "getting grumped". It is cheaper than the incident.
+
+## Before / after
+
+**2:04 a.m.** The ticket says "return the caller's profile with their notification settings". The agent writes:
+
+```python
+@bp.get("/me")
+def me():
+    payload = request.get_json(silent=True) or {}
+    user_id = payload.get("user_id", session.get("user_id"))
+    if user_id is None:
+        abort(401)
+    row = query_one("select id, name, email from users where id = %s", (user_id,))
+    if row is None:
+        abort(404)
+    return jsonify({**row, "notifications": settings_for(user_id)})
+```
+
+It is tidy. It has a 401 and a 404. It is also an endpoint where any logged-in user reads any other user's profile by sending one JSON key. The agent tries to write the file. The Grump reads it first:
+
+```
+GRUMP: BLOCK
+1. app/api/profiles.py:14 — user_id is read from the request body, so any logged-in caller can read any profile by changing one number — take user_id from the session and ignore the body
+```
+
+The write is denied. The agent fixes it in three lines and reviews again:
+
+```diff
+-    payload = request.get_json(silent=True) or {}
+-    user_id = payload.get("user_id", session.get("user_id"))
++    user_id = session.get("user_id")
+```
+
+```
+GRUMP: APPROVE
+Fine.
+```
+
+Total cost: one denied write and eleven seconds. The alternative was a disclosure notice.
+
+## Numbers
+
+Most add-ons for coding agents are measured in lines of code saved. The Grump is measured in **defects caught**.
+
+Thirty small, realistic diffs across Python, TypeScript, Go, and YAML (Kubernetes manifests, GitHub workflows), each with exactly one seeded defect: an unchecked user id, SQL and shell injection, a secret in code, a swallowed exception, an off-by-one, a race, a wrong HTTP status, a mutable default, a `latest` image tag, missing resource limits, a destructive migration, `pull_request_target` with a checkout of the fork. Plus ten clean diffs, to count false alarms. Every diff goes to the same agent three ways: with no skill, with a generic "review this carefully" prompt, and with the Grump. Same ticket, same diff, same model.
+
+<p align="center"><img src="assets/benchmark.png" alt="Bar chart: defects caught out of 30 per agent, for no skill, a generic prompt, and grumpy-reviewer" width="720"></p>
+
+<!-- bench:table:start -->
+_No results yet._
+<!-- bench:table:end -->
+
+Method, per-diff table, limitations, and every raw reply: [benchmarks/results](benchmarks/results). Reproduce: `npm run bench && npm run bench:report`. Add your own case: [CONTRIBUTING](CONTRIBUTING.md).
+
+## How it works
+
+One file, [`rules/grump.md`](rules/grump.md), is the whole ruleset. Every adapter in this repo is generated from it.
+
+**The checklist**, in order, with a stop rule: the moment an item produces a `BLOCK`, he writes it and stops.
+
+1. **Scope.** Does it do what the ticket asked and nothing else?
+2. **Inputs.** Empty, absent, oversized, malformed, duplicated, concurrent. Where does each go?
+3. **Errors.** Where does each error go, and does the caller find out?
+4. **Off-diff changes.** Schema, config, env, permissions, flags: in the change or in the runbook?
+5. **Dependencies.** Is every new one earning its place?
+6. **Trust boundaries.** Secrets, PII, authn and authz, injection at every crossing.
+7. **Tests.** At the boundary where it breaks, not where it is convenient.
+8. **Rollback.** Revert and deploy, or a migration and a prayer?
+9. **Observability.** Would on-call understand the log line at 3 a.m.?
+10. **Naming and dead code.** Last. Never first.
+
+**The verdict** is a fixed block that the hooks parse:
+
+```
+GRUMP: APPROVE | REQUEST_CHANGES | BLOCK
+1. path/to/file.ext:LINE — what fails in production — smallest fix
+```
+
+`APPROVE` is followed by `Fine.` and nothing else. `BLOCK` is reserved for data loss, secrets, auth bypass, injection, and destructive operations.
+
+**The gate.** On hosts with lifecycle hooks, a `PreToolUse` hook runs before `Edit`, `Write`, `MultiEdit`, and any `git commit` or `git push`. It reads the verdict the agent just printed and decides: `BLOCK` denies in every mode; `REQUEST_CHANGES` denies in `gate` mode; `APPROVE` goes through; no verdict means "review first" (denied in `gate`, a reminder in `nag`). Every decision is written to a per-session scorecard.
+
+**Modes.** `nag` (default) reviews and prints findings; writes proceed unless the verdict is `BLOCK`. `gate` denies writes until the verdict is `APPROVE`. `off` does nothing. Set it with `/grumpy gate`, persist it in `~/.config/grumpy-reviewer/config.json`, or override for one session with `GRUMPY_MODE=gate`.
+
+## Install
+
+Pick your agent. Start a new session after installing; the Grump is there from the first prompt of the next one.
+
+### Claude Code
+
+```
+/plugin marketplace add lazy-senior-dev/grumpy-reviewer
+/plugin install grumpy-reviewer@lazy-senior-dev
+```
+
+Full plugin: persona every turn, the gate on every write and commit, six slash commands (namespaced as `/grumpy-reviewer:grumpy-review` and so on).
+
+### Codex
+
+```
+git clone https://github.com/lazy-senior-dev/grumpy-reviewer ~/.codex/plugins/grumpy-reviewer
+```
+
+Then add it to `~/.agents/plugins/marketplace.json`:
+
+```json
+{ "name": "lazy-senior-dev", "interface": { "displayName": "lazy-senior-dev" },
+  "plugins": [{ "name": "grumpy-reviewer", "source": { "source": "local", "path": "~/.codex/plugins/grumpy-reviewer" },
+                "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" }, "category": "Productivity" }] }
+```
+
+Open `/plugins` in Codex and enable it. Skills and hooks are shared with the Claude Code plugin; see the [portability notes](docs/agent-portability.md) for what is verified.
+
+### GitHub Copilot CLI
+
+```
+copilot plugin marketplace add lazy-senior-dev/grumpy-reviewer
+copilot plugin install grumpy-reviewer@lazy-senior-dev
+```
+
+### Gemini CLI
+
+```
+gemini extensions install https://github.com/lazy-senior-dev/grumpy-reviewer
+```
+
+Persona plus the six commands. To add the gate, merge [`examples/gemini-settings-hooks.json`](examples/gemini-settings-hooks.json) into `~/.gemini/settings.json`.
+
+### Antigravity CLI
+
+```
+git clone https://github.com/lazy-senior-dev/grumpy-reviewer ~/.grumpy-reviewer
+agy plugin install ~/.grumpy-reviewer
+```
+
+### OpenCode
+
+Copy [`.opencode/plugins/grumpy.mjs`](.opencode/plugins/grumpy.mjs) into your project's `.opencode/plugins/` (or `~/.config/opencode/plugins/`) and `AGENTS.md` into the project root. The commands are in `.opencode/command/`.
+
+### Cursor, Windsurf, Cline, Kiro, Qoder, OpenClaw, Devin, anything with AGENTS.md
+
+| Host | Copy this into your project |
+|---|---|
+| Cursor | [`.cursor/rules/grumpy.mdc`](.cursor/rules/grumpy.mdc) |
+| Windsurf / Devin Desktop | [`.windsurf/rules/grumpy.md`](.windsurf/rules/grumpy.md) |
+| Cline | [`.clinerules/grumpy.md`](.clinerules/grumpy.md) |
+| Kiro | [`.kiro/steering/grumpy.md`](.kiro/steering/grumpy.md) |
+| Qoder | [`.qoder/rules/grumpy.md`](.qoder/rules/grumpy.md), or `/plugin marketplace add lazy-senior-dev/grumpy-reviewer` |
+| OpenClaw | [`.openclaw/skills/grumpy-reviewer/`](.openclaw/skills/grumpy-reviewer/SKILL.md) into your workspace `skills/` |
+| Devin CLI | `devin plugins install lazy-senior-dev/grumpy-reviewer` |
+| Anything else | [`AGENTS.md`](AGENTS.md) |
+
+These hosts get the reviewer in the conversation, not the gate: the agent reviews, prints verdicts, and honours the mode, but nothing denies a write. The full table of what each host does and does not enforce, with the documentation each row was checked against, is in [docs/agent-portability.md](docs/agent-portability.md).
+
+## GitHub Action
+
+Review pull requests from humans too. One review per PR, inline findings anchored to the diff, updated in place on every push, never a second copy.
+
+```yaml
+# .github/workflows/grumpy.yml
+name: grumpy-reviewer
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+permissions:
+  contents: read
+  pull-requests: write
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: lazy-senior-dev/grumpy-reviewer@v1
+        with:
+          mode: nag          # gate: request changes and fail the check until APPROVE
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+```
+
+Inputs: `mode` (`nag` or `gate`), `provider` (`anthropic` or `openai`, with `OPENAI_API_KEY`), `model`, `max_files` (largest files first, the rest listed as not reviewed), `ignore` (globs). On pull requests from forks, where secrets are unavailable, it posts one neutral note and exits green. Full example: [`examples/workflow.yml`](examples/workflow.yml).
+
+## Commands
+
+| Command | What it does |
+|---|---|
+| `/grumpy [nag\|gate\|off]` | Set the mode. With no argument, report it. |
+| `/grumpy-review` | Review the working-tree diff. Returns a numbered request-changes list. No code. |
+| `/grumpy-pr <number\|url>` | Review a pull request the same way. |
+| `/grumpy-fix` | The only command that touches code: apply the findings from the last review, each as a separate minimal edit, then review again. |
+| `/grumpy-scorecard` | What the Grump caught this session, as a table. |
+| `/grumpy-help` | This table. |
+
+In Claude Code the commands are namespaced by plugin: `/grumpy-reviewer:grumpy-review`. Hosts without slash commands understand plain words: "review the diff as the Grump".
+
+## Uninstall
+
+| Host | Command |
+|---|---|
+| Claude Code | `/plugin uninstall grumpy-reviewer@lazy-senior-dev` |
+| Codex | Disable in `/plugins`, remove the entry from `~/.agents/plugins/marketplace.json` |
+| Copilot CLI | `copilot plugin uninstall grumpy-reviewer` |
+| Gemini CLI | `gemini extensions uninstall grumpy-reviewer` |
+| Antigravity CLI | `agy plugin uninstall grumpy-reviewer` |
+| OpenCode | Delete `.opencode/plugins/grumpy.mjs` and `.opencode/command/grumpy-*.md` |
+| Cursor, Windsurf, Cline, Kiro, Qoder, OpenClaw | Delete the file you copied |
+| Devin CLI | `devin plugins uninstall grumpy-reviewer` |
+| Everywhere | `rm -rf ~/.config/grumpy-reviewer` removes the mode and scorecards |
+
+## FAQ
+
+**Isn't this just a system prompt that says "review your code"?** A prompt asks; the Grump enforces. The persona is one part. The others are a fixed verdict block that tooling can parse, a `PreToolUse` gate that reads that verdict and denies the write, a scorecard of every decision, and a benchmark with a generic-prompt arm so you can see how much a plain "review carefully" buys you and how much the checklist and the gate add on top. He also never writes code, which keeps author and reviewer apart even when they are the same model.
+
+**Does it slow my agent down?** The persona card is injected once per user prompt, not per tool call. The benchmark records the input tokens of every call; the "extra input tokens per review" column in the table above is the measured overhead of the card over a bare review. A denied write costs one extra turn, which is the point.
+
+**Can he be wrong?** Yes. He reviews a diff, not your whole system, and he is a language model with a strong opinion. If a finding is wrong, say so in your own words; the agent prints `GRUMP: OVERRIDE` quoting you, the gate lets the write through, and the override is logged to the scorecard so you can see later how often you were right. Only you can trigger an override; the agent cannot decide to skip a `BLOCK` on its own.
+
+**Does it send my code anywhere?** No. The hooks and skills run inside your agent, on your machine; they read the tool call and the session transcript the host hands them and write a small config and scorecard under `~/.config/grumpy-reviewer/`. They open no network connections. The GitHub Action sends the pull request diff to the provider you chose, with your key, and nowhere else.
+
+**Why is he grumpy?** Because "looks good to me" has shipped more incidents than any bug. Cheerful reviewers approve. Grumpy reviewers read. The grumpiness is aimed at the code, never at you; that is written into the rules, and the code of conduct says the same about this repo.
+
+**Who wrote this?** Sandeep Bazar ([@sandeepbazar](https://github.com/sandeepbazar)): fourteen years of platform infrastructure at IBM, most of it Kubernetes and storage, most of the rest reviewing pull requests at 3 a.m. The Grump is a composite of every reviewer who ever saved him from himself.
+
+## Related
+
+- **agent-bill** prints a cost, tokens, and tool-call receipt after every agent session. See what the Grump saved you. [agentcost/agent-bill](https://github.com/agentcost/agent-bill)
+- **Coming from the same desk:** *paranoid-sre*, who reviews what happens when it is deployed, and *tenured*, who has seen this exact outage before. Watch [lazy-senior-dev](https://github.com/lazy-senior-dev) or say hello in [Discussions](https://github.com/lazy-senior-dev/grumpy-reviewer/discussions). More in [docs/RELATED.md](docs/RELATED.md).
+
+## Contributing
+
+The most valuable contribution is a diff he should have caught and did not: open a [Slipped past him](https://github.com/lazy-senior-dev/grumpy-reviewer/issues/new?template=slipped-past-him.yml) issue with the diff, his verdict, and what broke. It becomes a benchmark case and, if a rule fixes it, a line in `rules/grump.md`. Rule proposals need a real production failure behind them. Details in [CONTRIBUTING.md](CONTRIBUTING.md). Translations of this README are welcome as pull requests.
+
+If the Grump saved you an incident, [sponsor the desk](https://github.com/sponsors/sandeepbazar).
+
+## License
+
+[MIT](LICENSE). Copyright (c) 2026 Sandeep Bazar.
