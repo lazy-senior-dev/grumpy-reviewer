@@ -23,6 +23,7 @@ Hosts fall into two tiers:
 | OpenClaw | instruction (skill) | `.openclaw/skills/grumpy-reviewer/SKILL.md` | `$grumpy-reviewer` | [skills](https://github.com/openclaw/openclaw/blob/main/docs/tools/skills.md) | 2026-09-04 |
 | Devin CLI | instruction | `.devin-plugin/plugin.json`, `skills/`, `AGENTS.md` | skills | [plugins](https://docs.devin.ai/cli/extensibility/plugins/overview), [rules](https://docs.devin.ai/cli/extensibility/rules) | 2026-09-04; Devin `hooks.json` events documented, schema not, so not shipped |
 | Qoder | instruction | `.qoder-plugin/plugin.json`, `.qoder/rules/grumpy.md`, `skills/`, `AGENTS.md` | skills | [rules](https://docs.qoder.com/user-guide/rules), [plugins](https://docs.qoder.com/cli/plugins-reference) | 2026-09-04; `trigger` frontmatter in `.qoder/rules/*.md` unverified (Qoder documents the four trigger types, not the file syntax) |
+| Antigravity CLI | gate (imported) | Imports this repo as a plugin: `skills/`, `commands/*.toml`, `hooks/` | `/grumpy-help` and friends | Tested locally: `agy plugin install <clone>` imported 6 skills, 6 commands, 1 hook set, and `agy -p "/grumpy-help"` printed the command table (agy 1.1.22) | 2026-09-04; no public schema document, so behaviour of the imported hook is unverified |
 | Any AGENTS.md host | instruction | `AGENTS.md` | none | [agents.md](https://agents.md) | 2026-09-04 |
 
 ## Install
@@ -41,6 +42,7 @@ Hosts fall into two tiers:
 | OpenClaw | Copy `.openclaw/skills/grumpy-reviewer/` into your workspace `skills/` |
 | Devin CLI | `devin plugins install lazy-senior-dev/grumpy-reviewer` |
 | Qoder | `/plugin marketplace add lazy-senior-dev/grumpy-reviewer` then `/plugins install grumpy-reviewer` |
+| Antigravity CLI | `git clone https://github.com/lazy-senior-dev/grumpy-reviewer ~/.grumpy-reviewer && agy plugin install ~/.grumpy-reviewer` |
 | Anything else | Copy `AGENTS.md` into your project root |
 
 ## Uninstall
@@ -59,6 +61,7 @@ Hosts fall into two tiers:
 | OpenClaw | Delete `skills/grumpy-reviewer/` from the workspace |
 | Devin CLI | `devin plugins uninstall grumpy-reviewer` |
 | Qoder | `/plugins uninstall grumpy-reviewer` |
+| Antigravity CLI | `agy plugin uninstall grumpy-reviewer` |
 | Any AGENTS.md host | Delete `AGENTS.md` (or the Grump section of it) |
 | Everywhere | `rm -rf ~/.config/grumpy-reviewer` removes the mode setting and scorecards |
 
