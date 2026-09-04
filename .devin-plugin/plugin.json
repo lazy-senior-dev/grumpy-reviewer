@@ -1,0 +1,23 @@
+{
+  "name": "grumpy-reviewer",
+  "version": "0.1.0",
+  "description": "Your agent's code, reviewed by the staff engineer who has rejected 4,000 pull requests, before it ever reaches your branch.",
+  "author": {
+    "name": "Sandeep Bazar",
+    "url": "https://github.com/sandeepbazar"
+  },
+  "homepage": "https://lazy-senior-dev.github.io/grumpy-reviewer",
+  "repository": "https://github.com/lazy-senior-dev/grumpy-reviewer",
+  "license": "MIT",
+  "keywords": [
+    "code-review",
+    "ai-agents",
+    "claude-code",
+    "codex",
+    "github-action",
+    "agent-skills",
+    "persona",
+    "pull-request"
+  ],
+  "skills": "./skills"
+}
