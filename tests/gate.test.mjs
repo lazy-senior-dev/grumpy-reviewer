@@ -88,6 +88,11 @@ test("render speaks each host's dialect", () => {
   assert.equal(render(allow, "copilot").stdout, "");
   assert.equal(JSON.parse(render(deny, "gemini").stdout).decision, "deny");
   assert.equal(render(deny, "kiro").exitCode, 2);
+  assert.equal(render(deny, "bob").exitCode, 2);
+  assert.equal(render(deny, "bob").stderr, "no");
+  assert.equal(render(allow, "bob").stdout, "");
+  assert.equal(classify({ toolName: "write_to_file", toolInput: { path: "x.go" } }).file, "x.go");
+  assert.equal(classify({ toolName: "execute_command", toolInput: { command: "git push origin main" } }).kind, "commit");
   assert.equal(render(deny, "kiro").stderr, "no");
   assert.equal(render({ action: "skip" }, "claude").stdout, "");
 });

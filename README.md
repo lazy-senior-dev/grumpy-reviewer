@@ -9,7 +9,7 @@
 <p align="center">
   <a href="https://github.com/lazy-senior-dev/grumpy-reviewer"><img alt="GitHub stars" src="https://img.shields.io/github/stars/lazy-senior-dev/grumpy-reviewer?style=flat&color=1f1f1f"></a>
   <a href="CHANGELOG.md"><img alt="Version 0.1.0" src="https://img.shields.io/badge/version-0.1.0-1f1f1f"></a>
-  <img alt="Works with 13 agents" src="https://img.shields.io/badge/works%20with-13%20agents-1f1f1f">
+  <img alt="Works with 14 agents" src="https://img.shields.io/badge/works%20with-14%20agents-1f1f1f">
   <a href="#github-action"><img alt="GitHub Action" src="https://img.shields.io/badge/GitHub%20Action-v1-1f1f1f"></a>
   <a href="LICENSE"><img alt="Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-1f1f1f"></a>
   <!-- npm badge once published: <a href="https://www.npmjs.com/package/grumpy-reviewer"><img alt="npm" src="https://img.shields.io/npm/v/grumpy-reviewer?style=flat&color=1f1f1f"></a> -->
@@ -34,13 +34,13 @@ npx github:lazy-senior-dev/grumpy-reviewer review --staged   # only what is stag
 npx github:lazy-senior-dev/grumpy-reviewer pr 123            # a pull request, via gh
 ```
 
-It finds `claude`, `codex`, or `agy` on your PATH (or `ANTHROPIC_API_KEY`), sends the diff to that agent with the Grump's ruleset, prints the verdict block, and exits 1 on anything but `APPROVE`, so it drops straight into a pre-commit hook or a CI step. Nothing is installed and nothing leaves your machine except the diff going to the agent you already trust. Add `--agent codex` to choose.
+It finds `claude`, `codex`, `agy`, or `bob` (with `BOB_API_KEY`) on your PATH, or `ANTHROPIC_API_KEY`,, sends the diff to that agent with the Grump's ruleset, prints the verdict block, and exits 1 on anything but `APPROVE`, so it drops straight into a pre-commit hook or a CI step. Nothing is installed and nothing leaves your machine except the diff going to the agent you already trust. Add `--agent codex` to choose.
 
 ## The thirty-second version
 
 You tell your AI coding agent to build something. It builds it, fast, and writes the file. Nobody reads that file before it lands on your branch, and the agent is a confident author, not a suspicious reviewer.
 
-grumpy-reviewer puts a reviewer in the loop. Install it once and, before every edit, write, or commit, the agent has to review its own change the way a staff engineer would: ten questions, in order, answered in writing, then a verdict. `APPROVE` goes through. `REQUEST_CHANGES` lists what breaks and the smallest fix. `BLOCK` (secrets, injection, auth holes, data loss) stops the write, whatever mode you are in and however late it is. Works in Claude Code, Codex, Copilot CLI, Gemini CLI, OpenCode, Cursor, and eight more. Also a GitHub Action, so it reviews human pull requests too. Apache-2.0.
+grumpy-reviewer puts a reviewer in the loop. Install it once and, before every edit, write, or commit, the agent has to review its own change the way a staff engineer would: ten questions, in order, answered in writing, then a verdict. `APPROVE` goes through. `REQUEST_CHANGES` lists what breaks and the smallest fix. `BLOCK` (secrets, injection, auth holes, data loss) stops the write, whatever mode you are in and however late it is. Works in Claude Code, Codex, Copilot CLI, IBM Bob, Antigravity, OpenCode, Cursor, and seven more. Also a GitHub Action, so it reviews human pull requests too. Apache-2.0.
 
 ## Who he is
 
@@ -180,6 +180,14 @@ copilot plugin marketplace add lazy-senior-dev/grumpy-reviewer
 copilot plugin install grumpy-reviewer@lazy-senior-dev
 ```
 
+### IBM Bob (Bob Shell)
+
+```
+npx github:lazy-senior-dev/grumpy-reviewer install bob
+```
+
+Copies the rule into `.bob/rules/`, the skill into `.bob/skills/`, six slash commands into `.bob/commands/`, the hook runtime into `.bob/hooks/grumpy/`, and merges `UserPromptSubmit` and `PreToolUse` hooks into `.bob/settings.json`, so the gate denies a blocked write with exit 2. Bob also reads the root `AGENTS.md`.
+
 ### Antigravity CLI (and the Gemini CLI format)
 
 ```
@@ -195,6 +203,12 @@ Copy [`.opencode/plugins/grumpy.mjs`](.opencode/plugins/grumpy.mjs) into your pr
 
 ### Cursor, Windsurf, Cline, Kiro, Qoder, OpenClaw, Devin, anything with AGENTS.md
 
+One command copies exactly the files that host reads, and `uninstall` removes exactly those:
+
+```
+npx github:lazy-senior-dev/grumpy-reviewer install cursor      # or windsurf, cline, kiro, qoder, opencode, gemini, copilot, bob, agents, all
+```
+
 | Host | Copy this into your project |
 |---|---|
 | Cursor | [`.cursor/rules/grumpy.mdc`](.cursor/rules/grumpy.mdc) |
@@ -207,6 +221,17 @@ Copy [`.opencode/plugins/grumpy.mjs`](.opencode/plugins/grumpy.mjs) into your pr
 | Anything else | [`AGENTS.md`](AGENTS.md) |
 
 These hosts get the reviewer in the conversation, not the gate: the agent reviews, prints verdicts, and honours the mode, but nothing denies a write. The full table of what each host does and does not enforce, with the documentation each row was checked against, is in [docs/agent-portability.md](docs/agent-portability.md).
+
+## Adopt it across an organisation
+
+One persona, every repository, no per-developer setup.
+
+1. **Make it the default reviewer.** Put the Action in your organisation's `.github` repository as a [required workflow](https://docs.github.com/en/actions/using-workflows/required-workflows) or add it to each repo's `.github/workflows/`, in `gate` mode, and make the check required in a branch ruleset. Every pull request, human or agent, then gets the same review before merge.
+2. **Make it the default for agents.** Commit `AGENTS.md` (and the host-specific files your teams use) with `npx github:lazy-senior-dev/grumpy-reviewer install all`. Every AGENTS.md-aware host, including Codex, Copilot, Cursor, Kiro, Bob Shell, and OpenCode, loads it with no plugin at all.
+3. **Pin and review.** Pin the Action to a commit SHA, keep `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` as an organisation secret, and read `benchmarks/results` before you trust the numbers; then rerun the benchmark against your own seeded cases with `npm run bench`.
+4. **Keep the rules yours.** Fork, edit `rules/grump.md`, run `npm run build`; every adapter regenerates. The verdict format stays fixed, so hooks, the Action, and the scorecard keep working with your rules.
+
+Security posture, in one paragraph: no runtime dependencies, no network calls from the hooks, every third-party action pinned to a SHA, CodeQL and OpenSSF Scorecard on every push, provenance on npm publishes, and a written [threat model](SECURITY.md#threat-model).
 
 ## GitHub Action
 
@@ -256,8 +281,9 @@ In Claude Code both `/grumpy-review` and the namespaced `/grumpy-reviewer:grumpy
 | Copilot CLI | `copilot plugin uninstall grumpy-reviewer` |
 | Gemini CLI | `gemini extensions uninstall grumpy-reviewer` |
 | Antigravity CLI | `agy plugin uninstall grumpy-reviewer` |
+| IBM Bob | `npx github:lazy-senior-dev/grumpy-reviewer uninstall bob` |
 | OpenCode | Delete `.opencode/plugins/grumpy.mjs` and `.opencode/command/grumpy-*.md` |
-| Cursor, Windsurf, Cline, Kiro, Qoder, OpenClaw | Delete the file you copied |
+| Cursor, Windsurf, Cline, Kiro, Qoder, OpenClaw | `npx github:lazy-senior-dev/grumpy-reviewer uninstall <host>`, or delete the file you copied |
 | Devin CLI | `devin plugins uninstall grumpy-reviewer` |
 | Everywhere | `rm -rf ~/.config/grumpy-reviewer` removes the mode and scorecards |
 

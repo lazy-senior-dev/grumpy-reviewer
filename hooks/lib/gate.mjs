@@ -2,8 +2,8 @@
 
 import { severityRank } from "./verdict.mjs";
 
-const WRITE_TOOLS = /^(edit|write|multiedit|notebookedit|apply_patch|write_file|replace|create|create_file|edit_file|str_replace_editor|str_replace_based_edit_tool)$/i;
-const SHELL_TOOLS = /^(bash|shell|run_shell_command|execute_command|powershell|terminal|exec_command)$/i;
+const WRITE_TOOLS = /^(edit|write|multiedit|notebookedit|apply_patch|write_file|write_to_file|apply_diff|multi_apply_diff|insert_content|search_and_replace|replace|create|create_file|edit_file|str_replace_editor|str_replace_based_edit_tool)$/i;
+const SHELL_TOOLS = /^(bash|shell|run_shell_command|execute_command|run_command|powershell|terminal|exec_command)$/i;
 const COMMIT = /\bgit\s+(?:-{1,2}[\w-]+(?:[= ]\S+)?\s+)*(commit|push|merge|rebase|cherry-pick)\b/;
 const MAX_GATE_DENIALS = 2;
 
@@ -134,6 +134,9 @@ export function render(decision, host, eventName = "PreToolUse") {
       return deny
         ? { stdout: "", stderr: decision.reason, exitCode: 2 }
         : { stdout: decision.context || "", stderr: "", exitCode: 0 };
+    case "bob":
+      // Bob Shell: exit 2 blocks the tool; stdout of a PreToolUse hook is not fed to the model.
+      return deny ? { stdout: "", stderr: decision.reason, exitCode: 2 } : { stdout: "", stderr: "", exitCode: 0 };
     case "claude":
     case "codex":
     default: {

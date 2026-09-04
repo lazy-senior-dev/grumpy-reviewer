@@ -21,7 +21,7 @@ if (!existsSync(RAW)) {
 }
 
 const perAgent = {};
-const ORDER = ["claude", "codex", "api", "agy"];
+const ORDER = ["claude", "codex", "bob", "api", "agy"];
 const byOrder = (a, b) => (ORDER.indexOf(a.replace(/\.jsonl$/, "")) + 100) % 100 - (ORDER.indexOf(b.replace(/\.jsonl$/, "")) + 100) % 100 || a.localeCompare(b);
 for (const file of readdirSync(RAW).filter((f) => f.endsWith(".jsonl")).sort(byOrder)) {
   const agent = file.replace(/\.jsonl$/, "");

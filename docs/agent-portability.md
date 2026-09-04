@@ -24,6 +24,7 @@ Hosts fall into two tiers:
 | Devin CLI | instruction | `.devin-plugin/plugin.json`, `skills/`, `AGENTS.md` | skills | [plugins](https://docs.devin.ai/cli/extensibility/plugins/overview), [rules](https://docs.devin.ai/cli/extensibility/rules) | 2026-09-04; Devin `hooks.json` events documented, schema not, so not shipped |
 | Qoder | instruction | `.qoder-plugin/plugin.json`, `.qoder/rules/grumpy.md`, `skills/`, `AGENTS.md` | skills | [rules](https://docs.qoder.com/user-guide/rules), [plugins](https://docs.qoder.com/cli/plugins-reference) | 2026-09-04; `trigger` frontmatter in `.qoder/rules/*.md` unverified (Qoder documents the four trigger types, not the file syntax) |
 | Antigravity CLI | gate (imported) | Imports this repo through the Gemini extension format: `gemini-extension.json`, `GEMINI.md`, `commands/*.toml`, `skills/`, `hooks/` | `/grumpy-help` and friends | Tested locally: `agy plugin install <clone>` imported 6 skills, 6 commands, 1 hook set, and `agy -p "/grumpy-help"` printed the command table (agy 1.1.22). Google now serves individual Gemini CLI users through Antigravity, so this is the live path for the Gemini adapter | 2026-09-04; no public schema document, so behaviour of the imported hook is unverified |
+| IBM Bob (Bob Shell) | gate | `AGENTS.md`, `.bob/rules/grumpy.md`, `.bob/skills/grumpy-reviewer/SKILL.md`, `.bob/commands/grumpy-*.md`, hooks in `.bob/settings.json` | `/grumpy-review` and friends | [custom rules](https://bob.ibm.com/docs/shell/configuration/bobshell-custom-rules), [skills](https://bob.ibm.com/docs/shell/features/skills), [slash commands](https://bob.ibm.com/docs/shell/features/slash-commands), [lifecycle hooks](https://bob.ibm.com/docs/shell/configuration/lifecycle-hooks); tool names taken from Bob Shell 2.0.2's bundle | 2026-09-04; hook stdin is `{event, session_id, tool, input}` and exit 2 blocks, which the gate speaks with `--host bob`; headless benchmarking needs `BOB_API_KEY` |
 | Any AGENTS.md host | instruction | `AGENTS.md` | none | [agents.md](https://agents.md) | 2026-09-04 |
 
 ## Install
@@ -43,7 +44,8 @@ Hosts fall into two tiers:
 | Devin CLI | `devin plugins install lazy-senior-dev/grumpy-reviewer` |
 | Qoder | `/plugin marketplace add lazy-senior-dev/grumpy-reviewer` then `/plugins install grumpy-reviewer` |
 | Antigravity CLI | `git clone https://github.com/lazy-senior-dev/grumpy-reviewer ~/.grumpy-reviewer && agy plugin install ~/.grumpy-reviewer` |
-| Anything else | Copy `AGENTS.md` into your project root |
+| IBM Bob | `npx github:lazy-senior-dev/grumpy-reviewer install bob` |
+| Anything else | Copy `AGENTS.md` into your project root, or `npx github:lazy-senior-dev/grumpy-reviewer install agents` |
 
 ## Uninstall
 
@@ -62,6 +64,7 @@ Hosts fall into two tiers:
 | Devin CLI | `devin plugins uninstall grumpy-reviewer` |
 | Qoder | `/plugins uninstall grumpy-reviewer` |
 | Antigravity CLI | `agy plugin uninstall grumpy-reviewer` |
+| IBM Bob | `npx github:lazy-senior-dev/grumpy-reviewer uninstall bob` |
 | Any AGENTS.md host | Delete `AGENTS.md` (or the Grump section of it) |
 | Everywhere | `rm -rf ~/.config/grumpy-reviewer` removes the mode setting and scorecards |
 

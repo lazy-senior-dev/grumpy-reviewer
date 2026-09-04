@@ -2,9 +2,12 @@
 // Try the Grump without installing anything:
 //   npx github:lazy-senior-dev/grumpy-reviewer review [--staged] [--agent claude|codex|agy|api] [--model ID]
 //   npx github:lazy-senior-dev/grumpy-reviewer pr <number|url> [--agent ...]
+//   npx github:lazy-senior-dev/grumpy-reviewer install <host> [--force]   copy the adapter for a host into this repo
+//   npx github:lazy-senior-dev/grumpy-reviewer uninstall <host>           remove exactly those files
+// Hosts: agents, bob, cursor, windsurf, cline, kiro, qoder, opencode, gemini, copilot, all
 // Uses whichever headless agent you already have signed in. Sends the diff to that agent and nothing else.
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import fs, { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { AGENTS, availableAgents } from "../benchmarks/lib/agents.mjs";
@@ -17,10 +20,88 @@ const opt = (name, def) => { const i = args.indexOf(name); return i > -1 ? args[
 const flag = (name) => args.includes(name);
 
 function usage(code = 0) {
-  console.log(readFileSync(fileURLToPath(import.meta.url), "utf8").split("\n").slice(1, 5).map((l) => l.replace(/^\/\/ ?/, "")).join("\n"));
+  console.log(readFileSync(fileURLToPath(import.meta.url), "utf8").split("\n").slice(1, 8).map((l) => l.replace(/^\/\/ ?/, "")).join("\n"));
   process.exit(code);
 }
 if (!cmd || cmd === "help" || cmd === "--help") usage();
+
+// ---- install / uninstall: copy the files a host reads into the current repository ----
+const ROOT = join(HERE, "..");
+const HOSTS = {
+  agents: { files: ["AGENTS.md"], note: "Read by every AGENTS.md-aware host (Codex, Copilot, Cursor, Kiro, Bob Shell, OpenCode, and more)." },
+  bob: { files: [".bob/rules/grumpy.md", ".bob/skills/grumpy-reviewer/SKILL.md", ".bob/commands/grumpy.md", ".bob/commands/grumpy-review.md", ".bob/commands/grumpy-pr.md", ".bob/commands/grumpy-fix.md", ".bob/commands/grumpy-scorecard.md", ".bob/commands/grumpy-help.md"], dirs: [["hooks", ".bob/hooks/grumpy"]], settings: ".bob/settings.json", note: "IBM Bob Shell: rules, skill, six commands, and PreToolUse/UserPromptSubmit hooks in .bob/settings.json." },
+  cursor: { files: [".cursor/rules/grumpy.mdc"], note: "Cursor rule, alwaysApply." },
+  windsurf: { files: [".windsurf/rules/grumpy.md"], note: "Windsurf / Devin Desktop rule, always_on." },
+  cline: { files: [".clinerules/grumpy.md"], note: "Cline rule." },
+  kiro: { files: [".kiro/steering/grumpy.md"], note: "Kiro steering file, inclusion: always." },
+  qoder: { files: [".qoder/rules/grumpy.md"], note: "Qoder rule." },
+  opencode: { files: [".opencode/plugins/grumpy.mjs", ".opencode/command/grumpy.md", ".opencode/command/grumpy-review.md", ".opencode/command/grumpy-pr.md", ".opencode/command/grumpy-fix.md", ".opencode/command/grumpy-scorecard.md", ".opencode/command/grumpy-help.md", "AGENTS.md"], note: "OpenCode plugin (two-phase gate), commands, and AGENTS.md." },
+  gemini: { files: ["GEMINI.md"], note: "Gemini CLI context file. For the extension form use: gemini extensions install https://github.com/lazy-senior-dev/grumpy-reviewer" },
+  copilot: { files: [".github/copilot-instructions.md"], note: "Copilot custom instructions. For the plugin form use: copilot plugin marketplace add lazy-senior-dev/grumpy-reviewer" },
+};
+HOSTS.all = { files: [...new Set(Object.values(HOSTS).flatMap((h) => h.files))], dirs: HOSTS.bob.dirs, settings: HOSTS.bob.settings, note: "Every instruction-only adapter at once." };
+
+function copyDir(from, to) {
+  fs.mkdirSync(to, { recursive: true });
+  for (const name of fs.readdirSync(from)) {
+    const a = join(from, name), b = join(to, name);
+    if (fs.statSync(a).isDirectory()) copyDir(a, b); else fs.copyFileSync(a, b);
+  }
+}
+
+if (cmd === "install" || cmd === "uninstall") {
+  const host = args[1];
+  if (!host || !HOSTS[host]) {
+    console.error(`Which host? One of: ${Object.keys(HOSTS).join(", ")}`);
+    process.exit(2);
+  }
+  const h = HOSTS[host];
+  const force = flag("--force");
+  const cwd = process.cwd();
+  if (cmd === "install") {
+    const written = [], skipped = [];
+    for (const rel of h.files) {
+      const dest = join(cwd, rel);
+      if (fs.existsSync(dest) && !force) { skipped.push(rel); continue; }
+      fs.mkdirSync(dirname(dest), { recursive: true });
+      fs.copyFileSync(join(ROOT, rel), dest);
+      written.push(rel);
+    }
+    for (const [from, to] of h.dirs || []) { copyDir(join(ROOT, from), join(cwd, to)); written.push(to + "/"); }
+    if (h.settings) {
+      const dest = join(cwd, h.settings);
+      const ours = JSON.parse(readFileSync(join(ROOT, h.settings), "utf8"));
+      for (const groups of Object.values(ours.hooks)) for (const g of groups) for (const hk of g.hooks) hk.command = hk.command.replace("node hooks/", "node .bob/hooks/grumpy/");
+      let merged = ours;
+      if (fs.existsSync(dest)) {
+        try {
+          const existing = JSON.parse(readFileSync(dest, "utf8"));
+          merged = { ...existing, hooks: { ...(existing.hooks || {}) } };
+          for (const [event, groups] of Object.entries(ours.hooks)) merged.hooks[event] = [...(existing.hooks?.[event] || []).filter((g) => !JSON.stringify(g).includes("grumpy-")), ...groups];
+        } catch { if (!force) { skipped.push(h.settings + " (could not parse; use --force to replace)"); merged = null; } }
+      }
+      if (merged) { fs.mkdirSync(dirname(dest), { recursive: true }); fs.writeFileSync(dest, JSON.stringify(merged, null, 2) + "\n"); written.push(h.settings); }
+    }
+    console.log(`Installed the Grump for ${host}. ${h.note}`);
+    for (const w of written) console.log("  wrote   " + w);
+    for (const sk of skipped) console.log("  kept    " + sk + " (exists; --force to overwrite)");
+    console.log(`Start a new session. Remove with: npx github:lazy-senior-dev/grumpy-reviewer uninstall ${host}`);
+  } else {
+    const removed = [];
+    for (const rel of h.files) { const p = join(cwd, rel); if (fs.existsSync(p)) { fs.rmSync(p); removed.push(rel); } }
+    for (const [, to] of h.dirs || []) { const p = join(cwd, to); if (fs.existsSync(p)) { fs.rmSync(p, { recursive: true }); removed.push(to + "/"); } }
+    if (h.settings && fs.existsSync(join(cwd, h.settings))) {
+      try {
+        const existing = JSON.parse(readFileSync(join(cwd, h.settings), "utf8"));
+        for (const [event, groups] of Object.entries(existing.hooks || {})) existing.hooks[event] = groups.filter((g) => !JSON.stringify(g).includes("grumpy-"));
+        fs.writeFileSync(join(cwd, h.settings), JSON.stringify(existing, null, 2) + "\n");
+        removed.push(h.settings + " (grumpy hooks removed)");
+      } catch { console.log("  could not parse " + h.settings + "; remove the grumpy hooks by hand"); }
+    }
+    console.log(removed.length ? "Removed:\n  " + removed.join("\n  ") : "Nothing to remove.");
+  }
+  process.exit(0);
+}
 
 function sh(c, a) { return execFileSync(c, a, { encoding: "utf8", maxBuffer: 20 * 1024 * 1024 }); }
 

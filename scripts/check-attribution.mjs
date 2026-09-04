@@ -21,13 +21,13 @@ const EMAIL_ALLOWLIST = new Set([
 ]);
 
 // Assistant names may appear only where the file targets that assistant.
-const ASSISTANTS = /\b(Claude Code|Claude|Codex|Copilot|Gemini|Antigravity|Cursor|Windsurf|Cline|Kiro|OpenClaw|Devin|Qoder|OpenCode|ChatGPT|Anthropic|OpenAI)\b/g;
+const ASSISTANTS = /\b(Claude Code|Claude|Codex|Copilot|Gemini|Antigravity|Cursor|Windsurf|Cline|Kiro|OpenClaw|Devin|Qoder|OpenCode|ChatGPT|Anthropic|OpenAI|Bob Shell|IBM Bob)\b/g;
 const ASSISTANT_PATHS = [
   /^AGENTS\.md$/, /^GEMINI\.md$/, /^gemini-extension\.json$/, /^commands\//, /^skills\//, /^hooks\//,
-  /^\.(claude-plugin|codex-plugin|agents|github\/plugin|devin-plugin|qoder-plugin|qoder|opencode|cursor|windsurf|clinerules|kiro|openclaw)\//,
+  /^\.(claude-plugin|codex-plugin|agents|github\/plugin|devin-plugin|qoder-plugin|qoder|opencode|cursor|windsurf|clinerules|kiro|openclaw|bob)\//,
   /^\.github\/copilot-instructions\.md$/,
   /^README(\.[a-z]{2})?\.md$/, /^docs\//, /^action\.yml$/, /^action\//, /^examples\//,
-  /^benchmarks\//, /^scripts\//, /^tests\//, /^package\.json$/, /^CHANGELOG\.md$/, /^CONTRIBUTING\.md$/,
+  /^benchmarks\//, /^scripts\//, /^tests\//, /^bin\//, /^package\.json$/, /^CHANGELOG\.md$/, /^CONTRIBUTING\.md$/,
   /^\.github\/workflows\//, /^\.github\/ISSUE_TEMPLATE\//, /^\.github\/PULL_REQUEST_TEMPLATE\.md$/, /^assets\//,
 ];
 const BINARY = /\.(png|gif|jpg|jpeg|ico|woff2?|ttf|zip|tgz)$/i;

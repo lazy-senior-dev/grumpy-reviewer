@@ -39,6 +39,9 @@ function main() {
     case "gemini":
       out = { hookSpecificOutput: { hookEventName: "BeforeAgent", additionalContext: context } };
       break;
+    case "bob":
+      process.stdout.write(context + "\n");
+      return;
     default:
       out = { hookSpecificOutput: { hookEventName: "UserPromptSubmit", additionalContext: context } };
   }

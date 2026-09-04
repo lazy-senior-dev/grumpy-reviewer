@@ -133,6 +133,26 @@ export const AGENTS = {
       };
     },
   },
+  bob: {
+    label: "IBM Bob Shell",
+    available: async () => (process.env.BOB_API_KEY ? await which("bob") : null),
+    defaultModel: "",
+    async run({ system, user }) {
+      const prompt = system ? `# Reviewer instructions\n\n${system}\n\n# Task\n\n${user}` : user;
+      const args = ["run", "--format", "stream-json", "--mode", "ask", "--max-turns", "1", "--disable-mcp", "--disable-subagents", "--trust", "--accept-license"];
+      const res = await exec("bob", args, { input: prompt, cwd: scratch() });
+      let text = "";
+      let usage = { input: 0, output: 0 };
+      for (const line of res.stdout.split("\n")) {
+        let ev;
+        try { ev = JSON.parse(line); } catch { continue; }
+        if (ev.type === "message" && ev.role !== "user") text += typeof ev.content === "string" ? ev.content : (ev.text || (Array.isArray(ev.content) ? ev.content.map((c) => c.text || "").join("") : ""));
+        if (ev.type === "result") usage = { input: ev.input_tokens || ev.total_tokens || 0, output: ev.output_tokens || 0 };
+      }
+      if (!text.trim()) throw new Error(`bob returned no message (exit ${res.code}): ${(res.stderr || res.stdout).slice(0, 300)}`);
+      return { text, usage, costUsd: undefined, durationMs: res.durationMs, model: "bob-default" };
+    },
+  },
   api: {
     label: "Messages API",
     available: async () => (process.env.ANTHROPIC_API_KEY ? "anthropic" : process.env.OPENAI_API_KEY ? "openai" : null),

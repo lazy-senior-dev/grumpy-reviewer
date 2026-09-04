@@ -621,6 +621,36 @@ export function openclawSkill(rs, p) {
   return `${fm}\n\n${instructionBody(rs, { commands: false })}`;
 }
 
+// ---------- IBM Bob (Bob Shell) ----------
+
+export function bobSettings() {
+  const cmd = (script) => `node hooks/${script} --host bob 2>/dev/null || true`;
+  return {
+    hooks: {
+      UserPromptSubmit: [{ hooks: [{ type: "command", command: cmd("grumpy-context.mjs"), timeout: 10 }] }],
+      PreToolUse: [{ matcher: "^(edit|write_file|apply_diff|insert_content|search_and_replace|execute_command|bash|shell)$", hooks: [{ type: "command", command: cmd("grumpy-gate.mjs"), timeout: 15 }] }],
+    },
+  };
+}
+
+export function bobSkill(rs, p) {
+  const fm = ["---", "name: grumpy-reviewer", `description: ${JSON.stringify("Review any code change as the Grump before it is written or committed: ten questions, a fixed verdict block (GRUMP: APPROVE | REQUEST_CHANGES | BLOCK), no rewrites. Use whenever the user asks for a review, a second opinion on a diff, or before committing.")}`, "---"].join("\n");
+  return `${fm}\n\n${instructionBody(rs, { commands: false })}`;
+}
+
+export function bobCommands(rs) {
+  const out = new Map();
+  const mk = (name, description, hint, body) => out.set(`.bob/commands/${name}.md`, `---\ndescription: ${JSON.stringify(description.replace(/\\\|/g, "|"))}${hint ? `\nargument-hint: ${JSON.stringify(hint)}` : ""}\n---\n\n${body}\n`);
+  const c = (n) => rs.commands.find((x) => x.name === n).text;
+  mk("grumpy-review", c("grumpy-review"), "", "Run `git status --short`, `git diff`, and `git diff --cached`, then review the changes as the Grump: read the whole diff, answer the ten checklist questions in writing, in order, and print the verdict block (GRUMP: APPROVE | REQUEST_CHANGES | BLOCK, then numbered file:line — what fails in production — smallest fix lines). Do not edit any file.");
+  mk("grumpy-pr", c("grumpy-pr"), "<number-or-url>", "Run `gh pr view $1` and `gh pr diff $1`, then review the pull request as the Grump: read the whole diff, answer the ten checklist questions in writing, print the verdict block. Do not edit any file and do not post to the pull request.");
+  mk("grumpy-fix", c("grumpy-fix"), "", "Apply the findings from the most recent GRUMP: verdict in this conversation: one minimal edit per finding, nothing else. Then review the result again as the Grump and print a fresh verdict. If there is no verdict yet, run the review first.");
+  mk("grumpy", c("grumpy"), "[nag|gate|off]", "Set the Grump's mode to $1 for this conversation (nag, gate, or off) and confirm in one line; with no argument, report the current mode. The persistent setting is `mode` in ~/.config/grumpy-reviewer/config.json, or the GRUMPY_MODE environment variable.");
+  mk("grumpy-scorecard", c("grumpy-scorecard"), "", "List every GRUMP: verdict you printed in this conversation as a markdown table with columns Target, Verdict, Findings, and add a final line with the number of overrides.");
+  mk("grumpy-help", c("grumpy-help"), "", `Print this table and nothing else:\n\n${rs.sections["Commands"].replace(/\\\|/g, "|")}`);
+  return out;
+}
+
 // ---------- the whole set ----------
 
 export function renderAll(rs, p = pkg()) {
@@ -647,6 +677,10 @@ export function renderAll(rs, p = pkg()) {
   files.set(".kiro/steering/grumpy.md", kiroRule(rs));
   files.set(".qoder/rules/grumpy.md", qoderRule(rs));
   files.set(".openclaw/skills/grumpy-reviewer/SKILL.md", openclawSkill(rs, p));
+  files.set(".bob/rules/grumpy.md", clineRule(rs));
+  files.set(".bob/skills/grumpy-reviewer/SKILL.md", bobSkill(rs, p));
+  files.set(".bob/settings.json", json(bobSettings()));
+  for (const [k, v] of bobCommands(rs)) files.set(k, v);
   files.set("examples/opencode.json", json(opencodeConfig()));
   files.set("examples/gemini-settings-hooks.json", json(geminiHooksExample()));
   files.set("examples/copilot-repo-hooks.json", json(copilotRepoHooksExample()));
