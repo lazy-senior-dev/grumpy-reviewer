@@ -90,9 +90,9 @@ Thirty small, realistic diffs across Python, TypeScript, Go, and YAML (Kubernete
 | Codex CLI | `codex-default` (n=3) | no skill | 29 | 4 | 0 | n/a | 28893 | 693 | 23 s |
 | Codex CLI | `codex-default` (n=3) | generic review prompt | 30 | 3 | 0 | n/a | 28798 | 1013 | 25 s |
 | Codex CLI | `codex-default` (n=3) | **grumpy-reviewer** | **30** | **3** | **0** | **88%** | 15498 | 502 | 14 s |
-| Antigravity CLI | `agy-default` (n=1) | no skill | 22 | 0 | 10 | n/a | 19540 | 3418 | 48 s |
-| Antigravity CLI | `agy-default` (n=1) | generic review prompt | 27 | 0 | 4 | n/a | 19608 | 7278 | 56 s |
-| Antigravity CLI | `agy-default` (n=1) | **grumpy-reviewer** | **25** | **0** | **5** | **100%** | 20979 | 34389 | 98 s |
+| Antigravity CLI | `agy-default` (n=1) | no skill | 22 | 0 | 18 | n/a | 19553 | 2909 | 47 s |
+| Antigravity CLI | `agy-default` (n=1) | generic review prompt | 27 | 2 | 8 | n/a | 19613 | 8160 | 56 s |
+| Antigravity CLI | `agy-default` (n=1) | **grumpy-reviewer** | **25** | **0** | **5** | **100%** | 28979 | 26207 | 84 s |
 
 <!-- bench:table:end -->
 

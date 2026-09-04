@@ -103,8 +103,8 @@
     },
     "agy": {
       "label": "Antigravity CLI",
-      "calls": 123,
-      "errors": 30,
+      "calls": 150,
+      "errors": 31,
       "arms": {
         "bare": {
           "label": "no skill",
@@ -115,10 +115,10 @@
           "falsePositivesMedian": 0,
           "blockPrecision": null,
           "blocks": 0,
-          "unparseable": 10,
-          "inputTokensMedian": 19539.5,
-          "outputTokensMedian": 3418,
-          "latencyMedianMs": 47962
+          "unparseable": 18,
+          "inputTokensMedian": 19552.5,
+          "outputTokensMedian": 2909,
+          "latencyMedianMs": 47331.5
         },
         "generic": {
           "label": "generic review prompt",
@@ -126,13 +126,13 @@
           "runs": 1,
           "caughtMedian": 27,
           "caughtMean": 27,
-          "falsePositivesMedian": 0,
+          "falsePositivesMedian": 2,
           "blockPrecision": null,
           "blocks": 0,
-          "unparseable": 4,
-          "inputTokensMedian": 19608,
-          "outputTokensMedian": 7278,
-          "latencyMedianMs": 55713
+          "unparseable": 8,
+          "inputTokensMedian": 19613,
+          "outputTokensMedian": 8160,
+          "latencyMedianMs": 56246
         },
         "grump": {
           "label": "grumpy-reviewer",
@@ -144,9 +144,9 @@
           "blockPrecision": 1,
           "blocks": 13,
           "unparseable": 5,
-          "inputTokensMedian": 20978.5,
-          "outputTokensMedian": 34388.5,
-          "latencyMedianMs": 97779
+          "inputTokensMedian": 28979,
+          "outputTokensMedian": 26207,
+          "latencyMedianMs": 84008.5
         }
       }
     }
