@@ -1,6 +1,12 @@
 // The gate's decision logic, kept pure so it can be tested without a host.
 
 import { severityRank } from "./verdict.mjs";
+import { persona } from "./persona.mjs";
+
+function words() {
+  const p = persona();
+  return { P: p.verdictPrefix, A: p.verdicts.approve, C: p.verdicts.changes, B: p.verdicts.block, who: p.short, scope: new RegExp(p.scope || ".*") };
+}
 
 const WRITE_TOOLS = /^(edit|write|multiedit|notebookedit|apply_patch|write_file|write_to_file|apply_diff|multi_apply_diff|insert_content|search_and_replace|replace|create|create_file|edit_file|str_replace_editor|str_replace_based_edit_tool)$/i;
 const SHELL_TOOLS = /^(bash|shell|run_shell_command|execute_command|run_command|powershell|terminal|exec_command)$/i;
@@ -66,7 +72,9 @@ export function applicableVerdict({ latest, earlier, target }) {
 // Decide what the gate does. `state` is the per-session record for this file.
 export function decide({ mode, verdict, hasTranscript, denials = 0, target }) {
   const where = target?.kind === "commit" ? target.file : `write to ${target?.file ?? "file"}`;
+  const { P, A, C, B, who, scope } = words();
   if (mode === "off") return { action: "skip", reason: "mode off" };
+  if (target && target.kind === "write" && !scope.test(String(target.file))) return { action: "skip", reason: "outside this persona's scope" };
 
   if (verdict?.override) {
     return { action: "allow", logged: "override", reason: `override: ${verdict.reason || "no reason given"}` };
@@ -78,7 +86,7 @@ export function decide({ mode, verdict, hasTranscript, denials = 0, target }) {
       return {
         action: "deny",
         logged: "block",
-        reason: `GRUMP: BLOCK stands on the ${where}. ${open} finding(s) open. Fix them and print a new verdict. A BLOCK is never downgraded by mode; if the user has explicitly told you to proceed, print GRUMP: OVERRIDE — quoting them — and retry.`,
+        reason: `${P}: ${B} stands on the ${where}. ${open} finding(s) open. Fix them and print a new verdict. A ${B} is never downgraded by mode; if the user has explicitly told you to proceed, print ${P}: OVERRIDE — quoting them — and retry.`,
       };
     }
     if (verdict.verdict === "REQUEST_CHANGES") {
@@ -86,13 +94,13 @@ export function decide({ mode, verdict, hasTranscript, denials = 0, target }) {
         return {
           action: "deny",
           logged: "request_changes",
-          reason: `GRUMP: REQUEST_CHANGES stands on the ${where} with ${open} finding(s). Gate mode: fix them, print a new verdict, then retry.`,
+          reason: `${P}: ${C} stands on the ${where} with ${open} finding(s). Gate mode: fix them, print a new verdict, then retry.`,
         };
       }
       return {
         action: "allow",
         logged: "request_changes",
-        context: `The Grump left ${open} finding(s) open on this ${where}. Nag mode lets it through. Fix them before you finish the task.`,
+        context: `${who} left ${open} finding(s) open on this ${where}. Nag mode lets it through. Fix them before you finish the task.`,
       };
     }
     return { action: "allow", logged: "approve" };
@@ -104,19 +112,19 @@ export function decide({ mode, verdict, hasTranscript, denials = 0, target }) {
       return {
         action: "allow",
         logged: "gate_fallback",
-        context: `The gate could not find a verdict for this ${where} after ${denials} attempts and is letting it through. Print the verdict block in your reply, not inside a tool call.`,
+        context: `The gate could not find a verdict for this ${where} after ${denials} attempts and is letting it through. Print the ${P}: block in your reply, not inside a tool call.`,
       };
     }
     return {
       action: "deny",
       logged: "no_verdict",
-      reason: `No verdict found for this ${where}. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the ${target?.kind === "commit" ? "command" : "write"} now.`,
+      reason: `No verdict found for this ${where}. If you have not reviewed it yet: answer the ten checklist questions in writing and print the ${P}: block (${A}, ${C}, or ${B} with numbered file:line — failure — smallest fix lines; name the files an ${A} covers on the ${P} line). If you printed the verdict in this same message, the gate reads completed messages: just retry the ${target?.kind === "commit" ? "command" : "write"} now.`,
     };
   }
   return {
     action: "allow",
     logged: "no_verdict",
-    context: `No verdict printed before this ${where}. Nag mode lets it through. Before the next write, answer the checklist and print the GRUMP: block.`,
+    context: `No verdict printed before this ${where}. Nag mode lets it through. Before the next write, answer the checklist and print the ${P}: block.`,
   };
 }
 

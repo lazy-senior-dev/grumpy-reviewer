@@ -6,7 +6,7 @@
           {
             "name": "grumpy-context",
             "type": "command",
-            "command": "node \"$HOME/.grumpy-reviewer/hooks/grumpy-context.mjs\" --host gemini 2>/dev/null || true",
+            "command": "node \"$HOME/.grumpy-reviewer/hooks/review-context.mjs\" --host gemini 2>/dev/null || true",
             "timeout": 10
           }
         ]
@@ -19,7 +19,7 @@
           {
             "name": "grumpy-gate",
             "type": "command",
-            "command": "node \"$HOME/.grumpy-reviewer/hooks/grumpy-gate.mjs\" --host gemini 2>/dev/null || true",
+            "command": "node \"$HOME/.grumpy-reviewer/hooks/review-gate.mjs\" --host gemini 2>/dev/null || true",
             "timeout": 15
           }
         ]

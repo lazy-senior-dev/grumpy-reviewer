@@ -172,7 +172,7 @@ test("gate mode refuses malformed hook input; nag lets the host decide", () => {
 });
 
 function runGate(input, env = {}, host = "claude") {
-  const out = execFileSync(process.execPath, [join(process.cwd(), "hooks/grumpy-gate.mjs"), "--host", host], {
+  const out = execFileSync(process.execPath, [join(process.cwd(), "hooks/review-gate.mjs"), "--host", host], {
     input: typeof input === "string" ? input : JSON.stringify(input),
     env: { ...process.env, ...env },
     encoding: "utf8",
@@ -207,9 +207,9 @@ test("end to end: gate mode without a transcript denies twice then lets the writ
 
 test("context hook prints the card with the mode, and nothing when off", () => {
   const run = (env) =>
-    execFileSync(process.execPath, [join(process.cwd(), "hooks/grumpy-context.mjs")], { env: { ...process.env, ...env }, encoding: "utf8" }).trim();
+    execFileSync(process.execPath, [join(process.cwd(), "hooks/review-context.mjs")], { env: { ...process.env, ...env }, encoding: "utf8" }).trim();
   const on = JSON.parse(run({ GRUMPY_MODE: "gate", GRUMPY_CONFIG_DIR: mkdtempSync(join(tmpdir(), "g-")) }));
-  assert.match(on.hookSpecificOutput.additionalContext, /Grump mode: gate/);
+  assert.match(on.hookSpecificOutput.additionalContext, /Review mode: gate/);
   assert.match(on.hookSpecificOutput.additionalContext, /GRUMP:/);
   assert.equal(run({ GRUMPY_MODE: "off" }), "");
 });

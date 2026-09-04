@@ -7,9 +7,16 @@
 // about what it reports: anything it cannot read lands in `malformed`, never in
 // `findings`, so a hook can decide with what it actually understood.
 
+import { persona, canonical } from "./persona.mjs";
+
 export const VERDICTS = ["APPROVE", "REQUEST_CHANGES", "BLOCK"];
 
-const HEADER = /^[ \t]*(?:>?\s*)?GRUMP:[ \t]*(APPROVE|REQUEST_CHANGES|REQUEST CHANGES|BLOCK|OVERRIDE)\b[ \t]*(?:[—–-]+[ \t]*(.*))?$/gim;
+function headerRegex() {
+  const p = persona();
+  const words = [...new Set([...Object.values(p.verdicts), "APPROVE", "REQUEST_CHANGES", "BLOCK"])].map((w) => w.replace(/_/g, "[ _]")).concat(["OVERRIDE"]);
+  return new RegExp(`^[ \\t]*(?:>?\\s*)?${p.verdictPrefix}:[ \\t]*(${words.join("|")})\\b[ \\t]*(?:[—–-]+[ \\t]*(.*))?$`, "gim");
+}
+const HEADER = headerRegex();
 const FINDING = /^[ \t]*(\d+)[.)][ \t]+(.+?)[ \t]*$/;
 const SEPARATOR = /[ \t]+(?:—|–|--)[ \t]+/;
 const LOCATION = /^`?([^\s`:]+(?:\.[A-Za-z0-9_]+)?(?:\/[^\s`:]+)*):(\d+)(?:-(\d+))?`?$/;
@@ -49,9 +56,11 @@ export function parseVerdicts(text) {
     HEADER.lastIndex = 0;
     const m = HEADER.exec(lines[i]);
     if (!m) continue;
-    const verdict = m[1].toUpperCase().replace(" ", "_");
+    const label = m[1].toUpperCase().replace(" ", "_");
+    const verdict = canonical(label) || label;
     const result = {
       verdict,
+      label,
       override: verdict === "OVERRIDE",
       reason: (m[2] || "").trim(),
       findings: [],
@@ -96,8 +105,10 @@ export function severityRank(verdict) {
 }
 
 export function formatVerdict(result) {
-  const head = `GRUMP: ${result.verdict}${result.reason ? ` — ${result.reason}` : ""}`;
-  if (result.verdict === "APPROVE") return `${head}\nFine.`;
+  const p = persona();
+  const word = result.verdict === "OVERRIDE" ? "OVERRIDE" : p.verdicts[{ APPROVE: "approve", REQUEST_CHANGES: "changes", BLOCK: "block" }[result.verdict]] || result.verdict;
+  const head = `${p.verdictPrefix}: ${word}${result.reason ? ` — ${result.reason}` : ""}`;
+  if (result.verdict === "APPROVE") return `${head}\n${p.approveWord}`;
   const body = result.findings.map((f) => `${f.n}. ${f.file}${f.line ? `:${f.line}` : ""} — ${f.failure} — ${f.fix}`);
   return [head, ...body].join("\n");
 }

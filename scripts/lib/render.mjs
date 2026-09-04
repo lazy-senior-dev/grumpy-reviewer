@@ -7,11 +7,15 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const REPO = "lazy-senior-dev/grumpy-reviewer";
-const HOMEPAGE = "https://lazy-senior-dev.github.io/grumpy-reviewer";
+export const P = JSON.parse(readFileSync(join(ROOT, "persona.json"), "utf8"));
+const CMD = P.command;
+const V = P.verdicts;
+const VERDICT_LIST = `${V.approve} | ${V.changes} | ${V.block}`;
+const REPO = `lazy-senior-dev/${P.slug}`;
+const HOMEPAGE = P.homepage || `https://lazy-senior-dev.github.io/${P.slug}`;
 const REPO_URL = `https://github.com/${REPO}`;
 const AUTHOR = { name: "Sandeep Bazar", url: "https://github.com/sandeepbazar" };
-const GENERATED = "Rendered from rules/grump.md by scripts/build-adapters.mjs. Edit the rules, then run npm run build.";
+const GENERATED = `Rendered from ${P.rules} by scripts/build-adapters.mjs. Edit the rules, then run npm run build.`;
 
 export function pkg() {
   return JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
@@ -40,7 +44,7 @@ function checklistIntro(rs) {
 
 // The full ruleset as an instruction file. `commands` false swaps the slash-command
 // table for plain-language equivalents, for hosts that have no commands.
-export function instructionBody(rs, { commands = true, heading = "# The Grump" } = {}) {
+export function instructionBody(rs, { commands = true, heading = `# ${P.name}` } = {}) {
   const parts = [
     heading,
     `> ${rs.description}`,
@@ -54,12 +58,12 @@ export function instructionBody(rs, { commands = true, heading = "# The Grump" }
 
 function plainCommands(rs) {
   return [
-    "This host has no slash commands, so ask in plain words. The Grump answers the same way.",
+    `This host has no slash commands, so ask in plain words. ${P.name} answers the same way.`,
     "",
-    '- "Review the diff as the Grump" does what `/grumpy-review` does: the working-tree diff, a numbered request-changes list, no code.',
-    '- "Review PR 123 as the Grump" does what `/grumpy-pr` does.',
-    '- "Apply the Grump\'s findings" does what `/grumpy-fix` does: one minimal edit per finding, then a fresh review.',
-    '- "Grump mode gate" or "Grump mode off" sets the mode for this conversation; the persistent setting is `mode` in `~/.config/grumpy-reviewer/config.json` or the `GRUMPY_MODE` environment variable.',
+    `- "Review ${P.reviews} as ${P.asName}" does what \`/${CMD}-review\` does: the working-tree diff, a numbered request-changes list, no code.`,
+    `- "Review PR 123 as ${P.asName}" does what \`/${CMD}-pr\` does.`,
+    `- "Apply ${P.possessive} findings" does what \`/${CMD}-fix\` does: one minimal edit per finding, then a fresh review.`,
+    `- "${P.short} mode gate" or "${P.short} mode off" sets the mode for this conversation; the persistent setting is \`mode\` in \`~/.config/grumpy-reviewer/config.json\` or the \`GRUMPY_MODE\` environment variable.`,
   ].join("\n");
 }
 
@@ -67,7 +71,7 @@ function plainCommands(rs) {
 // runtime) and no commands (the host lists them).
 export function personaCard(rs) {
   return [
-    "# You are also the Grump",
+    `# You are also ${P.asName}`,
     `> ${rs.description}`,
     sectionsMd(rs, ["Character", "Self-review protocol", "The checklist", "The verdict", "Non-negotiables"]),
   ].join("\n\n") + "\n";
@@ -95,21 +99,22 @@ export function skills(rs) {
   const noCode = "You are reviewing, not writing. Do not edit, create, or delete any file while this skill runs.";
   const protocol = [
     "Read the whole diff before you write a word. If it is empty, say `Nothing to review.` and stop. If it is truncated, say so and do not approve.",
-    "Answer the ten checklist questions in writing, in order, one line each. Stop at the first `BLOCK` finding.",
-    "Print the verdict block: `GRUMP: APPROVE | REQUEST_CHANGES | BLOCK`, then numbered `file:line — what fails in production — smallest fix` lines. `APPROVE` is followed by `Fine.` and nothing else.",
+    `Answer the ten checklist questions in writing, in order, one line each. A \`${V.block}\` finding decides the verdict; finish the list anyway.`,
+    `Print the verdict block: \`${P.verdictPrefix}: ${VERDICT_LIST}\`, then numbered \`file:line — what fails in production — smallest fix\` lines. \`${V.approve}\` names the files it covers and is followed by \`${P.approveWord}\` and nothing else.`,
   ];
 
+  const c = (suffix) => commands[suffix ? `${CMD}-${suffix}` : CMD];
   const set = {
-    grumpy: {
+    [CMD]: {
       fm: {
-        name: "grumpy",
-        description: commands.grumpy.text + " Use when the user says grumpy, grump mode, nag, gate, or turn the Grump off.",
+        name: CMD,
+        description: c("").text + ` Use when the user says ${CMD}, ${P.short.toLowerCase()} mode, nag, gate, or turn ${P.asName} off.`,
         "argument-hint": "[nag|gate|off]",
         "disable-model-invocation": true,
         "allowed-tools": "Bash(node *)",
       },
       body: [
-        `!\`node "${HOOKS_REL}/grumpy-mode.mjs" $ARGUMENTS\``,
+        `!\`node "${HOOKS_REL}/review-mode.mjs" $ARGUMENTS\``,
         "",
         "Repeat the line above to the user exactly as printed. Do nothing else.",
         "",
@@ -118,10 +123,10 @@ export function skills(rs) {
         rs.modes.map((m) => `- \`${m.name}\`${m.note ? ` (${m.note})` : ""}: ${m.text}`).join("\n"),
       ].join("\n"),
     },
-    "grumpy-review": {
+    [`${CMD}-review`]: {
       fm: {
-        name: "grumpy-review",
-        description: commands["grumpy-review"].text + " Use when the user asks for a review of their changes, the diff, or what is about to be committed.",
+        name: `${CMD}-review`,
+        description: c("review").text + " Use when the user asks for a review of their changes, the diff, or what is about to be committed.",
         "allowed-tools": "Bash(git diff *), Bash(git status *), Bash(git log *), Read, Grep, Glob",
       },
       body: [
@@ -137,16 +142,16 @@ export function skills(rs) {
         "",
         "!`git diff --cached`",
         "",
-        "Review the changes above as the Grump.",
+        `Review the changes above as ${P.asName}.`,
         "",
         ...protocol.map((p, i) => `${i + 1}. ${p}`),
-        `4. ${noCode} If the user wants the findings applied, they run \`/grumpy-fix\`.`,
+        `4. ${noCode} If the user wants the findings applied, they run \`/${CMD}-fix\`.`,
       ].join("\n"),
     },
-    "grumpy-pr": {
+    [`${CMD}-pr`]: {
       fm: {
-        name: "grumpy-pr",
-        description: commands["grumpy-pr"].text + " Use when the user gives a pull request number or URL to review.",
+        name: `${CMD}-pr`,
+        description: c("pr").text + " Use when the user gives a pull request number or URL to review.",
         "argument-hint": "<number|url>",
         "allowed-tools": "Bash(gh pr diff *), Bash(gh pr view *), Read, Grep, Glob",
       },
@@ -159,45 +164,45 @@ export function skills(rs) {
         "",
         "!`gh pr diff $ARGUMENTS`",
         "",
-        "Review the pull request above as the Grump. If the `gh` output is an error, report it in one line and stop.",
+        `Review the pull request above as ${P.asName}. If the \`gh\` output is an error, report it in one line and stop.`,
         "",
         ...protocol.map((p, i) => `${i + 1}. ${p}`),
         `4. ${noCode} Do not post anything to the pull request; print the verdict here.`,
       ].join("\n"),
     },
-    "grumpy-fix": {
+    [`${CMD}-fix`]: {
       fm: {
-        name: "grumpy-fix",
-        description: commands["grumpy-fix"].text + " Use only when the user asks to apply, fix, or address the Grump's findings.",
+        name: `${CMD}-fix`,
+        description: c("fix").text + ` Use only when the user asks to apply, fix, or address ${P.possessive} findings.`,
         "disable-model-invocation": true,
         "allowed-tools": "Read, Edit, Write, Grep, Glob, Bash(git diff *)",
       },
       body: [
-        "This is the one command where the Grump's findings are turned into edits.",
+        `This is the one command where ${P.possessive} findings are turned into edits.`,
         "",
-        "1. Find the most recent `GRUMP:` verdict block in this conversation. If there is none, run the `/grumpy-review` procedure first and print the verdict.",
+        `1. Find the most recent \`${P.verdictPrefix}:\` verdict block in this conversation. If there is none, run the \`/${CMD}-review\` procedure first and print the verdict.`,
         "2. For each numbered finding, in order: open the file, make the smallest edit that resolves exactly that finding, and nothing else. One edit per finding. No renames, no reformatting, no drive-by improvements.",
         "3. If a finding cannot be resolved without a decision from the user (a schema change, a product question), skip it and say why in one line.",
-        "4. Review the result again as the Grump: answer the checklist, print a fresh verdict block. Repeat once at most; if findings remain after the second pass, stop and list them.",
+        `4. Review the result again as ${P.asName}: answer the checklist, print a fresh verdict block. Repeat once at most; if findings remain after the second pass, stop and list them.`,
       ].join("\n"),
     },
-    "grumpy-scorecard": {
+    [`${CMD}-scorecard`]: {
       fm: {
-        name: "grumpy-scorecard",
-        description: commands["grumpy-scorecard"].text + " Use when the user asks what the Grump caught, blocked, or let through.",
+        name: `${CMD}-scorecard`,
+        description: c("scorecard").text + ` Use when the user asks what ${P.asName} caught, blocked, or let through.`,
         "disable-model-invocation": true,
         "allowed-tools": "Bash(node *)",
       },
       body: [
-        `!\`node "${HOOKS_REL}/grumpy-scorecard.mjs" \${CLAUDE_SESSION_ID}\``,
+        `!\`node "${HOOKS_REL}/review-scorecard.mjs" \${CLAUDE_SESSION_ID}\``,
         "",
         "Show the tables above to the user unchanged. Below them, add one line naming the number of overrides and what they were for, or `No overrides.`",
       ].join("\n"),
     },
-    "grumpy-help": {
+    [`${CMD}-help`]: {
       fm: {
-        name: "grumpy-help",
-        description: commands["grumpy-help"].text + " Use when the user asks how the Grump works or which commands exist.",
+        name: `${CMD}-help`,
+        description: c("help").text + ` Use when the user asks how ${P.asName} works or which commands exist.`,
         "disable-model-invocation": true,
       },
       body: [
@@ -233,13 +238,13 @@ export function claudeHooks() {
     hooks: {
       UserPromptSubmit: [
         {
-          hooks: [{ type: "command", command: hookCommand("grumpy-context.mjs"), timeout: 10 }],
+          hooks: [{ type: "command", command: hookCommand("review-context.mjs"), timeout: 10 }],
         },
       ],
       PreToolUse: [
         {
           matcher: "Edit|Write|MultiEdit|NotebookEdit|Bash|apply_patch|shell",
-          hooks: [{ type: "command", command: hookCommand("grumpy-gate.mjs"), timeout: 15 }],
+          hooks: [{ type: "command", command: hookCommand("review-gate.mjs"), timeout: 15 }],
         },
       ],
     },
@@ -252,29 +257,29 @@ export function copilotHooks() {
   return {
     version: 1,
     hooks: {
-      sessionStart: [{ type: "command", bash: cmd("grumpy-context.mjs"), powershell: ps("grumpy-context.mjs"), timeoutSec: 10 }],
-      preToolUse: [{ type: "command", bash: cmd("grumpy-gate.mjs"), powershell: ps("grumpy-gate.mjs"), timeoutSec: 15 }],
+      sessionStart: [{ type: "command", bash: cmd("review-context.mjs"), powershell: ps("review-context.mjs"), timeoutSec: 10 }],
+      preToolUse: [{ type: "command", bash: cmd("review-gate.mjs"), powershell: ps("review-gate.mjs"), timeoutSec: 15 }],
     },
   };
 }
 
 export function geminiHooksExample() {
-  const cmd = (script) => `node "$HOME/.grumpy-reviewer/hooks/${script}" --host gemini 2>/dev/null || true`;
+  const cmd = (script) => `node "$HOME/.${P.slug}/hooks/${script}" --host gemini 2>/dev/null || true`;
   return {
     hooks: {
-      BeforeAgent: [{ hooks: [{ name: "grumpy-context", type: "command", command: cmd("grumpy-context.mjs"), timeout: 10 }] }],
-      BeforeTool: [{ matcher: "write_file|replace|edit|run_shell_command", hooks: [{ name: "grumpy-gate", type: "command", command: cmd("grumpy-gate.mjs"), timeout: 15 }] }],
+      BeforeAgent: [{ hooks: [{ name: `${CMD}-context`, type: "command", command: cmd("review-context.mjs"), timeout: 10 }] }],
+      BeforeTool: [{ matcher: "write_file|replace|edit|run_shell_command", hooks: [{ name: `${CMD}-gate`, type: "command", command: cmd("review-gate.mjs"), timeout: 15 }] }],
     },
   };
 }
 
 export function copilotRepoHooksExample() {
-  const cmd = (script) => `node "$HOME/.grumpy-reviewer/hooks/${script}" --host copilot 2>/dev/null || true`;
+  const cmd = (script) => `node "$HOME/.${P.slug}/hooks/${script}" --host copilot 2>/dev/null || true`;
   return {
     version: 1,
     hooks: {
-      sessionStart: [{ type: "command", bash: cmd("grumpy-context.mjs"), timeoutSec: 10 }],
-      preToolUse: [{ type: "command", bash: cmd("grumpy-gate.mjs"), timeoutSec: 15 }],
+      sessionStart: [{ type: "command", bash: cmd("review-context.mjs"), timeoutSec: 10 }],
+      preToolUse: [{ type: "command", bash: cmd("review-gate.mjs"), timeoutSec: 15 }],
     },
   };
 }
@@ -283,8 +288,8 @@ export function copilotRepoHooksExample() {
 
 export function claudePlugin(rs, p) {
   return {
-    name: "grumpy-reviewer",
-    displayName: "Grumpy Reviewer",
+    name: P.slug,
+    displayName: P.displayName,
     version: p.version,
     description: p.description,
     author: AUTHOR,
@@ -307,8 +312,8 @@ export function claudeMarketplace(rs, p) {
     },
     plugins: [
       {
-        name: "grumpy-reviewer",
-        displayName: "Grumpy Reviewer",
+        name: P.slug,
+        displayName: P.displayName,
         description: p.description,
         version: p.version,
         source: "./",
@@ -321,7 +326,7 @@ export function claudeMarketplace(rs, p) {
 
 export function codexPlugin(rs, p) {
   return {
-    name: "grumpy-reviewer",
+    name: P.slug,
     version: p.version,
     description: p.description,
     author: AUTHOR,
@@ -332,14 +337,14 @@ export function codexPlugin(rs, p) {
     skills: "./skills",
     hooks: "./hooks/hooks.json",
     interface: {
-      displayName: "Grumpy Reviewer",
-      shortDescription: "The staff engineer who blocks the merge, inside your agent.",
-      longDescription: `${rs.description} Every write and commit is reviewed against a ten-question checklist and given a verdict: APPROVE, REQUEST_CHANGES, or BLOCK.`,
+      displayName: P.displayName,
+      shortDescription: P.shortDescription || `${P.name}, inside your agent.`,
+      longDescription: `${rs.description} Every write and commit is reviewed against a ten-question checklist and given a verdict: ${V.approve}, ${V.changes}, or ${V.block}.`,
       developerName: "lazy-senior-dev",
       category: "Productivity",
       capabilities: ["Code review", "Security review", "Pre-commit gate"],
       websiteURL: HOMEPAGE,
-      defaultPrompt: ["Review the diff as the Grump", "Grump mode gate"],
+      defaultPrompt: [`Review ${P.reviews} as ${P.asName}`, `${P.short} mode gate`],
       brandColor: "#1f1f1f",
     },
   };
@@ -351,7 +356,7 @@ export function codexMarketplace() {
     interface: { displayName: "lazy-senior-dev" },
     plugins: [
       {
-        name: "grumpy-reviewer",
+        name: P.slug,
         source: { source: "local", path: "./" },
         policy: { installation: "AVAILABLE", authentication: "ON_INSTALL" },
         category: "Productivity",
@@ -380,17 +385,17 @@ export function copilotMarketplace(rs, p) {
     name: "lazy-senior-dev",
     owner: { name: "sandeepbazar", email: "5602033+sandeepbazar@users.noreply.github.com" },
     metadata: { description: "Senior engineers your AI agent can be. One persona per plugin.", version: p.version },
-    plugins: [{ name: "grumpy-reviewer", description: p.description, version: p.version, source: "./" }],
+    plugins: [{ name: P.slug, description: p.description, version: p.version, source: "./" }],
   };
 }
 
 export function geminiExtension(rs, p) {
-  return { name: "grumpy-reviewer", version: p.version, description: p.description, contextFileName: "GEMINI.md" };
+  return { name: P.slug, version: p.version, description: p.description, contextFileName: "GEMINI.md" };
 }
 
 export function devinPlugin(rs, p) {
   return {
-    name: "grumpy-reviewer",
+    name: P.slug,
     version: p.version,
     description: p.description,
     author: AUTHOR,
@@ -404,7 +409,7 @@ export function devinPlugin(rs, p) {
 
 export function qoderPlugin(rs, p) {
   return {
-    name: "grumpy-reviewer",
+    name: P.slug,
     version: p.version,
     description: p.description,
     author: AUTHOR,
@@ -426,7 +431,7 @@ function toml(str) {
 export function geminiCommands(rs) {
   const out = new Map();
   const review = [
-    "Review the working-tree changes as the Grump.",
+    `Review the working-tree changes as ${P.asName}.`,
     "",
     "Status:",
     "!{git status --short}",
@@ -437,10 +442,10 @@ export function geminiCommands(rs) {
     "Staged:",
     "!{git diff --cached}",
     "",
-    "Read the whole diff. Answer the ten checklist questions in writing, in order. Print the verdict block: GRUMP: APPROVE | REQUEST_CHANGES | BLOCK, then numbered file:line — what fails in production — smallest fix lines. Do not edit any file.",
+    `Read the whole diff. Answer the ten checklist questions in writing, in order. Print the verdict block: ${P.verdictPrefix}: ${VERDICT_LIST}, then numbered file:line — what fails in production — smallest fix lines. Do not edit any file.`,
   ].join("\n");
   const pr = [
-    "Review pull request {{args}} as the Grump.",
+    `Review pull request {{args}} as ${P.asName}.`,
     "",
     "!{gh pr view {{args}}}",
     "",
@@ -449,21 +454,22 @@ export function geminiCommands(rs) {
     "Read the whole diff. Answer the ten checklist questions in writing, in order. Print the verdict block. Do not edit any file and do not post to the pull request.",
   ].join("\n");
   const fix = [
-    "Apply the findings from the most recent GRUMP: verdict in this conversation. One minimal edit per finding, nothing else. Then review the result again as the Grump and print a fresh verdict. If there is no verdict yet, review the working tree first.",
+    `Apply the findings from the most recent ${P.verdictPrefix}: verdict in this conversation. One minimal edit per finding, nothing else. Then review the result again as ${P.asName} and print a fresh verdict. If there is no verdict yet, review the working tree first.`,
   ].join("\n");
   const mode = [
-    "Set the Grump's mode to {{args}} for this conversation (nag, gate, or off) and confirm it in one line. If {{args}} is empty, report the current mode. The persistent setting lives in ~/.config/grumpy-reviewer/config.json under `mode`; tell the user that in one sentence.",
+    `Set ${P.possessive} mode to {{args}} for this conversation (nag, gate, or off) and confirm it in one line. If {{args}} is empty, report the current mode. The persistent setting lives in ~/.config/grumpy-reviewer/config.json under \`mode\`; tell the user that in one sentence.`,
   ].join("\n");
   const help = `Print this table and nothing else:\n\n${rs.sections["Commands"].replace(/\\\|/g, "|")}`;
   const scorecard =
-    "List every GRUMP: verdict you printed in this conversation as a markdown table with columns Target, Verdict, Findings. Add a final line with the number of overrides.";
+    `List every ${P.verdictPrefix}: verdict you printed in this conversation as a markdown table with columns Target, Verdict, Findings. Add a final line with the number of overrides.`;
+  const ct = (n) => rs.commands.find((c) => c.name === n).text;
   const entries = {
-    "grumpy-review": [rs.commands.find((c) => c.name === "grumpy-review").text, review],
-    "grumpy-pr": [rs.commands.find((c) => c.name === "grumpy-pr").text, pr],
-    "grumpy-fix": [rs.commands.find((c) => c.name === "grumpy-fix").text, fix],
-    grumpy: [rs.commands.find((c) => c.name === "grumpy").text, mode],
-    "grumpy-scorecard": [rs.commands.find((c) => c.name === "grumpy-scorecard").text, scorecard],
-    "grumpy-help": [rs.commands.find((c) => c.name === "grumpy-help").text, help],
+    [`${CMD}-review`]: [ct(`${CMD}-review`), review],
+    [`${CMD}-pr`]: [ct(`${CMD}-pr`), pr],
+    [`${CMD}-fix`]: [ct(`${CMD}-fix`), fix],
+    [CMD]: [ct(CMD), mode],
+    [`${CMD}-scorecard`]: [ct(`${CMD}-scorecard`), scorecard],
+    [`${CMD}-help`]: [ct(`${CMD}-help`), help],
   };
   for (const [name, [description, prompt]] of Object.entries(entries)) {
     out.set(`commands/${name}.toml`, `# ${GENERATED}\ndescription = ${JSON.stringify(description.replace(/\\\|/g, "|"))}\nprompt = ${toml(prompt)}\n`);
@@ -475,9 +481,9 @@ export function geminiCommands(rs) {
 
 export function opencodePlugin(rs) {
   const card = JSON.stringify(personaCard(rs));
-  return `// grumpy-reviewer plugin for OpenCode. ${GENERATED}
-// Copy this file to .opencode/plugins/grumpy.mjs (project) or ~/.config/opencode/plugins/ (global).
-// It injects the Grump on every turn and, in gate mode, stops the first write to each
+  return `// ${P.slug} plugin for OpenCode. ${GENERATED}
+// Copy this file to .opencode/plugins/${CMD}.mjs (project) or ~/.config/opencode/plugins/ (global).
+// It injects ${P.asName} on every turn and, in gate mode, stops the first write to each
 // file until a verdict has been printed. Mode: GRUMPY_MODE, then ~/.config/grumpy-reviewer/config.json.
 
 import { readFileSync } from "node:fs";
@@ -501,14 +507,14 @@ function mode() {
   return "nag";
 }
 
-export const GrumpyReviewer = async () => {
+export const ${P.displayName.replace(/[^A-Za-z0-9]/g, "")} = async () => {
   const stopped = new Map(); // sessionID -> Set of files already stopped once
   return {
     "experimental.chat.system.transform": async (_input, output) => {
       const m = mode();
       if (m === "off") return;
       const gate = m === "gate" ? "the first write to each file is refused until a verdict is printed" : "writes proceed after the verdict";
-      output.system.push(CARD + "\\n\\nGrump mode: " + m + "; " + gate + ".");
+      output.system.push(CARD + "\\n\\nReview mode: " + m + "; " + gate + ".");
     },
     "tool.execute.before": async (input, output) => {
       if (mode() !== "gate") return;
@@ -521,7 +527,7 @@ export const GrumpyReviewer = async () => {
       if (seen.has(file)) return;
       seen.add(file);
       throw new Error(
-        "The Grump stopped this write to " + file + ". Review your own change first: answer the ten checklist questions in writing, print the GRUMP: verdict block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines), fix any findings, then retry. The retry for this file will go through."
+        "${P.name} stopped this write to " + file + ". Review your own change first: answer the ten checklist questions in writing, print the ${P.verdictPrefix}: verdict block (${VERDICT_LIST} with numbered file:line — failure — smallest fix lines), fix any findings, then retry. The retry for this file will go through."
       );
     },
   };
@@ -532,30 +538,31 @@ export const GrumpyReviewer = async () => {
 export function opencodeCommands(rs) {
   const out = new Map();
   const mk = (name, description, body) => out.set(`.opencode/command/${name}.md`, `---\ndescription: ${JSON.stringify(description.replace(/\\\|/g, "|"))}\n---\n\n${body}\n`);
-  mk("grumpy-review", rs.commands.find((c) => c.name === "grumpy-review").text, [
-    "Review the working-tree changes as the Grump.",
+  const ct = (n) => rs.commands.find((c) => c.name === n).text;
+  mk(`${CMD}-review`, ct(`${CMD}-review`), [
+    `Review the working-tree changes as ${P.asName}.`,
     "",
     "Status: !`git status --short`",
     "Unstaged: !`git diff`",
     "Staged: !`git diff --cached`",
     "",
-    "Read the whole diff. Answer the ten checklist questions in writing, in order. Print the verdict block (GRUMP: APPROVE | REQUEST_CHANGES | BLOCK, then numbered file:line — what fails in production — smallest fix). Do not edit any file.",
+    `Read the whole diff. Answer the ten checklist questions in writing, in order. Print the verdict block (${P.verdictPrefix}: ${VERDICT_LIST}, then numbered file:line — what fails in production — smallest fix). Do not edit any file.`,
   ].join("\n"));
-  mk("grumpy-pr", rs.commands.find((c) => c.name === "grumpy-pr").text, [
-    "Review pull request $ARGUMENTS as the Grump.",
+  mk(`${CMD}-pr`, ct(`${CMD}-pr`), [
+    `Review pull request $ARGUMENTS as ${P.asName}.`,
     "",
     "!`gh pr view $ARGUMENTS`",
     "!`gh pr diff $ARGUMENTS`",
     "",
     "Read the whole diff. Answer the checklist in writing. Print the verdict block. Do not edit any file and do not post to the pull request.",
   ].join("\n"));
-  mk("grumpy-fix", rs.commands.find((c) => c.name === "grumpy-fix").text,
-    "Apply the findings from the most recent GRUMP: verdict in this conversation: one minimal edit per finding, nothing else. Then review the result again as the Grump and print a fresh verdict. If there is no verdict yet, review the working tree first.");
-  mk("grumpy", rs.commands.find((c) => c.name === "grumpy").text,
-    "Set the Grump's mode to $ARGUMENTS for this conversation (nag, gate, or off) and confirm in one line. If no mode was given, report the current one. The persistent setting is `mode` in ~/.config/grumpy-reviewer/config.json, or the GRUMPY_MODE environment variable.");
-  mk("grumpy-scorecard", rs.commands.find((c) => c.name === "grumpy-scorecard").text,
-    "List every GRUMP: verdict you printed in this conversation as a markdown table with columns Target, Verdict, Findings. Add a final line with the number of overrides.");
-  mk("grumpy-help", rs.commands.find((c) => c.name === "grumpy-help").text, `Print this table and nothing else:\n\n${rs.sections["Commands"].replace(/\\\|/g, "|")}`);
+  mk(`${CMD}-fix`, ct(`${CMD}-fix`),
+    `Apply the findings from the most recent ${P.verdictPrefix}: verdict in this conversation: one minimal edit per finding, nothing else. Then review the result again as ${P.asName} and print a fresh verdict. If there is no verdict yet, review the working tree first.`);
+  mk(CMD, ct(CMD),
+    `Set ${P.possessive} mode to $ARGUMENTS for this conversation (nag, gate, or off) and confirm in one line. If no mode was given, report the current one. The persistent setting is \`mode\` in ~/.config/grumpy-reviewer/config.json, or the GRUMPY_MODE environment variable.`);
+  mk(`${CMD}-scorecard`, ct(`${CMD}-scorecard`),
+    `List every ${P.verdictPrefix}: verdict you printed in this conversation as a markdown table with columns Target, Verdict, Findings. Add a final line with the number of overrides.`);
+  mk(`${CMD}-help`, ct(`${CMD}-help`), `Print this table and nothing else:\n\n${rs.sections["Commands"].replace(/\\\|/g, "|")}`);
   return out;
 }
 
@@ -569,16 +576,16 @@ export function opencodeConfig() {
 // ---------- rules files for instruction-only hosts ----------
 
 function rulesFile(rs, header, opts = {}) {
-  const body = instructionBody(rs, { commands: false, heading: "# The Grump", ...opts });
+  const body = instructionBody(rs, { commands: false, heading: `# ${P.name}`, ...opts });
   return (header ? header + "\n\n" : "") + body;
 }
 
 export function cursorRule(rs) {
-  return rulesFile(rs, frontmatter({ description: "The Grump reviews every change before it is written: a ten-question checklist and a verdict.", alwaysApply: true }));
+  return rulesFile(rs, frontmatter({ description: `${P.name} reviews every change before it is written: a ten-question checklist and a verdict.`, alwaysApply: true }));
 }
 
 export function windsurfRule(rs) {
-  return rulesFile(rs, frontmatter({ trigger: "always_on", description: "The Grump reviews every change before it is written." }));
+  return rulesFile(rs, frontmatter({ trigger: "always_on", description: `${P.name} reviews every change before it is written.` }));
 }
 
 export function kiroRule(rs) {
@@ -586,7 +593,7 @@ export function kiroRule(rs) {
 }
 
 export function qoderRule(rs) {
-  return rulesFile(rs, frontmatter({ trigger: "always_on", description: "The Grump reviews every change before it is written." }));
+  return rulesFile(rs, frontmatter({ trigger: "always_on", description: `${P.name} reviews every change before it is written.` }));
 }
 
 export function clineRule(rs) {
@@ -598,17 +605,17 @@ export function copilotInstructions(rs) {
 }
 
 export function agentsMd(rs) {
-  return instructionBody(rs, { commands: false, heading: "# The Grump" });
+  return instructionBody(rs, { commands: false, heading: `# ${P.name}` });
 }
 
 export function geminiMd(rs) {
-  return instructionBody(rs, { commands: true, heading: "# The Grump" });
+  return instructionBody(rs, { commands: true, heading: `# ${P.name}` });
 }
 
 export function openclawSkill(rs, p) {
   const fm = [
     "---",
-    "name: grumpy-reviewer",
+    `name: ${P.slug}`,
     `description: ${JSON.stringify(p.description)}`,
     `homepage: ${HOMEPAGE}`,
     "user-invocable: true",
@@ -627,14 +634,14 @@ export function bobSettings() {
   const cmd = (script) => `node hooks/${script} --host bob 2>/dev/null || true`;
   return {
     hooks: {
-      UserPromptSubmit: [{ hooks: [{ type: "command", command: cmd("grumpy-context.mjs"), timeout: 10 }] }],
-      PreToolUse: [{ matcher: "^(edit|write_file|apply_diff|insert_content|search_and_replace|execute_command|bash|shell)$", hooks: [{ type: "command", command: cmd("grumpy-gate.mjs"), timeout: 15 }] }],
+      UserPromptSubmit: [{ hooks: [{ type: "command", command: cmd("review-context.mjs"), timeout: 10 }] }],
+      PreToolUse: [{ matcher: "^(edit|write_file|apply_diff|insert_content|search_and_replace|execute_command|bash|shell)$", hooks: [{ type: "command", command: cmd("review-gate.mjs"), timeout: 15 }] }],
     },
   };
 }
 
 export function bobSkill(rs, p) {
-  const fm = ["---", "name: grumpy-reviewer", `description: ${JSON.stringify("Review any code change as the Grump before it is written or committed: ten questions, a fixed verdict block (GRUMP: APPROVE | REQUEST_CHANGES | BLOCK), no rewrites. Use whenever the user asks for a review, a second opinion on a diff, or before committing.")}`, "---"].join("\n");
+  const fm = ["---", `name: ${P.slug}`, `description: ${JSON.stringify(`Review any change as ${P.asName} before it is written or committed: ten questions, a fixed verdict block (${P.verdictPrefix}: ${VERDICT_LIST}), no rewrites. Use whenever the user asks for a review, a second opinion on a diff, or before committing.`)}`, "---"].join("\n");
   return `${fm}\n\n${instructionBody(rs, { commands: false })}`;
 }
 
@@ -642,12 +649,12 @@ export function bobCommands(rs) {
   const out = new Map();
   const mk = (name, description, hint, body) => out.set(`.bob/commands/${name}.md`, `---\ndescription: ${JSON.stringify(description.replace(/\\\|/g, "|"))}${hint ? `\nargument-hint: ${JSON.stringify(hint)}` : ""}\n---\n\n${body}\n`);
   const c = (n) => rs.commands.find((x) => x.name === n).text;
-  mk("grumpy-review", c("grumpy-review"), "", "Run `git status --short`, `git diff`, and `git diff --cached`, then review the changes as the Grump: read the whole diff, answer the ten checklist questions in writing, in order, and print the verdict block (GRUMP: APPROVE | REQUEST_CHANGES | BLOCK, then numbered file:line — what fails in production — smallest fix lines). Do not edit any file.");
-  mk("grumpy-pr", c("grumpy-pr"), "<number-or-url>", "Run `gh pr view $1` and `gh pr diff $1`, then review the pull request as the Grump: read the whole diff, answer the ten checklist questions in writing, print the verdict block. Do not edit any file and do not post to the pull request.");
-  mk("grumpy-fix", c("grumpy-fix"), "", "Apply the findings from the most recent GRUMP: verdict in this conversation: one minimal edit per finding, nothing else. Then review the result again as the Grump and print a fresh verdict. If there is no verdict yet, run the review first.");
-  mk("grumpy", c("grumpy"), "[nag|gate|off]", "Set the Grump's mode to $1 for this conversation (nag, gate, or off) and confirm in one line; with no argument, report the current mode. The persistent setting is `mode` in ~/.config/grumpy-reviewer/config.json, or the GRUMPY_MODE environment variable.");
-  mk("grumpy-scorecard", c("grumpy-scorecard"), "", "List every GRUMP: verdict you printed in this conversation as a markdown table with columns Target, Verdict, Findings, and add a final line with the number of overrides.");
-  mk("grumpy-help", c("grumpy-help"), "", `Print this table and nothing else:\n\n${rs.sections["Commands"].replace(/\\\|/g, "|")}`);
+  mk(`${CMD}-review`, c(`${CMD}-review`), "", `Run \`git status --short\`, \`git diff\`, and \`git diff --cached\`, then review the changes as ${P.asName}: read the whole diff, answer the ten checklist questions in writing, in order, and print the verdict block (${P.verdictPrefix}: ${VERDICT_LIST}, then numbered file:line — what fails in production — smallest fix lines). Do not edit any file.`);
+  mk(`${CMD}-pr`, c(`${CMD}-pr`), "<number-or-url>", `Run \`gh pr view $1\` and \`gh pr diff $1\`, then review the pull request as ${P.asName}: read the whole diff, answer the ten checklist questions in writing, print the verdict block. Do not edit any file and do not post to the pull request.`);
+  mk(`${CMD}-fix`, c(`${CMD}-fix`), "", `Apply the findings from the most recent ${P.verdictPrefix}: verdict in this conversation: one minimal edit per finding, nothing else. Then review the result again as ${P.asName} and print a fresh verdict. If there is no verdict yet, run the review first.`);
+  mk(CMD, c(CMD), "[nag|gate|off]", `Set ${P.possessive} mode to $1 for this conversation (nag, gate, or off) and confirm in one line; with no argument, report the current mode. The persistent setting is \`mode\` in ~/.config/grumpy-reviewer/config.json, or the GRUMPY_MODE environment variable.`);
+  mk(`${CMD}-scorecard`, c(`${CMD}-scorecard`), "", `List every ${P.verdictPrefix}: verdict you printed in this conversation as a markdown table with columns Target, Verdict, Findings, and add a final line with the number of overrides.`);
+  mk(`${CMD}-help`, c(`${CMD}-help`), "", `Print this table and nothing else:\n\n${rs.sections["Commands"].replace(/\\\|/g, "|")}`);
   return out;
 }
 
@@ -670,15 +677,16 @@ export function renderAll(rs, p = pkg()) {
   files.set("gemini-extension.json", json(geminiExtension(rs, p)));
   files.set(".devin-plugin/plugin.json", json(devinPlugin(rs, p)));
   files.set(".qoder-plugin/plugin.json", json(qoderPlugin(rs, p)));
-  files.set(".opencode/plugins/grumpy.mjs", opencodePlugin(rs));
-  files.set(".cursor/rules/grumpy.mdc", cursorRule(rs));
-  files.set(".windsurf/rules/grumpy.md", windsurfRule(rs));
-  files.set(".clinerules/grumpy.md", clineRule(rs));
-  files.set(".kiro/steering/grumpy.md", kiroRule(rs));
-  files.set(".qoder/rules/grumpy.md", qoderRule(rs));
-  files.set(".openclaw/skills/grumpy-reviewer/SKILL.md", openclawSkill(rs, p));
-  files.set(".bob/rules/grumpy.md", clineRule(rs));
-  files.set(".bob/skills/grumpy-reviewer/SKILL.md", bobSkill(rs, p));
+  files.set(`.opencode/plugins/${CMD}.mjs`, opencodePlugin(rs));
+  files.set(`.cursor/rules/${CMD}.mdc`, cursorRule(rs));
+  files.set(`.windsurf/rules/${CMD}.md`, windsurfRule(rs));
+  files.set(`.clinerules/${CMD}.md`, clineRule(rs));
+  files.set(`.kiro/steering/${CMD}.md`, kiroRule(rs));
+  files.set(`.qoder/rules/${CMD}.md`, qoderRule(rs));
+  files.set(`.openclaw/skills/${P.slug}/SKILL.md`, openclawSkill(rs, p));
+  files.set(`.bob/rules/${CMD}.md`, clineRule(rs));
+  files.set(`.bob/skills/${P.slug}/SKILL.md`, bobSkill(rs, p));
+  files.set("hooks/persona.json", readFileSync(join(ROOT, "persona.json"), "utf8"));
   files.set(".bob/settings.json", json(bobSettings()));
   for (const [k, v] of bobCommands(rs)) files.set(k, v);
   files.set("examples/opencode.json", json(opencodeConfig()));

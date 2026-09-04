@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Print what the Grump caught in a session as a markdown table.
-//   node grumpy-scorecard.mjs [session_id]
+//   node review-scorecard.mjs [session_id]
 
 import { readScorecard, latestScorecardSession, scorecardPath } from "./lib/config.mjs";
 
@@ -8,7 +8,7 @@ const requested = (process.argv[2] || "").trim();
 const sessionId = requested && requested !== "unknown" ? requested : latestScorecardSession();
 
 if (!sessionId) {
-  console.log("No scorecard yet. The Grump has not seen a write in this session.");
+  console.log("No scorecard yet. The reviewer has not seen a write in this session.");
   process.exit(0);
 }
 
@@ -30,7 +30,7 @@ const summary = {
   findings: rows.reduce((n, r) => n + (r.findings || 0), 0),
 };
 
-console.log(`Grump scorecard for session ${sessionId}`);
+console.log(`Review scorecard for session ${sessionId}`);
 console.log("");
 console.log("| Writes seen | Approved | Changes requested | Blocked | Denied at the gate | Overrides | Unreviewed | Findings |");
 console.log("|---|---|---|---|---|---|---|---|");

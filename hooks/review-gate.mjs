@@ -2,7 +2,7 @@
 // PreToolUse gate. Reads the host's hook event from stdin, finds the last verdict
 // the agent printed, and answers allow or deny in the host's dialect.
 //
-//   node grumpy-gate.mjs [--host claude|codex|copilot|gemini|kiro]
+//   node review-gate.mjs [--host claude|codex|copilot|gemini|kiro]
 //
 // It never throws: any internal failure means "allow", because a broken reviewer
 // must not become a broken editor.
@@ -49,7 +49,7 @@ async function main() {
   if (raw === null || !stdin.complete) {
     // Unreadable input: nag lets the host decide, gate refuses rather than guess.
     if (mode === "gate" && stdin.data.trim()) {
-      return emit(render({ action: "deny", reason: "The Grump could not read this tool call (truncated or malformed hook input) and gate mode does not guess. Retry the call." }, host));
+      return emit(render({ action: "deny", reason: "The reviewer could not read this tool call (truncated or malformed hook input) and gate mode does not guess. Retry the call." }, host));
     }
     return emit({ stdout: "", stderr: "", exitCode: 0 });
   }

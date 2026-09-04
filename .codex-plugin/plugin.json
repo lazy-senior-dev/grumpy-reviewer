@@ -23,7 +23,7 @@
   "hooks": "./hooks/hooks.json",
   "interface": {
     "displayName": "Grumpy Reviewer",
-    "shortDescription": "The staff engineer who blocks the merge, inside your agent.",
+    "shortDescription": "The Grump, inside your agent.",
     "longDescription": "Grey stubble, reading glasses pushed up into hair he forgot they were in, a mug that says NOT LGTM. He has rejected four thousand pull requests and still remembers the one he should not have approved. Every write and commit is reviewed against a ten-question checklist and given a verdict: APPROVE, REQUEST_CHANGES, or BLOCK.",
     "developerName": "lazy-senior-dev",
     "category": "Productivity",

@@ -77,7 +77,7 @@ if (cmd === "install" || cmd === "uninstall") {
         try {
           const existing = JSON.parse(readFileSync(dest, "utf8"));
           merged = { ...existing, hooks: { ...(existing.hooks || {}) } };
-          for (const [event, groups] of Object.entries(ours.hooks)) merged.hooks[event] = [...(existing.hooks?.[event] || []).filter((g) => !JSON.stringify(g).includes("grumpy-")), ...groups];
+          for (const [event, groups] of Object.entries(ours.hooks)) merged.hooks[event] = [...(existing.hooks?.[event] || []).filter((g) => !JSON.stringify(g).includes("review-")), ...groups];
         } catch { if (!force) { skipped.push(h.settings + " (could not parse; use --force to replace)"); merged = null; } }
       }
       if (merged) { fs.mkdirSync(dirname(dest), { recursive: true }); fs.writeFileSync(dest, JSON.stringify(merged, null, 2) + "\n"); written.push(h.settings); }
@@ -93,7 +93,7 @@ if (cmd === "install" || cmd === "uninstall") {
     if (h.settings && fs.existsSync(join(cwd, h.settings))) {
       try {
         const existing = JSON.parse(readFileSync(join(cwd, h.settings), "utf8"));
-        for (const [event, groups] of Object.entries(existing.hooks || {})) existing.hooks[event] = groups.filter((g) => !JSON.stringify(g).includes("grumpy-"));
+        for (const [event, groups] of Object.entries(existing.hooks || {})) existing.hooks[event] = groups.filter((g) => !JSON.stringify(g).includes("review-"));
         fs.writeFileSync(join(cwd, h.settings), JSON.stringify(existing, null, 2) + "\n");
         removed.push(h.settings + " (grumpy hooks removed)");
       } catch { console.log("  could not parse " + h.settings + "; remove the grumpy hooks by hand"); }

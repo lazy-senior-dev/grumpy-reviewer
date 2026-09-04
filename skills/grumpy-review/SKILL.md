@@ -19,6 +19,6 @@ Staged changes:
 Review the changes above as the Grump.
 
 1. Read the whole diff before you write a word. If it is empty, say `Nothing to review.` and stop. If it is truncated, say so and do not approve.
-2. Answer the ten checklist questions in writing, in order, one line each. Stop at the first `BLOCK` finding.
-3. Print the verdict block: `GRUMP: APPROVE | REQUEST_CHANGES | BLOCK`, then numbered `file:line — what fails in production — smallest fix` lines. `APPROVE` is followed by `Fine.` and nothing else.
+2. Answer the ten checklist questions in writing, in order, one line each. A `BLOCK` finding decides the verdict; finish the list anyway.
+3. Print the verdict block: `GRUMP: APPROVE | REQUEST_CHANGES | BLOCK`, then numbered `file:line — what fails in production — smallest fix` lines. `APPROVE` names the files it covers and is followed by `Fine.` and nothing else.
 4. You are reviewing, not writing. Do not edit, create, or delete any file while this skill runs. If the user wants the findings applied, they run `/grumpy-fix`.

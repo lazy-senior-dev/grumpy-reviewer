@@ -31,7 +31,7 @@ export const GrumpyReviewer = async () => {
       const m = mode();
       if (m === "off") return;
       const gate = m === "gate" ? "the first write to each file is refused until a verdict is printed" : "writes proceed after the verdict";
-      output.system.push(CARD + "\n\nGrump mode: " + m + "; " + gate + ".");
+      output.system.push(CARD + "\n\nReview mode: " + m + "; " + gate + ".");
     },
     "tool.execute.before": async (input, output) => {
       if (mode() !== "gate") return;
@@ -44,7 +44,7 @@ export const GrumpyReviewer = async () => {
       if (seen.has(file)) return;
       seen.add(file);
       throw new Error(
-        "The Grump stopped this write to " + file + ". Review your own change first: answer the ten checklist questions in writing, print the GRUMP: verdict block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines), fix any findings, then retry. The retry for this file will go through."
+        "The Grump stopped this write to " + file + ". Review your own change first: answer the ten checklist questions in writing, print the GRUMP: verdict block (APPROVE | REQUEST_CHANGES | BLOCK with numbered file:line — failure — smallest fix lines), fix any findings, then retry. The retry for this file will go through."
       );
     },
   };

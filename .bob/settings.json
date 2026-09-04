@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node hooks/grumpy-context.mjs --host bob 2>/dev/null || true",
+            "command": "node hooks/review-context.mjs --host bob 2>/dev/null || true",
             "timeout": 10
           }
         ]
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node hooks/grumpy-gate.mjs --host bob 2>/dev/null || true",
+            "command": "node hooks/review-gate.mjs --host bob 2>/dev/null || true",
             "timeout": 15
           }
         ]

@@ -2,7 +2,7 @@
 // UserPromptSubmit (Claude Code, Codex), sessionStart (Copilot CLI), BeforeAgent (Gemini CLI).
 // Injects the reviewer card plus the current mode. Prints nothing when the mode is off.
 //
-//   node grumpy-context.mjs [--host claude|codex|copilot|gemini]
+//   node review-context.mjs [--host claude|codex|copilot|gemini]
 
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -30,7 +30,7 @@ function main() {
   const card = persona();
   if (mode === "off" || !card) return;
   const gate = mode === "gate" ? "writes are denied until the verdict is APPROVE" : "writes proceed after the verdict; a BLOCK still stops them";
-  const context = `${card}\n\nGrump mode: ${mode} (${source}); ${gate}.`;
+  const context = `${card}\n\nReview mode: ${mode} (${source}); ${gate}.`;
   let out;
   switch (host) {
     case "copilot":

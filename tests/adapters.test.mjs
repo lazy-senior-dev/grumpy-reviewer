@@ -81,7 +81,7 @@ test("the OpenCode plugin is valid JavaScript that exports a plugin", async () =
   const output = { system: [] };
   process.env.GRUMPY_MODE = "nag";
   await plugin["experimental.chat.system.transform"]({}, output);
-  assert.match(output.system[0], /Grump mode: nag/);
+  assert.match(output.system[0], /Review mode: nag/);
   process.env.GRUMPY_MODE = "gate";
   const args = { args: { filePath: "x.ts" } };
   await assert.rejects(() => plugin["tool.execute.before"]({ tool: "edit", sessionID: "s" }, args), /stopped this write/);

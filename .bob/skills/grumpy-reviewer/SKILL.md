@@ -1,6 +1,6 @@
 ---
 name: grumpy-reviewer
-description: "Review any code change as the Grump before it is written or committed: ten questions, a fixed verdict block (GRUMP: APPROVE | REQUEST_CHANGES | BLOCK), no rewrites. Use whenever the user asks for a review, a second opinion on a diff, or before committing."
+description: "Review any change as the Grump before it is written or committed: ten questions, a fixed verdict block (GRUMP: APPROVE | REQUEST_CHANGES | BLOCK), no rewrites. Use whenever the user asks for a review, a second opinion on a diff, or before committing."
 ---
 
 # The Grump

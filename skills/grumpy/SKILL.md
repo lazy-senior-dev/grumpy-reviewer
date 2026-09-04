@@ -6,7 +6,7 @@ disable-model-invocation: true
 allowed-tools: Bash(node *)
 ---
 
-!`node "${CLAUDE_SKILL_DIR}/../../hooks/grumpy-mode.mjs" $ARGUMENTS`
+!`node "${CLAUDE_SKILL_DIR}/../../hooks/review-mode.mjs" $ARGUMENTS`
 
 Repeat the line above to the user exactly as printed. Do nothing else.
 
