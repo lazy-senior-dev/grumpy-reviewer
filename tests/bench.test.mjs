@@ -56,8 +56,11 @@ test("scoring a seeded case: caught needs a flag and the named defect", () => {
   const passed = scoreResponse(s01, "Looks good. VERDICT: PASS");
   assert.equal(passed.caught, false);
   assert.equal(passed.unparseable, false);
-  const freeText = scoreResponse(s01, "profiles.py takes user_id from the body; that is an authorization bypass.\nVERDICT: FAIL");
-  assert.equal(freeText.caught, true);
+  const freeText = scoreResponse(s01, "the /me handler takes user_id from the body; that is an authorization bypass.\nVERDICT: FAIL");
+  assert.equal(freeText.caught, true, "single-file diffs do not require the file name");
+  const s16 = cases.find((c) => c.id === "s16-ts-needless-dependency");
+  assert.equal(scoreResponse(s16, "a dependency for one line of arithmetic\nVERDICT: FAIL").caught, false, "multi-file diffs require the file name");
+  assert.equal(scoreResponse(s16, "package.json adds a dependency for one line of arithmetic\nVERDICT: FAIL").caught, true);
   assert.equal(freeText.verdict, null);
 });
 

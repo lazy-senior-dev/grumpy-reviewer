@@ -46,7 +46,7 @@ export const AGENTS = {
   claude: {
     label: "Claude Code",
     available: () => which("claude"),
-    defaultModel: "sonnet",
+    defaultModel: "claude-sonnet-5",
     async run({ system, user, model }) {
       const args = ["-p", "--safe-mode", "--no-session-persistence", "--max-turns", "1", "--tools", "", "--output-format", "json"];
       if (model) args.push("--model", model);

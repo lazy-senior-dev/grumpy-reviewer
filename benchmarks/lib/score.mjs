@@ -19,8 +19,12 @@ export function keywordsHit(c, text) {
   return c.match.every((alt) => new RegExp(alt, "i").test(hay));
 }
 
+// Only required when the diff touches more than one file; a single-file review
+// that says "the handler" instead of the file name has still found the defect.
 export function fileMentioned(c, text) {
   if (!c.file) return true;
+  const files = (c.diff || "").match(/^diff --git /gm) || [];
+  if (files.length <= 1) return true;
   const base = c.file.split("/").pop();
   return (text || "").includes(base);
 }
