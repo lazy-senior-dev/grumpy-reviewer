@@ -143,14 +143,15 @@ export const AGENTS = {
       const res = await exec("bob", args, { input: prompt, cwd: scratch() });
       let text = "";
       let usage = { input: 0, output: 0 };
+      let cost;
       for (const line of res.stdout.split("\n")) {
         let ev;
         try { ev = JSON.parse(line); } catch { continue; }
-        if (ev.type === "message" && ev.role !== "user") text += typeof ev.content === "string" ? ev.content : (ev.text || (Array.isArray(ev.content) ? ev.content.map((c) => c.text || "").join("") : ""));
-        if (ev.type === "result") usage = { input: ev.input_tokens || ev.total_tokens || 0, output: ev.output_tokens || 0 };
+        if (ev.type === "message" && ev.role === "assistant") text += typeof ev.content === "string" ? ev.content : (ev.text || (Array.isArray(ev.content) ? ev.content.map((c) => c.text || "").join("") : ""));
+        if (ev.type === "result") { usage = { input: ev.stats?.input_tokens || 0, output: ev.stats?.output_tokens || 0 }; cost = ev.stats?.session_costs; if (ev.status && ev.status !== "success") throw new Error(`bob status ${ev.status}`); }
       }
       if (!text.trim()) throw new Error(`bob returned no message (exit ${res.code}): ${(res.stderr || res.stdout).slice(0, 300)}`);
-      return { text, usage, costUsd: undefined, durationMs: res.durationMs, model: "bob-default" };
+      return { text, usage, costUsd: cost, durationMs: res.durationMs, model: "bob-default" };
     },
   },
   api: {

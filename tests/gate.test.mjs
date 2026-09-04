@@ -8,13 +8,20 @@ import { normaliseInput, classify, decide, render, bumpDenials, clearDenials, ap
 import { lastVerdict } from "../hooks/lib/verdict.mjs";
 import { assistantTextSinceLastPrompt, latestAssistantText } from "../hooks/lib/transcript.mjs";
 const P_ = JSON.parse(readFileSync(new URL("../persona.json", import.meta.url), "utf8"));
-const T = (s) => s.replace(/GRUMP:/g, P_.verdictPrefix + ":").replace(/\bREQUEST_CHANGES\b/g, P_.verdicts.changes).replace(/\bAPPROVE\b/g, P_.verdicts.approve).replace(/\bBLOCK\b/g, P_.verdicts.block).replace(/Fine\./g, P_.approveWord);
+const TF_ = P_.test || {};
+// F maps the fixture file names into the persona's scope; T maps the Grump's words into the persona's.
+const F = (p) => (TF_.ext ? p.replace(/\.(py|ts|go)$/, TF_.ext).replace(/^(?!\/)(?!src\/)/, TF_.dir + "/").replace(/^src\//, TF_.dir + "/").replace(/^\/repo\/src\//, "/repo/" + TF_.dir + "/") : p);
+const T = (s) => {
+  const pairs = [["GRUMP:", P_.verdictPrefix + ":"], ["REQUEST_CHANGES", P_.verdicts.changes], ["APPROVE", P_.verdicts.approve], ["BLOCK", P_.verdicts.block], ["Fine.", P_.approveWord]];
+  for (const [a, b] of pairs) s = s.replace(new RegExp(a.replace(/[.]/g, "\\.") + (/[A-Z_]+$/.test(a) ? "\\b" : ""), "gi"), (m) => (m === m.toLowerCase() && a !== "Fine." ? b.toLowerCase() : b));
+  return s.replace(/(\/?(?:repo\/)?(?:src\/)?[ab]\.(?:py|ts|go))(?=:\d)/g, (m) => F(m));
+};
 
 
-const write = { toolName: "Write", toolInput: { file_path: "src/a.py", content: "" } };
+const write = { toolName: "Write", toolInput: { file_path: F("src/a.py"), content: "" } };
 
 test("classify recognises writes, commits, and ignores reads", () => {
-  assert.deepEqual(classify(write), { kind: "write", file: "src/a.py" });
+  assert.deepEqual(classify(write), { kind: "write", file: F("src/a.py") });
   assert.equal(classify({ toolName: "Read", toolInput: { file_path: "x" } }), null);
   assert.equal(classify({ toolName: "Bash", toolInput: { command: "git status" } }), null);
   assert.equal(classify({ toolName: "Bash", toolInput: { command: "git add -A && git commit -m x" } }).kind, "commit");
@@ -33,7 +40,7 @@ test("normaliseInput accepts claude and copilot shapes", () => {
   assert.equal(normaliseInput(null).sessionId, "unknown");
 });
 
-const target = { kind: "write", file: "src/a.py" };
+const target = { kind: "write", file: F("src/a.py") };
 const block = lastVerdict(T("GRUMP: BLOCK\n1. src/a.py:1 — secret in code — move to env"));
 const changes = lastVerdict(T("GRUMP: REQUEST_CHANGES\n1. src/a.py:1 — unhandled error — return 404"));
 const approve = lastVerdict(T("GRUMP: APPROVE\nFine."));
@@ -113,14 +120,14 @@ test("transcript: assistant text since the last human prompt", () => {
   const text = assistantTextSinceLastPrompt(lines);
   assert.ok(text.includes("thinking"));
   assert.ok(text.includes(T("GRUMP: BLOCK")));
-  assert.ok(!text.includes("APPROVE"));
+  assert.ok(!text.includes(T("APPROVE")));
 });
 
 test("a verdict covers the files it names; an unnamed one covers the write; earlier verdicts need the file", () => {
   const forA = lastVerdict(T("GRUMP: REQUEST_CHANGES\n1. src/a.py:3 — x — y"));
   const fineA = lastVerdict(T("GRUMP: APPROVE — src/a.py\nFine."));
   const fine = lastVerdict(T("GRUMP: APPROVE\nFine."));
-  const a = { kind: "write", file: "/repo/src/a.py" }, b = { kind: "write", file: "/repo/src/b.py" };
+  const a = { kind: "write", file: F("/repo/src/a.py") }, b = { kind: "write", file: F("/repo/src/b.py") };
   assert.equal(applicableVerdict({ latest: fineA, earlier: null, target: a }), fineA);
   assert.equal(applicableVerdict({ latest: fineA, earlier: null, target: b }), null, "an approval naming a.py does not cover b.py");
   assert.equal(applicableVerdict({ latest: fine, earlier: null, target: b }), fine, "an approval naming nothing covers the write");
@@ -139,7 +146,7 @@ test("latestAssistantText returns the previous completed message, not text since
     { type: "assistant", message: { content: [{ type: "tool_use", name: "Write" }] } },
     { type: "user", message: { content: [{ type: "tool_result", content: "denied" }] } },
   ].map((e) => JSON.stringify(e)).join("\n");
-  assert.match(latestAssistantText(lines), /APPROVE — b\.py/);
+  assert.match(latestAssistantText(lines), new RegExp(T("APPROVE — b.py")));
   assert.equal(latestAssistantText(JSON.stringify({ type: "user", message: { content: "hi" } })), "");
 });
 
@@ -164,8 +171,8 @@ test("end to end: a verdict for one file does not authorise a write to another i
     JSON.stringify({ type: "user", message: { content: [{ type: "tool_result", content: "ok" }] } }),
   ].join("\n"));
   const env = { GRUMPY_CONFIG_DIR: join(dir, "cfg"), GRUMPY_MODE: "gate" };
-  assert.equal(runGate({ session_id: "scope", tool_name: "Write", tool_input: { file_path: "src/b.py" }, transcript_path: transcript }, env).hookSpecificOutput.permissionDecision, "deny");
-  assert.equal(runGate({ session_id: "scope", tool_name: "Write", tool_input: { file_path: "src/a.py" }, transcript_path: transcript }, env), null, "the named file is allowed");
+  assert.equal(runGate({ session_id: "scope", tool_name: "Write", tool_input: { file_path: F("src/b.py") }, transcript_path: transcript }, env).hookSpecificOutput.permissionDecision, "deny");
+  assert.equal(runGate({ session_id: "scope", tool_name: "Write", tool_input: { file_path: F("src/a.py") }, transcript_path: transcript }, env), null, "the named file is allowed");
 });
 
 test("gate mode refuses malformed hook input; nag lets the host decide", () => {
@@ -191,21 +198,21 @@ test("end to end: the gate reads the transcript and denies a BLOCK", () => {
     JSON.stringify({ type: "assistant", message: { content: [{ type: "text", text: T("GRUMP: BLOCK\n1. src/a.py:3 — password logged — drop it from the log line") }] } }),
   ].join("\n"));
   const env = { GRUMPY_CONFIG_DIR: join(dir, "cfg"), GRUMPY_MODE: "nag" };
-  const res = runGate({ session_id: "e2e", tool_name: "Write", tool_input: { file_path: "src/a.py" }, transcript_path: transcript }, env);
+  const res = runGate({ session_id: "e2e", tool_name: "Write", tool_input: { file_path: F("src/a.py") }, transcript_path: transcript }, env);
   assert.equal(res.hookSpecificOutput.permissionDecision, "deny");
-  assert.equal(runGate({ session_id: "e2e", tool_name: "Read", tool_input: { file_path: "src/a.py" } }, env), null);
+  assert.equal(runGate({ session_id: "e2e", tool_name: "Read", tool_input: { file_path: F("src/a.py") } }, env), null);
   assert.equal(runGate("{{not json", env), null);
-  assert.equal(runGate({ session_id: "e2e", tool_name: "Write", tool_input: { file_path: "src/a.py" } }, { ...env, GRUMPY_MODE: "off" }), null);
+  assert.equal(runGate({ session_id: "e2e", tool_name: "Write", tool_input: { file_path: F("src/a.py") } }, { ...env, GRUMPY_MODE: "off" }), null);
 });
 
 test("end to end: gate mode without a transcript denies twice then lets the write through", () => {
   const dir = mkdtempSync(join(tmpdir(), "grumpy-e2e-"));
   const env = { GRUMPY_CONFIG_DIR: join(dir, "cfg"), GRUMPY_MODE: "gate" };
-  const call = { session_id: "g", tool_name: "Edit", tool_input: { file_path: "b.ts" } };
+  const call = { session_id: "g", tool_name: "Edit", tool_input: { file_path: F("b.ts") } };
   assert.equal(runGate(call, env).hookSpecificOutput.permissionDecision, "deny");
   assert.equal(runGate(call, env).hookSpecificOutput.permissionDecision, "deny");
   assert.equal(runGate(call, env).hookSpecificOutput.permissionDecision, undefined);
-  assert.equal(runGate({ sessionId: "g", toolName: "edit", toolArgs: { path: "c.ts" } }, env, "copilot").permissionDecision, "deny");
+  assert.equal(runGate({ sessionId: "g", toolName: "edit", toolArgs: { path: F("c.ts") } }, env, "copilot").permissionDecision, "deny");
 });
 
 test("context hook prints the card with the mode, and nothing when off", () => {
@@ -213,6 +220,6 @@ test("context hook prints the card with the mode, and nothing when off", () => {
     execFileSync(process.execPath, [join(process.cwd(), "hooks/review-context.mjs")], { env: { ...process.env, ...env }, encoding: "utf8" }).trim();
   const on = JSON.parse(run({ GRUMPY_MODE: "gate", GRUMPY_CONFIG_DIR: mkdtempSync(join(tmpdir(), "g-")) }));
   assert.match(on.hookSpecificOutput.additionalContext, /Review mode: gate/);
-  assert.match(on.hookSpecificOutput.additionalContext, /GRUMP:/);
+  assert.match(on.hookSpecificOutput.additionalContext, new RegExp(T("GRUMP:")));
   assert.equal(run({ GRUMPY_MODE: "off" }), "");
 });

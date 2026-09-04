@@ -6,7 +6,14 @@ import { globToRegExp, isIgnored, parseGlobs } from "../action/lib/glob.mjs";
 import { makeProvider } from "../action/lib/providers.mjs";
 import { selectFiles, composeReview, overallVerdict, run, readInputs, MARKER } from "../action/review.mjs";
 const P_ = JSON.parse(readFileSync(new URL("../persona.json", import.meta.url), "utf8"));
-const T = (s) => s.replace(/GRUMP:/g, P_.verdictPrefix + ":").replace(/\bREQUEST_CHANGES\b/g, P_.verdicts.changes).replace(/\bAPPROVE\b/g, P_.verdicts.approve).replace(/\bBLOCK\b/g, P_.verdicts.block).replace(/Fine\./g, P_.approveWord);
+const TF_ = P_.test || {};
+// F maps the fixture file names into the persona's scope; T maps the Grump's words into the persona's.
+const F = (p) => (TF_.ext ? p.replace(/\.(py|ts|go)$/, TF_.ext).replace(/^(?!\/)(?!src\/)/, TF_.dir + "/").replace(/^src\//, TF_.dir + "/").replace(/^\/repo\/src\//, "/repo/" + TF_.dir + "/") : p);
+const T = (s) => {
+  const pairs = [["GRUMP:", P_.verdictPrefix + ":"], ["REQUEST_CHANGES", P_.verdicts.changes], ["APPROVE", P_.verdicts.approve], ["BLOCK", P_.verdicts.block], ["Fine.", P_.approveWord]];
+  for (const [a, b] of pairs) s = s.replace(new RegExp(a.replace(/[.]/g, "\\.") + (/[A-Z_]+$/.test(a) ? "\\b" : ""), "gi"), (m) => (m === m.toLowerCase() && a !== "Fine." ? b.toLowerCase() : b));
+  return s.replace(/(\/?(?:repo\/)?(?:src\/)?[ab]\.(?:py|ts|go))(?=:\d)/g, (m) => F(m));
+};
 
 
 const PATCH = `@@ -10,6 +10,9 @@ def get_user(request):
