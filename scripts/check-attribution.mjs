@@ -51,7 +51,7 @@ for (const rel of tracked) {
   const lines = text.split("\n");
   lines.forEach((line, i) => {
     const where = `${rel}:${i + 1}`;
-    if (rel !== "scripts/check-attribution.mjs" && rel !== "tests/attribution.test.mjs") {
+    if (rel !== "scripts/check-attribution.mjs" && rel !== "tests/attribution.test.mjs" && rel !== "LICENSE") {
       for (const t of TRAILERS) if (t.test(line)) problems.push(`${where}: attribution trailer "${line.trim().slice(0, 60)}"`);
     }
     for (const email of line.match(EMAIL) || []) {

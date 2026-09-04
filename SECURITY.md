@@ -8,7 +8,7 @@ grumpy-reviewer runs inside your coding agent and, as a GitHub Action, inside yo
 
 Use GitHub's private vulnerability reporting: **Security tab, "Report a vulnerability"** on this repository. Do not open a public issue for security problems.
 
-You will get an acknowledgement within 72 hours and a fix or a clear answer within 14 days for anything that affects the hooks, the Action, or the adapters. Credit goes in the release notes unless you ask otherwise.
+You will get an acknowledgement within 72 hours and a fix or a clear answer within 14 days for anything that affects the hooks, the Action, or the adapters. Credit goes in the release notes unless you ask otherwise. Maintainer: [Sandeep Bazar](https://www.linkedin.com/in/sandeepbazar/).
 
 ## Scope
 
