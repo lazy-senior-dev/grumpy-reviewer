@@ -18,8 +18,10 @@ import { makeProvider } from "./lib/providers.mjs";
 import { GitHub } from "./lib/github.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-export const MARKER = "<!-- grumpy-reviewer -->";
-const FORK_MARKER = "<!-- grumpy-reviewer:fork -->";
+const P = JSON.parse(readFileSync(join(HERE, "..", "persona.json"), "utf8"));
+const V = P.verdicts;
+export const MARKER = `<!-- ${P.slug} -->`;
+const FORK_MARKER = `<!-- ${P.slug}:fork -->`;
 const DEFAULT_IGNORE = ["**/*.lock", "**/package-lock.json", "**/pnpm-lock.yaml", "**/yarn.lock", "**/*.min.js", "**/*.min.css", "**/*.map", "**/dist/**", "**/vendor/**", "**/*.snap", "**/*.svg", "**/*.png"];
 
 export function personaCard() {
@@ -104,7 +106,7 @@ export function composeReview({ results, skipped, verdict, mode, usage, model, r
       total++;
       const line = f.line ? anchorLine(r.file.patch, f.line) : null;
       const body = f.complete
-        ? `${MARKER}\n**${r.verdict.verdict === "BLOCK" ? "BLOCK" : "Finding"}.** ${f.failure}\n\n**Smallest fix:** ${f.fix}`
+        ? `${MARKER}\n**${r.verdict.verdict === "BLOCK" ? V.block : "Finding"}.** ${f.failure}\n\n**Smallest fix:** ${f.fix}`
         : `${MARKER}\n${f.raw}`;
       if (line) comments.push({ path: r.file.filename, line, side: "RIGHT", body });
       else unanchored.push(`- \`${r.file.filename}${f.line ? ":" + f.line : ""}\` ${f.complete ? `${f.failure} (fix: ${f.fix})` : f.raw}`);
@@ -112,23 +114,24 @@ export function composeReview({ results, skipped, verdict, mode, usage, model, r
   }
 
   const opening = {
-    APPROVE: "Fine.",
+    APPROVE: P.approveWord,
     REQUEST_CHANGES: total
       ? `${total} finding${total === 1 ? "" : "s"}. Each one names the line, what breaks in production, and the smallest fix. Fix them; I will read it again.`
       : "I could not read every file, and I do not approve what I have not read. See below, then re-run.",
-    BLOCK: `${total} finding${total === 1 ? "" : "s"}, and at least one is a BLOCK: data loss, a secret, an auth hole, or something destructive. That does not merge, whatever the schedule says.`,
+    BLOCK: `${total} finding${total === 1 ? "" : "s"}, and at least one is a ${V.block}: the class of failure this reviewer never lets through. That does not merge, whatever the schedule says.`,
   }[verdict];
+  const word = { APPROVE: V.approve, REQUEST_CHANGES: V.changes, BLOCK: V.block }[verdict];
 
-  const lines = [MARKER, `### GRUMP: ${verdict}`, "", opening, ""];
+  const lines = [MARKER, `### ${P.verdictPrefix}: ${word}`, "", opening, ""];
   if (unanchored.length) lines.push("Findings on lines outside the diff:", "", ...unanchored, "");
   const errors = results.filter((r) => r.error);
-  if (errors.length) lines.push("Files the Grump could not review (no verdict came back):", "", ...errors.map((r) => `- \`${r.file.filename}\`: ${r.error}`), "");
+  if (errors.length) lines.push(`Files ${P.asName || P.name} could not review (no verdict came back):`, "", ...errors.map((r) => `- \`${r.file.filename}\`: ${r.error}`), "");
   if (skipped.length) lines.push("Not reviewed:", "", ...skipped.map((s) => `- \`${s.filename}\`: ${s.why}`), "");
   lines.push(
     "<sub>",
     `Reviewed ${results.length} file${results.length === 1 ? "" : "s"} · mode \`${mode}\` · model \`${model}\` · ${usage.input.toLocaleString()} in / ${usage.output.toLocaleString()} out tokens`,
     runUrl ? ` · [run](${runUrl})` : "",
-    ` · [grumpy-reviewer](https://github.com/lazy-senior-dev/grumpy-reviewer)`,
+    ` · [${P.slug}](https://github.com/lazy-senior-dev/${P.slug})`,
     "</sub>",
   );
   const event = mode === "gate" && verdict !== "APPROVE" ? "REQUEST_CHANGES" : "COMMENT";
@@ -157,7 +160,7 @@ export async function publish(gh, number, headSha, review, { log = () => {} } = 
     return { action: "updated", id: previous.id };
   }
   if (previous && previous.state === "CHANGES_REQUESTED") {
-    await gh.dismissReview(number, previous.id, "The Grump read it again. Superseded by the review below.");
+    await gh.dismissReview(number, previous.id, `${P.name} read it again. Superseded by the review below.`);
     log(`dismissed review ${previous.id}`);
   } else if (previous) {
     await gh.updateReview(number, previous.id, `${MARKER}\n_Superseded by a newer review below._`);
@@ -200,7 +203,7 @@ export async function run({ inputs, event, fetchImpl = fetch, sleep, log = conso
   if (!inputs.apiKey) {
     if (isFork) {
       const existing = (await gh.issueComments(number)).find((c) => typeof c.body === "string" && c.body.includes(FORK_MARKER));
-      const body = `${FORK_MARKER}\nThe Grump cannot see secrets on pull requests from forks, so this one was not reviewed automatically. A maintainer can run the review from a branch in this repository.`;
+      const body = `${FORK_MARKER}\n${P.name} cannot see secrets on pull requests from forks, so this one was not reviewed automatically. A maintainer can run the review from a branch in this repository.`;
       if (!existing) await gh.createIssueComment(number, body);
       log("fork without secrets: posted a note and exited 0");
       return { status: "fork" };
@@ -221,10 +224,11 @@ export async function run({ inputs, event, fetchImpl = fetch, sleep, log = conso
   const { results, usage } = await reviewFiles(reviewed, provider, { log });
   const verdict = overallVerdict(results);
   const review = composeReview({ results, skipped, verdict, mode: inputs.mode, usage, model: provider.model, runUrl: inputs.runUrl });
+  const word = { APPROVE: V.approve, REQUEST_CHANGES: V.changes, BLOCK: V.block }[verdict];
   const posted = await publish(gh, number, pr.head.sha, review, { log });
 
   const failed = inputs.mode === "gate" && verdict !== "APPROVE";
-  log(`GRUMP: ${verdict} (${review.total} findings)${failed ? " -> failing the check (gate mode)" : ""}`);
+  log(`${P.verdictPrefix}: ${word} (${review.total} findings)${failed ? " -> failing the check (gate mode)" : ""}`);
   return { status: "reviewed", verdict, findings: review.total, posted, failed, usage };
 }
 

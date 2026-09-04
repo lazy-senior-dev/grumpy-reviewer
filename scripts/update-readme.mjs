@@ -10,6 +10,9 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const readmePath = join(ROOT, "README.md");
 const latestPath = join(ROOT, "benchmarks", "results", "latest.json");
 const readme = readFileSync(readmePath, "utf8");
+const P = JSON.parse(readFileSync(join(ROOT, "persona.json"), "utf8"));
+const WHO = P.asName || P.name;
+const HIM = P.pronoun === "she" ? "her" : P.pronoun === "they" ? "them" : "him";
 
 const TBD = `**Numbers: TBD.** Run \`npm run bench\` and \`npm run bench:report\` with a headless agent installed (\`claude\`, \`codex\`, or \`agy\`) or an \`ANTHROPIC_API_KEY\`; the table below fills in from \`benchmarks/results/latest.json\`.`;
 
@@ -25,8 +28,8 @@ function block() {
   const [, first] = rows[0];
   const b = first.arms.bare, g = first.arms.grump;
   const same = g.caughtMedian === b.caughtMedian;
-  const vs = (x, y, unit = "") => (x === y ? `${x}${unit} either way` : `${x}${unit} with him, ${y}${unit} without`);
-  const hero = `**On ${first.label} (\`${g.model}\`), the Grump catches ${n(g.caughtMedian)} of ${d.seeded} seeded defects${same ? ", the same as the agent alone" : ` against ${n(b.caughtMedian)} for the agent alone`}. What changes is discipline: false alarms on ${d.clean} clean diffs, ${vs(n(g.falsePositivesMedian), n(b.falsePositivesMedian))}; replies with no usable verdict per run, ${vs(perRun(g), perRun(b))}; ${n(g.blockPrecision * 100)}% of his BLOCK verdicts land on BLOCK-class defects; median review time ${vs(secs(g.latencyMedianMs), secs(b.latencyMedianMs))} at ${vs(n(g.outputTokensMedian), n(b.outputTokensMedian), " output tokens")}.** Median of ${g.runs} run${g.runs === 1 ? "" : "s"}, measured ${d.date}; [method, per-diff table, raw replies](benchmarks/results).`;
+  const vs = (x, y, unit = "") => (x === y ? `${x}${unit} either way` : `${x}${unit} with ${HIM}, ${y}${unit} without`);
+  const hero = `**On ${first.label} (\`${g.model}\`), ${WHO} catches ${n(g.caughtMedian)} of ${d.seeded} seeded defects${same ? ", the same as the agent alone" : ` against ${n(b.caughtMedian)} for the agent alone`}. What changes is discipline: false alarms on ${d.clean} clean diffs, ${vs(n(g.falsePositivesMedian), n(b.falsePositivesMedian))}; replies with no usable verdict per run, ${vs(perRun(g), perRun(b))}; ${n(g.blockPrecision * 100)}% of ${P.verdicts.block} verdicts land on ${P.verdicts.block}-class defects; median review time ${vs(secs(g.latencyMedianMs), secs(b.latencyMedianMs))} at ${vs(n(g.outputTokensMedian), n(b.outputTokensMedian), " output tokens")}.** Median of ${g.runs} run${g.runs === 1 ? "" : "s"}, measured ${d.date}; [method, per-diff table, raw replies](benchmarks/results).`;
   let table = `| Agent | Model | Arm | Defects caught (of ${d.seeded}) | False alarms (of ${d.clean}) | Replies without a verdict (per run) | BLOCK precision | Median input tokens | Median output tokens | Median latency |\n|---|---|---|---|---|---|---|---|---|---|\n`;
   for (const [, a] of rows) {
     for (const arm of ["bare", "generic", "grump"]) {
@@ -41,8 +44,8 @@ function block() {
   if (needleRows.length) {
     const [, fa] = needleRows[0];
     const nb = fa.needle.bare, ng = fa.needle.grump, nge = fa.needle.generic;
-    const heroNeedle = ` **In the needle tier, where the same defect hides in a four-file, 150-line pull request, ${fa.label} finds ${n(ng.caughtMedian)} of ${d.needle} with the Grump, ${n(nb.caughtMedian)} without${nge ? `, ${n(nge.caughtMedian)} with the generic prompt` : ""}.**`;
-    let needleTable = `\n\n**Needle tier** (one defect in a four-file pull request of about 150 lines):\n\n| Agent | Model | No skill | Generic prompt | **Grump** |\n|---|---|---|---|---|\n`;
+    const heroNeedle = ` **In the needle tier, where the same defect hides in a four-file, 150-line pull request, ${fa.label} finds ${n(ng.caughtMedian)} of ${d.needle} with ${WHO}, ${n(nb.caughtMedian)} without${nge ? `, ${n(nge.caughtMedian)} with the generic prompt` : ""}.**`;
+    let needleTable = `\n\n**Needle tier** (one defect in a four-file pull request of about 150 lines):\n\n| Agent | Model | No skill | Generic prompt | **${P.short}** |\n|---|---|---|---|---|\n`;
     for (const [, a] of needleRows) needleTable += `| ${a.label} | \`${a.needle.grump.model}\` (n=${a.needle.grump.runs}) | ${n(a.needle.bare.caughtMedian)}/${d.needle} | ${a.needle.generic ? n(a.needle.generic.caughtMedian) + "/" + d.needle : "n/a"} | **${n(a.needle.grump.caughtMedian)}/${d.needle}** |\n`;
     return { hero: hero + heroNeedle, table: table + needleTable };
   }

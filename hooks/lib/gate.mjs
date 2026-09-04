@@ -5,7 +5,7 @@ import { persona } from "./persona.mjs";
 
 function words() {
   const p = persona();
-  return { P: p.verdictPrefix, A: p.verdicts.approve, C: p.verdicts.changes, B: p.verdicts.block, who: p.short, scope: new RegExp(p.scope || ".*") };
+  return { P: p.verdictPrefix, A: p.verdicts.approve, C: p.verdicts.changes, B: p.verdicts.block, who: p.short, scope: new RegExp(p.scope || ".*", "i") };
 }
 
 const WRITE_TOOLS = /^(edit|write|multiedit|notebookedit|apply_patch|write_file|write_to_file|apply_diff|multi_apply_diff|insert_content|search_and_replace|replace|create|create_file|edit_file|str_replace_editor|str_replace_based_edit_tool)$/i;

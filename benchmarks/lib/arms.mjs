@@ -3,6 +3,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { BENCH_ROOT } from "./cases.mjs";
+const P = JSON.parse(readFileSync(join(BENCH_ROOT, "..", "persona.json"), "utf8"));
 
 const VERDICT_LINE = "End your reply with exactly one line: `VERDICT: PASS` if you would merge this as it is, or `VERDICT: FAIL` if something must change first.";
 
@@ -19,9 +20,9 @@ export const ARMS = {
     user: (c) => `Review this change carefully before it is merged.\n\n${c.diff}\n\n${VERDICT_LINE}`,
   },
   grump: {
-    label: "grumpy-reviewer",
+    label: P.slug,
     system: () => readFileSync(join(BENCH_ROOT, "..", "hooks", "persona.md"), "utf8") + "\n\nPrint the verdict block and nothing else.",
-    user: (c) => `Review this change as the Grump.\n\n${c.diff}`,
+    user: (c) => `Review this change as ${P.asName || P.name}.\n\n${c.diff}`,
   },
 };
 

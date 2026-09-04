@@ -18,7 +18,7 @@ const agents = Object.entries(data.agents).filter(([, a]) => a.arms?.grump && a.
 const arms = [
   { key: "bare", label: "no skill", fill: "#bdb6aa" },
   { key: "generic", label: "generic prompt", fill: "#7a746b" },
-  { key: "grump", label: "grumpy-reviewer", fill: "#ff8a65" },
+  { key: "grump", label: JSON.parse(readFileSync(join(ROOT, "persona.json"), "utf8")).slug, fill: "#ff8a65" },
 ];
 const metrics = [
   { key: "caughtMedian", label: "defects caught, 30 small diffs", sub: "higher is better", max: data.seeded, better: "higher" },

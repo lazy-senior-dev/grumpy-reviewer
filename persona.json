@@ -29,5 +29,14 @@
     "pull-request"
   ],
   "asName": "the Grump",
-  "possessive": "the Grump's"
+  "possessive": "the Grump's",
+  "checklist": {
+    "first": "Scope",
+    "last": "Naming and dead code"
+  },
+  "bench": {
+    "seeded": 30,
+    "clean": 10,
+    "needle": 10
+  }
 }

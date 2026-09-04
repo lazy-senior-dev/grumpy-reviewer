@@ -6,7 +6,9 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
-export const RULES_PATH = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "rules", "grump.md");
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const PERSONA = JSON.parse(readFileSync(join(ROOT, "persona.json"), "utf8"));
+export const RULES_PATH = join(ROOT, PERSONA.rules || "rules/grump.md");
 export const VERDICTS = ["APPROVE", "REQUEST_CHANGES", "BLOCK"];
 export const MODES = ["nag", "gate", "off"];
 
@@ -83,7 +85,7 @@ export function validateRuleset(rs) {
     if (item.n !== i + 1) problems.push(`checklist item ${i + 1} is numbered ${item.n}`);
   });
   for (const m of MODES) if (!rs.modes.some((x) => x.name === m)) problems.push(`mode ${m} missing`);
-  for (const v of VERDICTS) if (!(rs.sections["The verdict"] || "").includes("`" + v + "`")) problems.push(`verdict ${v} not documented`);
+  for (const v of Object.values(PERSONA.verdicts || { a: "APPROVE", c: "REQUEST_CHANGES", b: "BLOCK" })) if (!(rs.sections["The verdict"] || "").includes("`" + v + "`")) problems.push(`verdict ${v} not documented`);
   for (const s of ["Character", "The checklist", "The verdict", "Non-negotiables", "Modes", "Self-review protocol", "Commands"]) {
     if (!rs.sections[s]) problems.push(`section "${s}" missing`);
   }

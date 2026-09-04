@@ -14,6 +14,8 @@ import { AGENTS, availableAgents } from "../benchmarks/lib/agents.mjs";
 import { lastVerdict } from "../hooks/lib/verdict.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
+const P = JSON.parse(readFileSync(join(HERE, "..", "persona.json"), "utf8"));
+const CMD = P.command;
 const args = process.argv.slice(2);
 const cmd = args[0];
 const opt = (name, def) => { const i = args.indexOf(name); return i > -1 ? args[i + 1] : def; };
@@ -27,17 +29,18 @@ if (!cmd || cmd === "help" || cmd === "--help") usage();
 
 // ---- install / uninstall: copy the files a host reads into the current repository ----
 const ROOT = join(HERE, "..");
+const CMDS = [CMD, `${CMD}-review`, `${CMD}-pr`, `${CMD}-fix`, `${CMD}-scorecard`, `${CMD}-help`];
 const HOSTS = {
   agents: { files: ["AGENTS.md"], note: "Read by every AGENTS.md-aware host (Codex, Copilot, Cursor, Kiro, Bob Shell, OpenCode, and more)." },
-  bob: { files: [".bob/rules/grumpy.md", ".bob/skills/grumpy-reviewer/SKILL.md", ".bob/commands/grumpy.md", ".bob/commands/grumpy-review.md", ".bob/commands/grumpy-pr.md", ".bob/commands/grumpy-fix.md", ".bob/commands/grumpy-scorecard.md", ".bob/commands/grumpy-help.md"], dirs: [["hooks", ".bob/hooks/grumpy"]], settings: ".bob/settings.json", note: "IBM Bob Shell: rules, skill, six commands, and PreToolUse/UserPromptSubmit hooks in .bob/settings.json." },
-  cursor: { files: [".cursor/rules/grumpy.mdc"], note: "Cursor rule, alwaysApply." },
-  windsurf: { files: [".windsurf/rules/grumpy.md"], note: "Windsurf / Devin Desktop rule, always_on." },
-  cline: { files: [".clinerules/grumpy.md"], note: "Cline rule." },
-  kiro: { files: [".kiro/steering/grumpy.md"], note: "Kiro steering file, inclusion: always." },
-  qoder: { files: [".qoder/rules/grumpy.md"], note: "Qoder rule." },
-  opencode: { files: [".opencode/plugins/grumpy.mjs", ".opencode/command/grumpy.md", ".opencode/command/grumpy-review.md", ".opencode/command/grumpy-pr.md", ".opencode/command/grumpy-fix.md", ".opencode/command/grumpy-scorecard.md", ".opencode/command/grumpy-help.md", "AGENTS.md"], note: "OpenCode plugin (two-phase gate), commands, and AGENTS.md." },
-  gemini: { files: ["GEMINI.md"], note: "Gemini CLI context file. For the extension form use: gemini extensions install https://github.com/lazy-senior-dev/grumpy-reviewer" },
-  copilot: { files: [".github/copilot-instructions.md"], note: "Copilot custom instructions. For the plugin form use: copilot plugin marketplace add lazy-senior-dev/grumpy-reviewer" },
+  bob: { files: [`.bob/rules/${CMD}.md`, `.bob/skills/${P.slug}/SKILL.md`, ...CMDS.map((c) => `.bob/commands/${c}.md`)], dirs: [["hooks", `.bob/hooks/${CMD}`]], settings: ".bob/settings.json", note: "IBM Bob Shell: rules, skill, six commands, and PreToolUse/UserPromptSubmit hooks in .bob/settings.json." },
+  cursor: { files: [`.cursor/rules/${CMD}.mdc`], note: "Cursor rule, alwaysApply." },
+  windsurf: { files: [`.windsurf/rules/${CMD}.md`], note: "Windsurf / Devin Desktop rule, always_on." },
+  cline: { files: [`.clinerules/${CMD}.md`], note: "Cline rule." },
+  kiro: { files: [`.kiro/steering/${CMD}.md`], note: "Kiro steering file, inclusion: always." },
+  qoder: { files: [`.qoder/rules/${CMD}.md`], note: "Qoder rule." },
+  opencode: { files: [`.opencode/plugins/${CMD}.mjs`, ...CMDS.map((c) => `.opencode/command/${c}.md`), "AGENTS.md"], note: "OpenCode plugin (two-phase gate), commands, and AGENTS.md." },
+  gemini: { files: ["GEMINI.md"], note: `Gemini CLI context file. For the extension form use: gemini extensions install https://github.com/lazy-senior-dev/${P.slug}` },
+  copilot: { files: [".github/copilot-instructions.md"], note: `Copilot custom instructions. For the plugin form use: copilot plugin marketplace add lazy-senior-dev/${P.slug}` },
 };
 HOSTS.all = { files: [...new Set(Object.values(HOSTS).flatMap((h) => h.files))], dirs: HOSTS.bob.dirs, settings: HOSTS.bob.settings, note: "Every instruction-only adapter at once." };
 
@@ -71,7 +74,7 @@ if (cmd === "install" || cmd === "uninstall") {
     if (h.settings) {
       const dest = join(cwd, h.settings);
       const ours = JSON.parse(readFileSync(join(ROOT, h.settings), "utf8"));
-      for (const groups of Object.values(ours.hooks)) for (const g of groups) for (const hk of g.hooks) hk.command = hk.command.replace("node hooks/", "node .bob/hooks/grumpy/");
+      for (const groups of Object.values(ours.hooks)) for (const g of groups) for (const hk of g.hooks) hk.command = hk.command.replace("node hooks/", `node .bob/hooks/${CMD}/`);
       let merged = ours;
       if (fs.existsSync(dest)) {
         try {
@@ -82,10 +85,10 @@ if (cmd === "install" || cmd === "uninstall") {
       }
       if (merged) { fs.mkdirSync(dirname(dest), { recursive: true }); fs.writeFileSync(dest, JSON.stringify(merged, null, 2) + "\n"); written.push(h.settings); }
     }
-    console.log(`Installed the Grump for ${host}. ${h.note}`);
+    console.log(`Installed ${P.name} for ${host}. ${h.note}`);
     for (const w of written) console.log("  wrote   " + w);
     for (const sk of skipped) console.log("  kept    " + sk + " (exists; --force to overwrite)");
-    console.log(`Start a new session. Remove with: npx github:lazy-senior-dev/grumpy-reviewer uninstall ${host}`);
+    console.log(`Start a new session. Remove with: npx github:lazy-senior-dev/${P.slug} uninstall ${host}`);
   } else {
     const removed = [];
     for (const rel of h.files) { const p = join(cwd, rel); if (fs.existsSync(p)) { fs.rmSync(p); removed.push(rel); } }
@@ -126,7 +129,7 @@ if (!diff.trim()) {
   process.exit(0);
 }
 if (diff.length > 400_000) {
-  console.error(`That diff is ${Math.round(diff.length / 1000)} KB. The Grump reads everything, but not that; narrow it with --staged or review files in batches.`);
+  console.error(`That diff is ${Math.round(diff.length / 1000)} KB. ${P.name} reads everything, but not that; narrow it with --staged or review files in batches.`);
   process.exit(2);
 }
 
@@ -140,9 +143,9 @@ if (!agentName || (wanted && !available.includes(wanted))) {
 const agent = AGENTS[agentName];
 const model = opt("--model", agent.defaultModel);
 const system = readFileSync(join(HERE, "..", "hooks", "persona.md"), "utf8") + "\n\nPrint the verdict block and nothing else.";
-const user = `Review this change as the Grump. It is the ${label}.\n\n${diff}`;
+const user = `Review this change as ${P.asName || P.name}. It is the ${label}.\n\n${diff}`;
 
-process.stderr.write(`Reading the ${label} (${diff.split("\n").length} lines) with ${agent.label}${model ? ` (${model})` : ""}. The Grump does not skim; give him a moment.\n`);
+process.stderr.write(`Reading the ${label} (${diff.split("\n").length} lines) with ${agent.label}${model ? ` (${model})` : ""}. ${P.name} does not skim; give it a moment.\n`);
 const started = Date.now();
 let res;
 try {

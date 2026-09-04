@@ -1,18 +1,20 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { loadRuleset, validateRuleset, parseRuleset } from "../scripts/lib/ruleset.mjs";
+import { readFileSync } from "node:fs";
+const P = JSON.parse(readFileSync(new URL("../persona.json", import.meta.url), "utf8"));
 
 test("the ruleset parses and validates", () => {
   const rs = loadRuleset();
-  assert.equal(rs.title, "The Grump");
+  assert.equal(rs.title, P.name);
   assert.deepEqual(validateRuleset(rs), []);
   assert.equal(rs.checklist.length, 10);
-  assert.equal(rs.checklist[0].title, "Scope");
-  assert.equal(rs.checklist[9].title, "Naming and dead code");
+  assert.equal(rs.checklist[0].title, P.checklist.first);
+  assert.equal(rs.checklist[9].title, P.checklist.last);
   assert.deepEqual(rs.modes.map((m) => m.name), ["nag", "gate", "off"]);
   assert.equal(rs.commands.length, 6);
-  assert.equal(rs.catchphrase, "Show me where it breaks.");
-  assert.match(rs.verdictExample, /^GRUMP: REQUEST_CHANGES/);
+  assert.equal(rs.catchphrase, P.tagline);
+  assert.match(rs.verdictExample, new RegExp("^" + P.verdictPrefix + ": " + P.verdicts.changes));
 });
 
 test("the ruleset never uses the banned words in the Grump's own voice", () => {

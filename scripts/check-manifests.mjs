@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
+const P = JSON.parse(readFileSync(join(ROOT, "persona.json"), "utf8"));
 const problems = [];
 const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const SEMVER = /^\d+\.\d+\.\d+(-[\w.]+)?$/;
@@ -27,7 +28,7 @@ function checkPlugin(rel, { requireSkills = true } = {}) {
   const m = load(rel);
   if (!m) return;
   expect(rel, KEBAB.test(m.name), "name must be kebab-case");
-  expect(rel, m.name === "grumpy-reviewer", "name must be grumpy-reviewer");
+  expect(rel, m.name === P.slug, `name must be ${P.slug}`);
   expect(rel, SEMVER.test(m.version), "version must be semver");
   expect(rel, m.version === pkg.version, `version must match package.json (${pkg.version})`);
   expect(rel, typeof m.description === "string" && m.description.length > 20, "description missing");

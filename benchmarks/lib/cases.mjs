@@ -21,18 +21,21 @@ function loadDir(dir, clean) {
 
 // Needle tier: one seeded defect buried in a four-file pull request of otherwise clean changes.
 // Built deterministically from the seeded and clean sets, so the cases stay original and reproducible.
-const NEEDLES = [
-  ["s01-py-user-id-from-body", ["c06-py-type-hints-docstrings", "c10-py-validated-config", "c01-py-retry-with-tests"]],
-  ["s05-py-swallowed-exception", ["c01-py-retry-with-tests", "c06-py-type-hints-docstrings", "c10-py-validated-config"]],
-  ["s06-py-off-by-one", ["c10-py-validated-config", "c01-py-retry-with-tests", "c06-py-type-hints-docstrings"]],
-  ["s10-ts-wrong-http-status", ["c02-ts-rename-helper", "c07-ts-add-unit-test", "c05-gha-add-cache"]],
-  ["s11-ts-race-check-then-set", ["c07-ts-add-unit-test", "c02-ts-rename-helper", "c05-gha-add-cache"]],
-  ["s15-ts-unbounded-body", ["c02-ts-rename-helper", "c05-gha-add-cache", "c07-ts-add-unit-test"]],
-  ["s17-go-ignored-error", ["c08-go-error-wrapping", "c03-go-add-flag", "c09-k8s-add-pdb"]],
-  ["s21-go-nil-deref", ["c03-go-add-flag", "c08-go-error-wrapping", "c04-k8s-scale-with-limits"]],
-  ["s23-go-no-http-timeout", ["c08-go-error-wrapping", "c09-k8s-add-pdb", "c03-go-add-flag"]],
-  ["s25-k8s-no-resource-limits", ["c04-k8s-scale-with-limits", "c09-k8s-add-pdb", "c05-gha-add-cache"]],
-];
+// needles.json (optional) pins the combinations; otherwise they are chosen deterministically:
+// every third seeded case, each padded with three clean cases of the same language where possible.
+function needlePlan(seeded, clean) {
+  const pinned = join(BENCH_ROOT, "needles.json");
+  if (existsSync(pinned)) return JSON.parse(readFileSync(pinned, "utf8"));
+  const plan = [];
+  for (let i = 0; i < seeded.length && plan.length < 10; i += 3) {
+    const s = seeded[i];
+    const same = clean.filter((c) => c.language === s.language);
+    const pool = same.length >= 3 ? same : clean;
+    const picks = [0, 1, 2].map((k) => pool[(i / 3 + k) % pool.length].id);
+    plan.push([s.id, picks]);
+  }
+  return plan;
+}
 
 function stripTicket(diff) {
   return diff.replace(/^Ticket: .*\n\n?/, "");
@@ -40,7 +43,8 @@ function stripTicket(diff) {
 
 export function buildNeedles(seeded, clean) {
   const byId = Object.fromEntries([...seeded, ...clean].map((c) => [c.id, c]));
-  return NEEDLES.map(([sid, cids], i) => {
+  if (clean.length < 3) return [];
+  return needlePlan(seeded, clean).map(([sid, cids], i) => {
     const s = byId[sid];
     const parts = cids.map((id) => byId[id]);
     const all = [...parts.slice(0, i % 3), s, ...parts.slice(i % 3)];

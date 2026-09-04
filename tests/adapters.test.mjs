@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { loadRuleset } from "../scripts/lib/ruleset.mjs";
-import { renderAll, ROOT, personaCard } from "../scripts/lib/render.mjs";
+import { renderAll, ROOT, personaCard, P } from "../scripts/lib/render.mjs";
 
 const rs = loadRuleset();
 const files = renderAll(rs);
@@ -56,7 +56,7 @@ test("skills have valid frontmatter and never invite code edits except grumpy-fi
     assert.ok(fm, c.name + " frontmatter");
     assert.match(fm[1], new RegExp(`^name: ${c.name}$`, "m"));
     assert.match(fm[1], /^description: /m);
-    if (c.name !== "grumpy-fix") assert.ok(!/allowed-tools: .*\bEdit\b/.test(fm[1]), c.name + " must not pre-approve Edit");
+    if (c.name !== `${P.command}-fix`) assert.ok(!/allowed-tools: .*\bEdit\b/.test(fm[1]), c.name + " must not pre-approve Edit");
   }
 });
 
@@ -74,8 +74,8 @@ test("the hooks manifest points at scripts that exist", () => {
 });
 
 test("the OpenCode plugin is valid JavaScript that exports a plugin", async () => {
-  const mod = await import(join(ROOT, ".opencode/plugins/grumpy.mjs"));
-  const plugin = await mod.GrumpyReviewer();
+  const mod = await import(join(ROOT, `.opencode/plugins/${P.command}.mjs`));
+  const plugin = await mod[P.displayName.replace(/[^A-Za-z0-9]/g, "")]();
   assert.equal(typeof plugin["tool.execute.before"], "function");
   assert.equal(typeof plugin["experimental.chat.system.transform"], "function");
   const output = { system: [] };
@@ -91,7 +91,7 @@ test("the OpenCode plugin is valid JavaScript that exports a plugin", async () =
 });
 
 test("banned reviewer words never appear in the Grump's instructions", () => {
-  for (const rel of ["AGENTS.md", "hooks/persona.md", ".cursor/rules/grumpy.mdc"]) {
+  for (const rel of ["AGENTS.md", "hooks/persona.md", `.cursor/rules/${P.command}.mdc`]) {
     const text = files.get(rel).toLowerCase();
     // the words are allowed only inside the sentence that bans them
     const stripped = text.replace(/you never write[^\n]+/g, "");
