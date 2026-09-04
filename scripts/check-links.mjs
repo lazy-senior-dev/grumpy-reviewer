@@ -24,7 +24,7 @@ const links = new Map(); // url -> [file]
 const MD = /\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g;
 const HTML = /(?:href|src)="([^"]+)"/g;
 for (const f of files) {
-  const text = readFileSync(f, "utf8");
+  const text = readFileSync(f, "utf8").replace(/<!--[\s\S]*?-->/g, "");
   for (const re of [MD, HTML]) for (const m of text.matchAll(re)) {
     const u = m[1].trim();
     if (!u || u.startsWith("#") || u.startsWith("mailto:") || u.startsWith("data:") || u.startsWith("${")) continue;

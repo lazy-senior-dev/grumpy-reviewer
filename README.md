@@ -7,7 +7,7 @@
 <p align="center"><em>Show me where it breaks.</em></p>
 
 <p align="center">
-  <a href="https://github.com/lazy-senior-dev/grumpy-reviewer/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/lazy-senior-dev/grumpy-reviewer?style=flat&color=1f1f1f"></a>
+  <a href="https://github.com/lazy-senior-dev/grumpy-reviewer"><img alt="GitHub stars" src="https://img.shields.io/github/stars/lazy-senior-dev/grumpy-reviewer?style=flat&color=1f1f1f"></a>
   <a href="CHANGELOG.md"><img alt="Version 0.1.0" src="https://img.shields.io/badge/version-0.1.0-1f1f1f"></a>
   <img alt="Works with 13 agents" src="https://img.shields.io/badge/works%20with-13%20agents-1f1f1f">
   <a href="#github-action"><img alt="GitHub Action" src="https://img.shields.io/badge/GitHub%20Action-v1-1f1f1f"></a>
