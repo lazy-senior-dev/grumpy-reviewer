@@ -15,7 +15,7 @@ One line each, in the order they were made. Anything a reader might reasonably h
 11. Gemini CLI hooks live in `settings.json`, not the extension, so the extension is instruction plus commands and `examples/gemini-settings-hooks.json` adds the gate.
 12. Cursor, Kiro, and Devin CLI document blocking pre-tool hooks but not the full stdin schema; they ship instruction-only rather than a hook that might silently do nothing.
 13. Antigravity CLI installs this repo with `agy plugin install <path>` (skills, commands, and hooks were imported and `/grumpy-help` ran); no public schema document was found, so the table cites the local test and version.
-14. Gemini CLI could not be exercised on the build machine (the account tier is no longer served by Gemini CLI), so its adapter is verified against documentation only.
+14. The standalone Gemini CLI no longer serves individual accounts; Google routes them through Antigravity CLI, which imports the Gemini extension format. The Gemini adapter is therefore verified by installing it into Antigravity and running its commands, plus the extension documentation.
 15. The Action posts inline findings as review comments and keeps one summary review; on re-runs it updates the summary in place when the review state can stay, and dismisses then replaces it when the state must change (gate mode flipping between REQUEST_CHANGES and approval).
 16. The Action's OpenAI default model id (`gpt-5`) was not verified against a live account; set `model` explicitly when using `provider: openai`.
 17. Benchmark arms all receive the identical ticket line and diff; the two non-Grump arms are asked for a `VERDICT: PASS|FAIL` last line so the same scorer applies to all three.

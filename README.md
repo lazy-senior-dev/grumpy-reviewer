@@ -166,20 +166,14 @@ copilot plugin marketplace add lazy-senior-dev/grumpy-reviewer
 copilot plugin install grumpy-reviewer@lazy-senior-dev
 ```
 
-### Gemini CLI
-
-```
-gemini extensions install https://github.com/lazy-senior-dev/grumpy-reviewer
-```
-
-Persona plus the six commands. To add the gate, merge [`examples/gemini-settings-hooks.json`](examples/gemini-settings-hooks.json) into `~/.gemini/settings.json`.
-
-### Antigravity CLI
+### Antigravity CLI (and the Gemini CLI format)
 
 ```
 git clone https://github.com/lazy-senior-dev/grumpy-reviewer ~/.grumpy-reviewer
 agy plugin install ~/.grumpy-reviewer
 ```
+
+Antigravity imports the Gemini extension in this repo (`gemini-extension.json`, `GEMINI.md`, `commands/*.toml`) plus the skills and hooks. If you still run the standalone Gemini CLI: `gemini extensions install https://github.com/lazy-senior-dev/grumpy-reviewer`, and merge [`examples/gemini-settings-hooks.json`](examples/gemini-settings-hooks.json) into `~/.gemini/settings.json` for the gate.
 
 ### OpenCode
 
