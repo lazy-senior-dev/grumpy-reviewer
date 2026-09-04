@@ -38,3 +38,7 @@ npm run check       # adapters fresh, manifests valid, attribution clean
 npm run bench       # benchmark against whatever headless agent is installed
 npm run bench:report
 ```
+
+## Fake secrets in benchmark cases
+
+Seeded secrets must look real to a reviewer without matching a real provider format: use invented prefixes (`psk-live-`, `chatbot-`) rather than the prefixes scanners recognise, or GitHub push protection will refuse the commit that carries them.
