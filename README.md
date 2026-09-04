@@ -271,7 +271,7 @@ One persona, every repository, no per-developer setup.
 
 1. **Make it the default reviewer.** Add the Action to each repository's `.github/workflows/` (a one-file template lives in `examples/workflow.yml`), run it in `gate` mode, and make the check required in a [branch ruleset](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets). Every pull request, human or agent, then gets the same review before merge.
 2. **Make it the default for agents.** Commit `AGENTS.md` (and the host-specific files your teams use) with `npx github:lazy-senior-dev/grumpy-reviewer install all`. Every AGENTS.md-aware host, including Codex, Copilot, Cursor, Kiro, Bob Shell, and OpenCode, loads it with no plugin at all.
-3. **Pin and review.** Pin the Action to a commit SHA, keep `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` as an organisation secret, and read `benchmarks/results` before you trust the numbers; then rerun the benchmark against your own seeded cases with `npm run bench`.
+3. **Pin and review.** Pin the Action to a commit SHA, keep `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, or `BOB_API_KEY` as an organisation secret, and read `benchmarks/results` before you trust the numbers; then rerun the benchmark against your own seeded cases with `npm run bench`.
 4. **Keep the rules yours.** Fork, edit `rules/grump.md`, run `npm run build`; every adapter regenerates. The verdict format stays fixed, so hooks, the Action, and the scorecard keep working with your rules.
 
 Security posture, in one paragraph: no runtime dependencies, no network calls from the hooks, every third-party action pinned to a SHA, CodeQL and OpenSSF Scorecard on every push, provenance on npm publishes, and a written [threat model](SECURITY.md#threat-model).
@@ -300,7 +300,7 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 ```
 
-Inputs: `mode` (`nag` or `gate`), `provider` (`anthropic` or `openai`, with `OPENAI_API_KEY`), `model`, `max_files` (largest files first, the rest listed as not reviewed), `ignore` (globs). On pull requests from forks, where secrets are unavailable, it posts one neutral note and exits green. Full example: [`examples/workflow.yml`](examples/workflow.yml).
+Inputs: `mode` (`nag` or `gate`), `provider` (`anthropic`, `openai` with `OPENAI_API_KEY`, or `bob` with `BOB_API_KEY`, which installs the Bob CLI on the runner and reviews through IBM Bob), `model`, `max_files` (largest files first, the rest listed as not reviewed), `ignore` (globs). On pull requests from forks, where secrets are unavailable, it posts one neutral note and exits green. Full example: [`examples/workflow.yml`](examples/workflow.yml).
 
 ## Commands
 
