@@ -6,6 +6,8 @@
 
 <p align="center"><em>Show me where it breaks.</em></p>
 
+<p align="center"><strong>Site:</strong> <a href="https://lazy-senior-dev.github.io/grumpy-reviewer/">lazy-senior-dev.github.io/grumpy-reviewer</a> · <strong>The cast:</strong> <a href="https://lazy-senior-dev.github.io/">lazy-senior-dev.github.io</a></p>
+
 <p align="center">
   <a href="https://github.com/lazy-senior-dev/grumpy-reviewer"><img alt="GitHub stars" src="https://img.shields.io/github/stars/lazy-senior-dev/grumpy-reviewer?style=flat&color=1f1f1f"></a>
   <a href="CHANGELOG.md"><img alt="Version 0.1.0" src="https://img.shields.io/badge/version-0.1.0-1f1f1f"></a>
@@ -234,6 +236,18 @@ npx github:lazy-senior-dev/grumpy-reviewer install cursor      # or windsurf, cl
 | Anything else | [`AGENTS.md`](AGENTS.md) |
 
 These hosts get the reviewer in the conversation, not the gate: the agent reviews, prints verdicts, and honours the mode, but nothing denies a write. The full table of what each host does and does not enforce, with the documentation each row was checked against, is in [docs/agent-portability.md](docs/agent-portability.md).
+
+## Same desk
+
+Three engineers, three jobs, one install path, one mode switch.
+
+| Persona | Reads | Verdict | Measured on |
+|---|---|---|---|
+| **grumpy-reviewer** · [site](https://lazy-senior-dev.github.io/grumpy-reviewer/) | the diff, before it reaches your branch | `GRUMP: APPROVE \| REQUEST_CHANGES \| BLOCK` | defects caught |
+| [paranoid-sre](https://github.com/lazy-senior-dev/paranoid-sre) · [site](https://lazy-senior-dev.github.io/paranoid-sre/) | the deploy: manifests, charts, Terraform, CI | `SRE: SHIP \| HOLD \| PAGE` | incidents prevented per rollout |
+| [tenured](https://github.com/lazy-senior-dev/tenured) · [site](https://lazy-senior-dev.github.io/tenured/) | the change against the repository's history | `TENURED: NEW \| SEEN_BEFORE \| DO_NOT_REPEAT` | repeated outages avoided |
+
+Install all three from this one marketplace (`/plugin install paranoid-sre@lazy-senior-dev`, `/plugin install tenured@lazy-senior-dev`) and each reviews its own territory: the Grump reads code, the Paranoid SRE reads what runs it, Tenured reads what history says about both. Every persona is generated from one markdown ruleset with the same machinery, so a fix in one lands in all. The cast: [lazy-senior-dev.github.io](https://lazy-senior-dev.github.io/).
 
 ## Adopt it across an organisation
 

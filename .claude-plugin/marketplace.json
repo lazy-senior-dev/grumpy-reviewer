@@ -22,6 +22,37 @@
         "security",
         "hooks"
       ]
+    },
+    {
+      "name": "paranoid-sre",
+      "displayName": "Paranoid SRE",
+      "description": "The on-call engineer who asks how it fails. Reviews manifests, charts, Terraform, and CI before they reach production.",
+      "source": {
+        "source": "github",
+        "repo": "lazy-senior-dev/paranoid-sre"
+      },
+      "category": "productivity",
+      "tags": [
+        "sre",
+        "deploy",
+        "kubernetes",
+        "terraform"
+      ]
+    },
+    {
+      "name": "tenured",
+      "displayName": "Tenured",
+      "description": "The engineer who remembers the postmortem. Reviews a change against the repository's own history.",
+      "source": {
+        "source": "github",
+        "repo": "lazy-senior-dev/tenured"
+      },
+      "category": "productivity",
+      "tags": [
+        "history",
+        "postmortem",
+        "incidents"
+      ]
     }
   ]
 }

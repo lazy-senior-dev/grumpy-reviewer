@@ -38,5 +38,28 @@
     "seeded": 30,
     "clean": 10,
     "needle": 10
-  }
+  },
+  "marketplace": [
+    {
+      "name": "paranoid-sre",
+      "displayName": "Paranoid SRE",
+      "description": "The on-call engineer who asks how it fails. Reviews manifests, charts, Terraform, and CI before they reach production.",
+      "tags": [
+        "sre",
+        "deploy",
+        "kubernetes",
+        "terraform"
+      ]
+    },
+    {
+      "name": "tenured",
+      "displayName": "Tenured",
+      "description": "The engineer who remembers the postmortem. Reviews a change against the repository's own history.",
+      "tags": [
+        "history",
+        "postmortem",
+        "incidents"
+      ]
+    }
+  ]
 }

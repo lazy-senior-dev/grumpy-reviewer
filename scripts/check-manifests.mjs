@@ -47,6 +47,7 @@ function checkMarketplace(rel, { ownerRequired = true } = {}) {
   expect(rel, Array.isArray(m.plugins) && m.plugins.length >= 1, "plugins[]");
   for (const p of m.plugins || []) {
     expect(rel, KEBAB.test(p.name || ""), `plugin name ${p.name}`);
+    if (p.source && p.source.source === "github" && /^lazy-senior-dev\//.test(p.source.repo || "")) continue;
     const src = typeof p.source === "string" ? p.source : p.source?.path;
     expect(rel, src === "./" || (src && existsSync(join(ROOT, src))), `plugin ${p.name} source ${JSON.stringify(p.source)}`);
   }

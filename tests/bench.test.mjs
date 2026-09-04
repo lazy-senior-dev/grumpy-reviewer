@@ -12,7 +12,7 @@ const F = (p) => (TF_.ext ? p.replace(/\.(py|ts|go)$/, TF_.ext).replace(/^(?!\/)
 const T = (s) => {
   const pairs = [["GRUMP:", P_.verdictPrefix + ":"], ["REQUEST_CHANGES", P_.verdicts.changes], ["APPROVE", P_.verdicts.approve], ["BLOCK", P_.verdicts.block], ["Fine.", P_.approveWord]];
   for (const [a, b] of pairs) s = s.replace(new RegExp(a.replace(/[.]/g, "\\.") + (/[A-Z_]+$/.test(a) ? "\\b" : ""), "gi"), (m) => (m === m.toLowerCase() && a !== "Fine." ? b.toLowerCase() : b));
-  return s.replace(/(\/?(?:repo\/)?(?:src\/)?[ab]\.(?:py|ts|go))(?=:\d)/g, (m) => F(m));
+  return s.replace(/(\/?(?:repo\/)?(?:src\/)?[ab]\.(?:py|ts|go))(?=[:\s,]|$)/g, (m) => F(m));
 };
 
 const P = JSON.parse(readFileSync(new URL("../persona.json", import.meta.url), "utf8"));

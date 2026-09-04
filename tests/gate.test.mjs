@@ -14,7 +14,7 @@ const F = (p) => (TF_.ext ? p.replace(/\.(py|ts|go)$/, TF_.ext).replace(/^(?!\/)
 const T = (s) => {
   const pairs = [["GRUMP:", P_.verdictPrefix + ":"], ["REQUEST_CHANGES", P_.verdicts.changes], ["APPROVE", P_.verdicts.approve], ["BLOCK", P_.verdicts.block], ["Fine.", P_.approveWord]];
   for (const [a, b] of pairs) s = s.replace(new RegExp(a.replace(/[.]/g, "\\.") + (/[A-Z_]+$/.test(a) ? "\\b" : ""), "gi"), (m) => (m === m.toLowerCase() && a !== "Fine." ? b.toLowerCase() : b));
-  return s.replace(/(\/?(?:repo\/)?(?:src\/)?[ab]\.(?:py|ts|go))(?=:\d)/g, (m) => F(m));
+  return s.replace(/(\/?(?:repo\/)?(?:src\/)?[ab]\.(?:py|ts|go))(?=[:\s,]|$)/g, (m) => F(m));
 };
 
 
@@ -157,7 +157,7 @@ test("transcript: text since the last tool result is narrower than text since th
     { type: "user", message: { content: [{ type: "tool_result", content: "ok" }] } },
     { type: "assistant", message: { content: [{ type: "text", text: "now the second file" }, { type: "tool_use", name: "Write" }] } },
   ].map((e) => JSON.stringify(e)).join("\n");
-  assert.ok(assistantTextSinceLastPrompt(lines).includes("APPROVE"));
+  assert.ok(assistantTextSinceLastPrompt(lines).includes(T("APPROVE")));
   assert.ok(!assistantTextSinceLastPrompt(lines, { sinceTool: true }).includes("APPROVE"));
   assert.ok(assistantTextSinceLastPrompt(lines, { sinceTool: true }).includes("second file"));
 });

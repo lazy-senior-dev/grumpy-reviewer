@@ -320,6 +320,7 @@ export function claudeMarketplace(rs, p) {
         category: "productivity",
         tags: ["code-review", "quality", "security", "hooks"],
       },
+      ...(P.marketplace || []).map((m) => ({ name: m.name, displayName: m.displayName, description: m.description, source: { source: "github", repo: `lazy-senior-dev/${m.name}` }, category: "productivity", tags: m.tags || [] })),
     ],
   };
 }
