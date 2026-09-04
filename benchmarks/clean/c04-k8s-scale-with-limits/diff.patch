@@ -1,4 +1,4 @@
-Ticket: PLAT-230 "Scale the api service to 4 replicas for the launch"
+Ticket: PLAT-230 "Scale the api service to 4 replicas for the launch and raise its disruption budget to match"
 
 diff --git a/deploy/k8s/api-deployment.yaml b/deploy/k8s/api-deployment.yaml
 --- a/deploy/k8s/api-deployment.yaml
@@ -12,15 +12,6 @@ diff --git a/deploy/k8s/api-deployment.yaml b/deploy/k8s/api-deployment.yaml
    selector:
      matchLabels:
        app: api
-@@ -17,7 +17,7 @@ spec:
-     spec:
-       containers:
-         - name: api
--          image: registry.example.com/shop/api:2.11.0
-+          image: registry.example.com/shop/api:2.11.1
-           resources:
-             requests:
-               cpu: 100m
 diff --git a/deploy/k8s/api-pdb.yaml b/deploy/k8s/api-pdb.yaml
 --- a/deploy/k8s/api-pdb.yaml
 +++ b/deploy/k8s/api-pdb.yaml

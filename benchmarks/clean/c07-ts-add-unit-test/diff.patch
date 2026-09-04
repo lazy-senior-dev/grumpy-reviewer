@@ -3,7 +3,7 @@ Ticket: QA-33 "Add tests for the discount calculator edge cases"
 diff --git a/src/pricing/discount.test.ts b/src/pricing/discount.test.ts
 --- /dev/null
 +++ b/src/pricing/discount.test.ts
-@@ -0,0 +1,24 @@
+@@ -0,0 +1,30 @@
 +import { describe, expect, test } from "vitest";
 +import { applyDiscount } from "./discount";
 +
@@ -12,8 +12,14 @@ diff --git a/src/pricing/discount.test.ts b/src/pricing/discount.test.ts
 +    expect(applyDiscount(1999, 0)).toBe(1999);
 +  });
 +
-+  test("rounds half-cents down to the nearest cent", () => {
++  test("rounds fractional cents down", () => {
++    // 1999 * 0.85 = 1699.15, so the cent is dropped
 +    expect(applyDiscount(1999, 15)).toBe(1699);
++  });
++
++  test("rejects non-finite prices and percentages", () => {
++    expect(() => applyDiscount(Number.NaN, 10)).toThrow(RangeError);
++    expect(() => applyDiscount(1999, Number.POSITIVE_INFINITY)).toThrow(RangeError);
 +  });
 +
 +  test("one hundred percent is free", () => {

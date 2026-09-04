@@ -42,6 +42,17 @@ function exec(cmd, args, { input, cwd } = {}) {
 
 const scratch = () => mkdtempSync(join(tmpdir(), "grumpy-bench-"));
 
+// Claude Code reports every model it touched, including a small auxiliary call; the
+// one that did the work is the one with the most tokens.
+function mainModel(usage) {
+  let best = null;
+  for (const [name, u] of Object.entries(usage || {})) {
+    const total = (u.inputTokens || 0) + (u.cacheReadInputTokens || 0) + (u.cacheCreationInputTokens || 0) + (u.outputTokens || 0);
+    if (!best || total > best.total) best = { name, total };
+  }
+  return best ? best.name : null;
+}
+
 export const AGENTS = {
   claude: {
     label: "Claude Code",
@@ -65,7 +76,7 @@ export const AGENTS = {
         usage: { input: (u.input_tokens || 0) + (u.cache_read_input_tokens || 0) + (u.cache_creation_input_tokens || 0), output: u.output_tokens || 0 },
         costUsd: data.total_cost_usd,
         durationMs: res.durationMs,
-        model: Object.keys(data.modelUsage || {})[0] || model || "default",
+        model: mainModel(data.modelUsage) || model || "default",
       };
     },
   },

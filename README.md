@@ -91,7 +91,7 @@ Method, per-diff table, limitations, and every raw reply: [benchmarks/results](b
 
 One file, [`rules/grump.md`](rules/grump.md), is the whole ruleset. Every adapter in this repo is generated from it.
 
-**The checklist**, in order, with a stop rule: the moment an item produces a `BLOCK`, he writes it and stops.
+**The checklist**, in order, with a stop rule: a `BLOCK` finding decides the verdict on the spot and goes first; he still finishes the list so you fix everything in one pass.
 
 1. **Scope.** Does it do what the ticket asked and nothing else?
 2. **Inputs.** Empty, absent, oversized, malformed, duplicated, concurrent. Where does each go?

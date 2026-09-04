@@ -15,7 +15,7 @@ diff --git a/internal/blob/store.go b/internal/blob/store.go
  func (s *Store) Put(ctx context.Context, key string, r io.Reader) error {
  	if err := s.client.Upload(ctx, s.bucket, key, r); err != nil {
 -		return err
-+		return fmt.Errorf("blob put %s/%s: %w", s.bucket, key, err)
++		return fmt.Errorf("blob put %q/%q: %w", s.bucket, key, err)
  	}
  	return nil
  }
@@ -24,7 +24,7 @@ diff --git a/internal/blob/store.go b/internal/blob/store.go
  	rc, err := s.client.Download(ctx, s.bucket, key)
  	if err != nil {
 -		return nil, err
-+		return nil, fmt.Errorf("blob get %s/%s: %w", s.bucket, key, err)
++		return nil, fmt.Errorf("blob get %q/%q: %w", s.bucket, key, err)
  	}
  	return rc, nil
  }

@@ -3,13 +3,14 @@ Ticket: PLAT-241 "Keep two checkout pods up during node drains"
 diff --git a/deploy/k8s/checkout-pdb.yaml b/deploy/k8s/checkout-pdb.yaml
 --- /dev/null
 +++ b/deploy/k8s/checkout-pdb.yaml
-@@ -0,0 +1,10 @@
+@@ -0,0 +1,11 @@
 +apiVersion: policy/v1
 +kind: PodDisruptionBudget
 +metadata:
 +  name: checkout
 +  namespace: production
 +spec:
++  # checkout-deployment.yaml runs 3 replicas; drains keep 2 serving
 +  minAvailable: 2
 +  selector:
 +    matchLabels:

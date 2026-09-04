@@ -29,4 +29,5 @@ One line each, in the order they were made. Anything a reader might reasonably h
 25. The README badge for npm is commented out until the package is published; the Trendshift slot is a comment.
 26. The build machine's global git config signs with an RSA key and the folder-level config was not yet included from `~/.gitconfig`; `SETUP.md` step 1 adds the include and step 3 re-signs the whole history with the intended key.
 27. Licensed Apache-2.0 with a NOTICE file rather than MIT: equally permissive, but redistributions must keep the originator's notice and downstream users get an explicit patent grant.
-28. No other project's rules, prompts, hook code, benchmark code, or examples were read into this repository; every file is original, and the README avoids comparisons with other projects by design.
+28. Claude Code reports usage for every model it touched during a headless call, including a small auxiliary Haiku call; the benchmark records the model with the most tokens as the model of record. The first run was relabelled after this was found, and the raw usage numbers include that auxiliary call in every arm alike.
+29. No other project's rules, prompts, hook code, benchmark code, or examples were read into this repository; every file is original, and the README avoids comparisons with other projects by design.

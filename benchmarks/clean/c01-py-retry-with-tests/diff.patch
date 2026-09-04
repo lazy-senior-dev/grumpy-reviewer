@@ -1,4 +1,4 @@
-Ticket: NET-4 "Retry transient gateway errors up to three times"
+Ticket: NET-4 "Retry transient gateway errors: three attempts in total, exponential backoff with jitter, capped at two seconds"
 
 diff --git a/app/util/retry.py b/app/util/retry.py
 --- /dev/null
@@ -16,8 +16,8 @@ diff --git a/app/util/retry.py b/app/util/retry.py
 +    """Raised by callers for errors that are safe to retry."""
 +
 +
-+def retry(fn: Callable[[], T], *, attempts: int = 3, base_delay: float = 0.2, sleep: Callable[[float], None] = time.sleep) -> T:
-+    """Call fn until it returns or raises something other than Transient. Re-raises the last Transient."""
++def retry(fn: Callable[[], T], *, attempts: int = 3, base_delay: float = 0.2, max_delay: float = 2.0, sleep: Callable[[float], None] = time.sleep) -> T:
++    """Call fn up to `attempts` times in total, sleeping between tries. Re-raises the last Transient."""
 +    if attempts < 1:
 +        raise ValueError("attempts must be at least 1")
 +    last: Transient | None = None
@@ -27,7 +27,7 @@ diff --git a/app/util/retry.py b/app/util/retry.py
 +        except Transient as exc:
 +            last = exc
 +            if attempt < attempts - 1:
-+                sleep(base_delay * (2**attempt) + random.uniform(0, base_delay))
++                sleep(min(max_delay, base_delay * (2**attempt) + random.uniform(0, base_delay)))
 +    assert last is not None
 +    raise last
 diff --git a/tests/util/test_retry.py b/tests/util/test_retry.py

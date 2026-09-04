@@ -1,4 +1,4 @@
-Ticket: DX-8 "Type-annotate the slug helpers so mypy passes on app/text"
+Ticket: DX-8 "Type-annotate and document the slug helpers so mypy passes on app/text"
 
 diff --git a/app/text/slug.py b/app/text/slug.py
 --- a/app/text/slug.py
