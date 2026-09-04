@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Fill the benchmark block of README.md from benchmarks/results/latest.json.
-// The block sits between <!-- bench:start --> and <!-- bench:end -->; everything else is hand-written.
+// The block sits between <!-- bench:hero:start --> / <!-- bench:hero:end --> and
+// <!-- bench:table:start --> / <!-- bench:table:end -->; everything else is hand-written.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -12,21 +13,29 @@ const readme = readFileSync(readmePath, "utf8");
 
 const TBD = `**Numbers: TBD.** Run \`npm run bench\` and \`npm run bench:report\` with a headless agent installed (\`claude\`, \`codex\`, or \`agy\`) or an \`ANTHROPIC_API_KEY\`; the table below fills in from \`benchmarks/results/latest.json\`.`;
 
+const n = (x, d = 0) => (x === null || x === undefined ? "n/a" : Number(x).toFixed(d));
+const secs = (ms) => (ms === null || ms === undefined ? "n/a" : (ms / 1000).toFixed(0) + " s");
+const perRun = (arm) => (arm && arm.runs ? n(arm.unparseable / arm.runs, 0) : "n/a");
+
 function block() {
   if (!existsSync(latestPath)) return { hero: TBD, table: "" };
   const d = JSON.parse(readFileSync(latestPath, "utf8"));
-  const rows = Object.entries(d.agents).filter(([, a]) => a.arms?.grump);
+  const rows = Object.entries(d.agents).filter(([, a]) => a.arms?.grump && a.arms?.bare);
   if (!rows.length) return { hero: TBD, table: "" };
   const [, first] = rows[0];
-  const b = first.arms.bare, g = first.arms.grump, ge = first.arms.generic;
-  const n = d.seeded;
-  const fmt = (arm) => (arm && arm.caughtMedian != null ? `${arm.caughtMedian}/${n}` : "n/a");
-  const hero = `**${fmt(g)} seeded defects caught with the Grump, ${fmt(b)} without, ${fmt(ge)} with a generic "review carefully" prompt** (${first.label}, \`${g.model}\`, median of ${g.runs} run${g.runs === 1 ? "" : "s"}; ${g.falsePositivesMedian ?? "n/a"} false alarm${g.falsePositivesMedian === 1 ? "" : "s"} on ${d.clean} clean diffs). Same diff, same model; only the reviewer changes. Measured ${d.date}; [method and raw replies](benchmarks/results).`;
-  let table = `| Agent | Model | No skill | Generic prompt | **Grump** | False alarms (Grump, of ${d.clean}) | BLOCK precision | Extra input tokens per review |\n|---|---|---|---|---|---|---|---|\n`;
+  const b = first.arms.bare, g = first.arms.grump;
+  const same = g.caughtMedian === b.caughtMedian;
+  const vs = (x, y, unit = "") => (x === y ? `${x}${unit} either way` : `${x}${unit} with him, ${y}${unit} without`);
+  const hero = `**On ${first.label} (\`${g.model}\`), the Grump catches ${n(g.caughtMedian)} of ${d.seeded} seeded defects${same ? ", the same as the agent alone" : ` against ${n(b.caughtMedian)} for the agent alone`}. What changes is discipline: false alarms on ${d.clean} clean diffs, ${vs(n(g.falsePositivesMedian), n(b.falsePositivesMedian))}; replies with no usable verdict per run, ${vs(perRun(g), perRun(b))}; ${n(g.blockPrecision * 100)}% of his BLOCK verdicts land on BLOCK-class defects; median review time ${vs(secs(g.latencyMedianMs), secs(b.latencyMedianMs))} at ${vs(n(g.outputTokensMedian), n(b.outputTokensMedian), " output tokens")}.** Median of ${g.runs} run${g.runs === 1 ? "" : "s"}, measured ${d.date}; [method, per-diff table, raw replies](benchmarks/results).`;
+  let table = `| Agent | Model | Arm | Defects caught (of ${d.seeded}) | False alarms (of ${d.clean}) | Replies without a verdict (per run) | BLOCK precision | Median input tokens | Median output tokens | Median latency |\n|---|---|---|---|---|---|---|---|---|---|\n`;
   for (const [, a] of rows) {
-    const gg = a.arms.grump, bb = a.arms.bare, gen = a.arms.generic;
-    const overhead = gg.inputTokensMedian != null && bb?.inputTokensMedian != null ? Math.round(gg.inputTokensMedian - bb.inputTokensMedian) : "n/a";
-    table += `| ${a.label} | \`${gg.model}\` (n=${gg.runs}) | ${fmt(bb)} | ${fmt(gen)} | **${fmt(gg)}** | ${gg.falsePositivesMedian ?? "n/a"} | ${gg.blockPrecision == null ? "n/a" : Math.round(gg.blockPrecision * 100) + "%"} | ${overhead} |\n`;
+    for (const arm of ["bare", "generic", "grump"]) {
+      const s = a.arms[arm];
+      if (!s) continue;
+      const bold = arm === "grump";
+      const wrap = (x) => (bold ? `**${x}**` : x);
+      table += `| ${a.label} | \`${s.model}\` (n=${s.runs}) | ${wrap(s.label)} | ${wrap(n(s.caughtMedian))} | ${wrap(n(s.falsePositivesMedian))} | ${wrap(perRun(s))} | ${arm === "grump" ? wrap(s.blockPrecision == null ? "n/a" : n(s.blockPrecision * 100) + "%") : "n/a"} | ${n(s.inputTokensMedian)} | ${n(s.outputTokensMedian)} | ${secs(s.latencyMedianMs)} |\n`;
+    }
   }
   return { hero, table };
 }

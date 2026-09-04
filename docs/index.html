@@ -124,12 +124,12 @@ Fine.</pre></div>
   <h2>Defects caught, not lines saved</h2>
   <p>Thirty small diffs, each with exactly one seeded defect, plus ten clean diffs to count false alarms. The same diff goes to the same agent three ways: no skill, a generic "review carefully" prompt, and the Grump. Same ticket, same diff, same model. The only thing that changes is who is reading.</p>
   <div class="numbers" id="numbers">
-    <div class="stat"><b id="n-bare">TBD</b><span>defects caught with no skill</span></div>
-    <div class="stat"><b id="n-generic">TBD</b><span>with a generic review prompt</span></div>
-    <div class="stat"><b id="n-grump">TBD</b><span>with the Grump</span></div>
-    <div class="stat"><b id="n-fp">TBD</b><span>false alarms on 10 clean diffs</span></div>
+    <div class="stat"><b id="n-caught">TBD</b><span id="l-caught">defects caught, with him and without</span></div>
+    <div class="stat"><b id="n-fp">TBD</b><span id="l-fp">false alarms on 10 clean diffs, with him vs without</span></div>
+    <div class="stat"><b id="n-nov">TBD</b><span id="l-nov">replies without a verdict, with him vs without</span></div>
+    <div class="stat"><b id="n-lat">TBD</b><span id="l-lat">median review time, with him vs without</span></div>
   </div>
-  <div class="table-wrap"><table id="bench-table"><thead><tr><th>Agent</th><th>Model</th><th>No skill</th><th>Generic prompt</th><th>Grump</th><th>False positives (Grump)</th><th>BLOCK precision</th></tr></thead><tbody><tr><td colspan="7" class="muted">Results load from <code>data/latest.json</code>. If this row is still here, run <code>npm run bench</code> and <code>npm run bench:report</code>.</td></tr></tbody></table></div>
+  <div class="table-wrap"><table id="bench-table"><thead><tr><th>Agent</th><th>Model</th><th>Arm</th><th>Defects caught</th><th>False alarms</th><th>No verdict (per run)</th><th>BLOCK precision</th><th>Median latency</th></tr></thead><tbody><tr><td colspan="8" class="muted">Results load from <code>data/latest.json</code>. If this row is still here, run <code>npm run bench</code> and <code>npm run bench:report</code>.</td></tr></tbody></table></div>
   <p class="small muted" id="bench-note" style="margin-top:.75rem">Method, per-diff table, raw replies and limitations: <a href="https://github.com/lazy-senior-dev/grumpy-reviewer/tree/main/benchmarks/results">benchmarks/results</a>. Reproduce with <code>npm run bench</code>.</p>
 </section>
 
@@ -240,23 +240,30 @@ Fine.</pre></div>
     var tbody = document.querySelector("#bench-table tbody");
     tbody.innerHTML = "";
     var first = null;
+    var perRun = function (arm) { return arm.runs ? (arm.unparseable / arm.runs).toFixed(0) : "n/a"; };
+    var secs = function (ms) { return ms == null ? "n/a" : (ms / 1000).toFixed(0) + " s"; };
     Object.keys(data.agents).forEach(function (key) {
       var a = data.agents[key];
       var arms = a.arms || {};
-      var g = arms.grump || {}, b = arms.bare || {}, ge = arms.generic || {};
-      if (!first && g.caughtMedian != null) first = { b: b, ge: ge, g: g };
-      var n = data.seeded;
-      var cell = function (arm) { return arm.caughtMedian == null ? "n/a" : arm.caughtMedian + " / " + n; };
-      var tr = document.createElement("tr");
-      tr.innerHTML = "<td>" + esc(a.label) + "</td><td><code>" + esc(String(g.model || b.model || "")) + "</code></td><td>" + cell(b) + "</td><td>" + cell(ge) + "</td><td><strong>" + cell(g) + "</strong></td><td>" + (g.falsePositivesMedian == null ? "n/a" : g.falsePositivesMedian + " / " + data.clean) + "</td><td>" + (g.blockPrecision == null ? "n/a" : Math.round(g.blockPrecision * 100) + "%") + "</td>";
-      tbody.appendChild(tr);
+      if (!arms.grump || !arms.bare) return;
+      if (!first) first = { a: a, b: arms.bare, g: arms.grump };
+      ["bare", "generic", "grump"].forEach(function (k) {
+        var s = arms[k];
+        if (!s) return;
+        var tr = document.createElement("tr");
+        var strong = k === "grump";
+        var w = function (x) { return strong ? "<strong>" + x + "</strong>" : x; };
+        tr.innerHTML = "<td>" + esc(a.label) + "</td><td><code>" + esc(String(s.model || "")) + "</code> (n=" + s.runs + ")</td><td>" + w(esc(s.label)) + "</td><td>" + w(s.caughtMedian + " / " + data.seeded) + "</td><td>" + w(s.falsePositivesMedian + " / " + data.clean) + "</td><td>" + w(perRun(s)) + "</td><td>" + (k === "grump" ? w(s.blockPrecision == null ? "n/a" : Math.round(s.blockPrecision * 100) + "%") : "n/a") + "</td><td>" + secs(s.latencyMedianMs) + "</td>";
+        tbody.appendChild(tr);
+      });
     });
     if (first) {
-      document.getElementById("n-bare").textContent = first.b.caughtMedian == null ? "n/a" : first.b.caughtMedian + "/" + data.seeded;
-      document.getElementById("n-generic").textContent = first.ge.caughtMedian == null ? "n/a" : first.ge.caughtMedian + "/" + data.seeded;
-      document.getElementById("n-grump").textContent = first.g.caughtMedian + "/" + data.seeded;
-      document.getElementById("n-fp").textContent = first.g.falsePositivesMedian == null ? "n/a" : first.g.falsePositivesMedian + "/" + data.clean;
-      document.getElementById("bench-note").insertAdjacentHTML("afterbegin", "Measured " + esc(data.date) + ". Headline numbers are the first agent in the table; medians over runs. ");
+      document.getElementById("n-caught").textContent = first.g.caughtMedian + " / " + first.b.caughtMedian;
+      document.getElementById("l-caught").textContent = "of " + data.seeded + " defects caught, with him / without (" + first.a.label + ")";
+      document.getElementById("n-fp").textContent = first.g.falsePositivesMedian + " / " + first.b.falsePositivesMedian;
+      document.getElementById("n-nov").textContent = perRun(first.g) + " / " + perRun(first.b);
+      document.getElementById("n-lat").textContent = secs(first.g.latencyMedianMs) + " / " + secs(first.b.latencyMedianMs);
+      document.getElementById("bench-note").insertAdjacentHTML("afterbegin", "Measured " + esc(data.date) + " on " + esc(first.a.label) + " (" + esc(String(first.g.model)) + "); medians over runs. ");
     }
   }).catch(function () {});
 })();

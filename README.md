@@ -19,7 +19,7 @@
 **Your agent's code, reviewed by the staff engineer who has rejected 4,000 pull requests, before it ever reaches your branch.**
 
 <!-- bench:hero:start -->
-**Numbers: TBD.** Run `npm run bench` and `npm run bench:report` with a headless agent installed (`claude`, `codex`, or `agy`) or an `ANTHROPIC_API_KEY`; the table below fills in from `benchmarks/results/latest.json`.
+**On Claude Code (`claude-sonnet-5`), the Grump catches 30 of 30 seeded defects, the same as the agent alone. What changes is discipline: false alarms on 10 clean diffs, 0 with him, 4 without; replies with no usable verdict per run, 0 with him, 3 without; 94% of his BLOCK verdicts land on BLOCK-class defects; median review time 7 s with him, 11 s without at 229 output tokens with him, 685 output tokens without.** Median of 3 runs, measured 2026-09-04; [method, per-diff table, raw replies](benchmarks/results).
 <!-- bench:hero:end -->
 
 ## The thirty-second version
@@ -79,13 +79,26 @@ Most add-ons for coding agents are measured in lines of code saved. The Grump is
 
 Thirty small, realistic diffs across Python, TypeScript, Go, and YAML (Kubernetes manifests, GitHub workflows), each with exactly one seeded defect: an unchecked user id, SQL and shell injection, a secret in code, a swallowed exception, an off-by-one, a race, a wrong HTTP status, a mutable default, a `latest` image tag, missing resource limits, a destructive migration, `pull_request_target` with a checkout of the fork. Plus ten clean diffs, to count false alarms. Every diff goes to the same agent three ways: with no skill, with a generic "review this carefully" prompt, and with the Grump. Same ticket, same diff, same model.
 
-<p align="center"><img src="assets/benchmark.png" alt="Bar chart: defects caught out of 30 per agent, for no skill, a generic prompt, and grumpy-reviewer" width="720"></p>
+<p align="center"><img src="assets/benchmark.png" alt="Bar chart per agent: defects caught, false alarms on clean diffs, and replies without a verdict, for no skill, a generic prompt, and grumpy-reviewer" width="860"></p>
 
 <!-- bench:table:start -->
-_No results yet._
+| Agent | Model | Arm | Defects caught (of 30) | False alarms (of 10) | Replies without a verdict (per run) | BLOCK precision | Median input tokens | Median output tokens | Median latency |
+|---|---|---|---|---|---|---|---|---|---|
+| Claude Code | `claude-sonnet-5` (n=3) | no skill | 30 | 4 | 3 | n/a | 5721 | 685 | 11 s |
+| Claude Code | `claude-sonnet-5` (n=3) | generic review prompt | 30 | 5 | 3 | n/a | 5830 | 1313 | 18 s |
+| Claude Code | `claude-sonnet-5` (n=3) | **grumpy-reviewer** | **30** | **0** | **0** | **94%** | 7753 | 229 | 7 s |
+| Codex CLI | `codex-default` (n=3) | no skill | 29 | 4 | 0 | n/a | 28893 | 693 | 23 s |
+| Codex CLI | `codex-default` (n=3) | generic review prompt | 30 | 3 | 0 | n/a | 28798 | 1013 | 25 s |
+| Codex CLI | `codex-default` (n=3) | **grumpy-reviewer** | **30** | **3** | **0** | **88%** | 15498 | 502 | 14 s |
+| Antigravity CLI | `agy-default` (n=1) | no skill | 22 | 0 | 10 | n/a | 19540 | 3418 | 48 s |
+| Antigravity CLI | `agy-default` (n=1) | generic review prompt | 27 | 0 | 4 | n/a | 19608 | 7278 | 56 s |
+| Antigravity CLI | `agy-default` (n=1) | **grumpy-reviewer** | **25** | **0** | **5** | **100%** | 20979 | 34389 | 98 s |
+
 <!-- bench:table:end -->
 
-Method, per-diff table, limitations, and every raw reply: [benchmarks/results](benchmarks/results). Reproduce: `npm run bench && npm run bench:report`. Add your own case: [CONTRIBUTING](CONTRIBUTING.md).
+What the numbers say, plainly: current models find these seeded defects with or without help. The value of a reviewer persona is not that it finds more; it is that it stops crying wolf on clean changes, always ends with a verdict a hook can act on, gets the severity right, and does it in fewer tokens and less time. A gate is only useful if it is both parseable and quiet on good code; those are the two columns that move.
+
+Method, per-diff table, limitations, the pilot run that led to one calibration pass, and every raw reply: [benchmarks/results](benchmarks/results). Reproduce: `npm run bench && npm run bench:report`. Add your own case: [CONTRIBUTING](CONTRIBUTING.md).
 
 ## How it works
 
@@ -244,7 +257,7 @@ In Claude Code both `/grumpy-review` and the namespaced `/grumpy-reviewer:grumpy
 
 **Isn't this just a system prompt that says "review your code"?** A prompt asks; the Grump enforces. The persona is one part. The others are a fixed verdict block that tooling can parse, a `PreToolUse` gate that reads that verdict and denies the write, a scorecard of every decision, and a benchmark with a generic-prompt arm so you can see how much a plain "review carefully" buys you and how much the checklist and the gate add on top. He also never writes code, which keeps author and reviewer apart even when they are the same model.
 
-**Does it slow my agent down?** The persona card is injected once per user prompt, not per tool call. The benchmark records the input tokens of every call; the "extra input tokens per review" column in the table above is the measured overhead of the card over a bare review. A denied write costs one extra turn, which is the point.
+**Does it slow my agent down?** The persona card is injected once per user prompt, not per tool call, and costs about two thousand input tokens (see the median input tokens column above). Reviews come back faster with it than without, because a verdict block is a few hundred output tokens where a free-form review is over a thousand. A denied write costs one extra turn, which is the point.
 
 **Can he be wrong?** Yes. He reviews a diff, not your whole system, and he is a language model with a strong opinion. If a finding is wrong, say so in your own words; the agent prints `GRUMP: OVERRIDE` quoting you, the gate lets the write through, and the override is logged to the scorecard so you can see later how often you were right. Only you can trigger an override; the agent cannot decide to skip a `BLOCK` on its own.
 

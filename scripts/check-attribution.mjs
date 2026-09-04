@@ -42,6 +42,7 @@ const problems = [];
 const tracked = git("ls-files", "-z").split("\0").filter(Boolean);
 for (const rel of tracked) {
   if (BINARY.test(rel)) continue;
+  if (/^benchmarks\/results\/.*\.jsonl$/.test(rel)) continue; // raw model replies are data, not authorship
   let text;
   try {
     text = readFileSync(join(ROOT, rel), "utf8");
