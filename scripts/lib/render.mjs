@@ -367,7 +367,7 @@ export function codexMarketplace() {
 
 export function copilotPlugin(rs, p) {
   return {
-    name: "grumpy-reviewer",
+    name: P.slug,
     version: p.version,
     description: p.description,
     author: AUTHOR,
