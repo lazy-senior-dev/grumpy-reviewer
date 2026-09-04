@@ -1,0 +1,77 @@
+# Agent portability
+
+One ruleset, `rules/grump.md`, rendered by `npm run build` into the file each host reads. This page says which file that is, what the host can enforce, how to install, and how to remove it. Nothing here is hand-written twice: if a row disagrees with the repo, the repo wins and this page has a bug.
+
+Hosts fall into two tiers:
+
+- **Gate hosts** run lifecycle hooks. The Grump is injected every turn and the `PreToolUse` gate can deny a write or a commit until a verdict is printed.
+- **Instruction hosts** load a rules file. The Grump reviews in the conversation; nothing is enforced.
+
+## What each host reads
+
+| Host | Tier | Files the host reads | Slash commands | Verified against | Checked |
+|---|---|---|---|---|---|
+| Claude Code | gate | `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `skills/*/SKILL.md`, `hooks/hooks.json` | `/grumpy-reviewer:grumpy`, `:grumpy-review`, `:grumpy-pr`, `:grumpy-fix`, `:grumpy-scorecard`, `:grumpy-help` | [plugins reference](https://code.claude.com/docs/en/plugins-reference), [hooks](https://code.claude.com/docs/en/hooks), [skills](https://code.claude.com/docs/en/skills) | 2026-09-04 |
+| Codex | gate | `.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json`, `skills/*/SKILL.md`, `hooks/hooks.json` | skills via `$grumpy-review` and friends | [plugins](https://developers.openai.com/codex/plugins/build), [hooks](https://developers.openai.com/codex/hooks) | 2026-09-04; the `${CLAUDE_PLUGIN_ROOT}` placeholder in `hooks/hooks.json` is not documented for Codex (see notes) |
+| GitHub Copilot CLI | gate | `.github/plugin/plugin.json`, `.github/plugin/marketplace.json` (Copilot also reads `.claude-plugin/marketplace.json`), `skills/`, `hooks/copilot-hooks.json` | skills | [marketplace](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/plugins-marketplace), [hooks reference](https://docs.github.com/en/copilot/reference/hooks-configuration) | 2026-09-04; plugin `hooks` path resolution unverified (see notes) |
+| Gemini CLI | instruction + commands | `gemini-extension.json`, `GEMINI.md`, `commands/*.toml` | `/grumpy-review`, `/grumpy-pr`, `/grumpy-fix`, `/grumpy`, `/grumpy-scorecard`, `/grumpy-help` | [extensions reference](https://geminicli.com/docs/extensions/reference/), [custom commands](https://geminicli.com/docs/cli/custom-commands/), [hooks](https://geminicli.com/docs/hooks/) | 2026-09-04; hooks optional via `examples/gemini-settings-hooks.json` |
+| OpenCode | gate (two-phase) | `.opencode/plugins/grumpy.mjs`, `.opencode/command/*.md`, `AGENTS.md` | `/grumpy-review` and friends | [plugins](https://opencode.ai/docs/plugins/), [plugin types](https://github.com/sst/opencode/blob/dev/packages/plugin/src/index.ts) | 2026-09-04; command frontmatter beyond `description` unverified |
+| Cursor | instruction | `.cursor/rules/grumpy.mdc` (`alwaysApply: true`), `AGENTS.md` | none | [rules](https://cursor.com/docs/context/rules), [hooks](https://cursor.com/docs/agent/hooks) | 2026-09-04; Cursor has a `preToolUse` hook, not shipped in this release |
+| Windsurf / Devin Desktop | instruction | `.windsurf/rules/grumpy.md` (`trigger: always_on`, 12,000 char limit), `AGENTS.md` | none | [rules](https://docs.devin.ai/desktop/cascade/memories) | 2026-09-04 |
+| Cline | instruction | `.clinerules/grumpy.md` | none | [rules](https://docs.cline.bot/customization/cline-rules) | 2026-09-04; Cline hooks are documented only for the SDK, not shipped |
+| Kiro | instruction | `.kiro/steering/grumpy.md` (`inclusion: always`), `AGENTS.md` | none | [steering](https://kiro.dev/docs/steering/), [hooks](https://kiro.dev/docs/hooks/) | 2026-09-04; Kiro `PreToolUse` hooks can block but the stdin schema is undocumented, so not shipped |
+| OpenClaw | instruction (skill) | `.openclaw/skills/grumpy-reviewer/SKILL.md` | `$grumpy-reviewer` | [skills](https://github.com/openclaw/openclaw/blob/main/docs/tools/skills.md) | 2026-09-04 |
+| Devin CLI | instruction | `.devin-plugin/plugin.json`, `skills/`, `AGENTS.md` | skills | [plugins](https://docs.devin.ai/cli/extensibility/plugins/overview), [rules](https://docs.devin.ai/cli/extensibility/rules) | 2026-09-04; Devin `hooks.json` events documented, schema not, so not shipped |
+| Qoder | instruction | `.qoder-plugin/plugin.json`, `.qoder/rules/grumpy.md`, `skills/`, `AGENTS.md` | skills | [rules](https://docs.qoder.com/user-guide/rules), [plugins](https://docs.qoder.com/cli/plugins-reference) | 2026-09-04; `trigger` frontmatter in `.qoder/rules/*.md` unverified (Qoder documents the four trigger types, not the file syntax) |
+| Any AGENTS.md host | instruction | `AGENTS.md` | none | [agents.md](https://agents.md) | 2026-09-04 |
+
+## Install
+
+| Host | Command |
+|---|---|
+| Claude Code | `/plugin marketplace add lazy-senior-dev/grumpy-reviewer` then `/plugin install grumpy-reviewer@lazy-senior-dev` |
+| Codex | Clone the repo, then point `~/.agents/plugins/marketplace.json` at it (see the [Codex install steps](../README.md#codex)) and enable it from `/plugins` |
+| GitHub Copilot CLI | `copilot plugin marketplace add lazy-senior-dev/grumpy-reviewer` then `copilot plugin install grumpy-reviewer@lazy-senior-dev` |
+| Gemini CLI | `gemini extensions install https://github.com/lazy-senior-dev/grumpy-reviewer` |
+| OpenCode | Copy `.opencode/plugins/grumpy.mjs` into your project's `.opencode/plugins/` (or `~/.config/opencode/plugins/`), and `AGENTS.md` into the project root |
+| Cursor | Copy `.cursor/rules/grumpy.mdc` into your project |
+| Windsurf / Devin Desktop | Copy `.windsurf/rules/grumpy.md` into your project |
+| Cline | Copy `.clinerules/grumpy.md` into your project's `.clinerules/` |
+| Kiro | Copy `.kiro/steering/grumpy.md` into your project |
+| OpenClaw | Copy `.openclaw/skills/grumpy-reviewer/` into your workspace `skills/` |
+| Devin CLI | `devin plugins install lazy-senior-dev/grumpy-reviewer` |
+| Qoder | `/plugin marketplace add lazy-senior-dev/grumpy-reviewer` then `/plugins install grumpy-reviewer` |
+| Anything else | Copy `AGENTS.md` into your project root |
+
+## Uninstall
+
+| Host | Command or file to remove |
+|---|---|
+| Claude Code | `/plugin uninstall grumpy-reviewer@lazy-senior-dev` |
+| Codex | Disable in `/plugins`, then remove the entry from `~/.agents/plugins/marketplace.json` |
+| GitHub Copilot CLI | `copilot plugin uninstall grumpy-reviewer` |
+| Gemini CLI | `gemini extensions uninstall grumpy-reviewer` |
+| OpenCode | Delete `.opencode/plugins/grumpy.mjs` and the `.opencode/command/grumpy-*.md` files |
+| Cursor | Delete `.cursor/rules/grumpy.mdc` |
+| Windsurf / Devin Desktop | Delete `.windsurf/rules/grumpy.md` |
+| Cline | Delete `.clinerules/grumpy.md` |
+| Kiro | Delete `.kiro/steering/grumpy.md` |
+| OpenClaw | Delete `skills/grumpy-reviewer/` from the workspace |
+| Devin CLI | `devin plugins uninstall grumpy-reviewer` |
+| Qoder | `/plugins uninstall grumpy-reviewer` |
+| Any AGENTS.md host | Delete `AGENTS.md` (or the Grump section of it) |
+| Everywhere | `rm -rf ~/.config/grumpy-reviewer` removes the mode setting and scorecards |
+
+## Notes on what is and is not verified
+
+- **Claude Code** is the reference host. Manifest, marketplace, hooks, and skills were checked against the documents linked above on the date shown, and `claude plugin validate .` passes in CI.
+- **Codex** reads the same `hooks/hooks.json` shape and event names (`UserPromptSubmit`, `PreToolUse`) and the same `skills/` layout. Its documentation does not name a placeholder for the plugin directory, so the `${CLAUDE_PLUGIN_ROOT}` reference in the shared hooks file is unverified for Codex. If the hooks do not fire, the skills and `AGENTS.md` still apply; the gate does not.
+- **Copilot CLI** hooks use their own event names and stdin shape (`toolName`, `toolArgs`) and output (`permissionDecision`). The gate script speaks that dialect with `--host copilot`. Whether a plugin's `hooks` path is resolved relative to the plugin root is not documented; `examples/copilot-repo-hooks.json` is the documented alternative, a `.github/hooks/*.json` file in your own repository that points at a clone of this one.
+- **Gemini CLI** hooks live in `settings.json`, not in the extension. `examples/gemini-settings-hooks.json` shows the `BeforeAgent` and `BeforeTool` entries; the gate speaks Gemini's `decision`/`reason` dialect with `--host gemini`.
+- **OpenCode** plugins cannot see the transcript, so the gate is two-phase: in `gate` mode the first write to each file is refused with the checklist, the retry goes through. Verdicts are enforced by the conversation, not by the plugin.
+- **Cursor**, **Kiro**, and **Devin CLI** all document a pre-tool hook that can block. They are not shipped here because the input each one sends to the hook is not fully documented; they will be added when a maintainer can test them. Until then these hosts are instruction-only.
+- **Mode** is shared across all hosts: `GRUMPY_MODE`, then `~/.config/grumpy-reviewer/config.json`. On instruction hosts the mode is advisory; the agent honours it, nothing enforces it.
+
+## The gate, in one paragraph
+
+On a `PreToolUse` event for `Edit`, `Write`, `MultiEdit`, `NotebookEdit`, `apply_patch`, or a `Bash` command containing `git commit`/`push`/`merge`/`rebase`, the gate reads the session transcript (when the host provides its path), finds the last `GRUMP:` block the agent printed since the user's last message, and decides: `BLOCK` denies in every mode; `REQUEST_CHANGES` denies only in `gate`; `APPROVE` and `OVERRIDE` allow; no verdict denies in `gate` (twice, then lets the write through with a note so a session can never brick) and allows with a reminder in `nag`. Every decision is appended to `~/.config/grumpy-reviewer/scorecard/<session>.jsonl`, which `/grumpy-scorecard` prints.
