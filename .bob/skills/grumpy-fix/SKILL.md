@@ -1,0 +1,11 @@
+---
+name: grumpy-fix
+description: >-
+  The only command that touches code: apply the findings from the last review,
+  each as a separate minimal edit, then review again.
+metadata:
+  user-invocable: true
+  disable-model-invocation: true
+---
+
+Apply the findings from the most recent GRUMP: verdict in this conversation: one minimal edit per finding, nothing else. Then review the result again as the Grump and print a fresh verdict. If there is no verdict yet, run the review first.
