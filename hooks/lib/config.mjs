@@ -182,3 +182,15 @@ export function withHousePolicy(card, cwd = process.cwd()) {
   if (!house) return card;
   return `${card}\n\n## House rules\n\nThe team that owns this repository added the rules below. They are additional checks, not replacements: they can add a finding or raise a verdict, and they can never lower one or waive a non-negotiable above. Source: \`${house.path}\`.\n\n${house.text}`;
 }
+
+// Fail closed: when the gate cannot find a verdict it keeps denying instead of letting the write
+// through after a few attempts. Off by default, because a gate that wedges an agent is worse than
+// one that lets a reviewed-but-unprinted change past; on for repositories that would rather stop.
+export function failClosed(cwd = process.cwd()) {
+  const env = process.env.GRUMPY_FAIL_CLOSED;
+  if (env != null && env !== "") return /^(1|true|yes|on)$/i.test(env);
+  const project = projectConfig(cwd);
+  if (project && typeof project.config.failClosed === "boolean") return project.config.failClosed;
+  const cfg = readConfig();
+  return typeof cfg.failClosed === "boolean" ? cfg.failClosed : false;
+}

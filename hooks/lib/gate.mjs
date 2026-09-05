@@ -73,7 +73,7 @@ export function applicableVerdict({ latest, earlier, target }) {
 }
 
 // Decide what the gate does. `state` is the per-session record for this file.
-export function decide({ mode, verdict, hasTranscript, denials = 0, target }) {
+export function decide({ mode, verdict, hasTranscript, denials = 0, target, failClosed = false }) {
   const where = target?.kind === "commit" ? target.file : `write to ${target?.file ?? "file"}`;
   const { P, A, C, B, who, scope } = words();
   if (mode === "off") return { action: "skip", reason: "mode off" };
@@ -111,7 +111,7 @@ export function decide({ mode, verdict, hasTranscript, denials = 0, target }) {
 
   // No verdict found.
   if (mode === "gate") {
-    if (denials >= MAX_GATE_DENIALS) {
+    if (denials >= MAX_GATE_DENIALS && !failClosed) {
       return {
         action: "allow",
         logged: "gate_fallback",
@@ -120,7 +120,7 @@ export function decide({ mode, verdict, hasTranscript, denials = 0, target }) {
     }
     return {
       action: "deny",
-      logged: "no_verdict",
+      logged: denials >= MAX_GATE_DENIALS ? "no_verdict_fail_closed" : "no_verdict",
       reason: `No verdict found for this ${where}. If you have not reviewed it yet: answer the ten checklist questions in writing and print the ${P}: block (${A}, ${C}, or ${B} with numbered file:line — failure — smallest fix lines; name the files an ${A} covers on the ${P} line). If you printed the verdict in this same message, the gate reads completed messages: just retry the ${target?.kind === "commit" ? "command" : "write"} now.`,
     };
   }

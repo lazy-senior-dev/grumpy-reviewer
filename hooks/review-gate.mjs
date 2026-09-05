@@ -7,7 +7,7 @@
 // It never throws: any internal failure means "allow", because a broken reviewer
 // must not become a broken editor.
 
-import { resolveMode, readState, writeState, appendScorecard } from "./lib/config.mjs";
+import { resolveMode, readState, writeState, appendScorecard, failClosed } from "./lib/config.mjs";
 import { lastVerdict } from "./lib/verdict.mjs";
 import { recentAssistantText } from "./lib/transcript.mjs";
 import { normaliseInput, classify, decide, render, bumpDenials, clearDenials, applicableVerdict } from "./lib/gate.mjs";
@@ -65,7 +65,7 @@ async function main() {
   let state = readState(call.sessionId);
   const denials = state.denials?.[target.file] || 0;
 
-  const decision = decide({ mode, verdict, hasTranscript: Boolean(text), denials, target });
+  const decision = decide({ mode, verdict, hasTranscript: Boolean(text), denials, target, failClosed: failClosed(call.cwd) });
 
   if (decision.action === "deny") state = bumpDenials(state, target.file);
   else state = clearDenials(state, target.file);
