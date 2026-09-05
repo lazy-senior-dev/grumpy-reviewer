@@ -75,6 +75,34 @@ The same staged diff, one CLI, 4 agents. Each recording is a real run captured w
 Each card reads the same way. **Verdict** is what The Grump concluded: APPROVE lets the change through, REQUEST_CHANGES asks for fixes, BLOCK stops it. **Findings** counts the numbered problems he listed, each naming a file, a line, and the smallest fix. **Time** is how long the whole review took, start to finish. **Tokens** is what the host reported it read and wrote, and says so plainly when a host reports nothing. Agents that narrate the whole checklist before the verdict are shown from the verdict block down; the CLI prints it the same way. Re-capture any of them with `--agent claude|codex|agy|bob`; Bob needs `BOB_API_KEY`.
 <!-- recordings:end -->
 
+## The standards behind the checklist
+
+None of the ten questions is invented. Each one is the operational form of a weakness class that a
+published catalogue already names, so a finding can be argued about on shared ground rather than on
+one reviewer's taste.
+
+| Checklist question | What it maps to |
+|---|---|
+| Inputs | [CWE-20, improper input validation](https://cwe.mitre.org/data/definitions/20.html) · [OWASP A03, injection](https://owasp.org/Top10/A03_2021-Injection/) |
+| Errors | [CWE-390, detection of error condition without action](https://cwe.mitre.org/data/definitions/390.html) · [CWE-703, improper check or handling of exceptional conditions](https://cwe.mitre.org/data/definitions/703.html) |
+| Off-diff changes | [Semantic Versioning](https://semver.org/), on changing a contract other code depends on |
+| Dependencies | [OpenSSF Concise Guide for Evaluating Open Source Software](https://best.openssf.org/Concise-Guide-for-Evaluating-Open-Source-Software) |
+| Trust boundaries | [OWASP Top 10](https://owasp.org/Top10/) · [CWE Top 25](https://cwe.mitre.org/top25/) · [CWE-798, hard-coded credentials](https://cwe.mitre.org/data/definitions/798.html) · [CWE-208, observable timing discrepancy](https://cwe.mitre.org/data/definitions/208.html) · [CWE-22, path traversal](https://cwe.mitre.org/data/definitions/22.html) |
+| Tests | [OWASP ASVS](https://owasp.org/www-project-application-security-verification-standard/), on verifying at the boundary |
+| Rollback | [Kubernetes deprecation policy](https://kubernetes.io/docs/reference/using-api/deprecation-policy/), on changing a contract while old clients still run |
+| Observability | [Google SRE, Monitoring Distributed Systems](https://sre.google/sre-book/monitoring-distributed-systems/) |
+| Naming and dead code | [CWE-561, dead code](https://cwe.mitre.org/data/definitions/561.html) |
+
+The verdict levels follow the same idea: `BLOCK` is reserved for the classes those catalogues treat
+as high severity, which is why it is never downgraded by a mode setting.
+
+## What agents actually get wrong
+
+Every mistake these reviewers look for was recorded being made. [What coding agents actually get wrong](https://github.com/lazy-senior-dev/lazy-senior-dev.github.io/blob/main/SIGNS.md)
+is an open catalogue built from the benchmark runs in these repositories: each entry names how often
+an agent shipped it, on which agents, the code one of them actually wrote, and the published standard
+it maps to. Nothing in it is written from memory.
+
 ## Where to get it, and how it is vetted
 
 - **npm** — not published yet; the first tagged release will do it. Until then, `npx github:lazy-senior-dev/grumpy-reviewer review` works today and needs only git. The release workflow publishes through [OIDC trusted publishing](https://docs.npmjs.com/trusted-publishers), so no long-lived token is ever stored here, and npm records build provenance for the package.
