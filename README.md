@@ -1,10 +1,22 @@
 <p align="center">
-  <img src="assets/grump.svg" alt="The Grump: grey stubble, reading glasses pushed up into his hair, a mug that says NOT LGTM" width="220">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://lazy-senior-dev.github.io/assets/hero/grumpy-reviewer-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://lazy-senior-dev.github.io/assets/hero/grumpy-reviewer-light.svg">
+    <img src="https://lazy-senior-dev.github.io/assets/hero/grumpy-reviewer-light.svg" alt="An agent's change flows through the Grump, who refuses the write until the findings are fixed, so the branch stays clean." width="880">
+  </picture>
 </p>
 
 <h1 align="center">grumpy-reviewer</h1>
 
 <p align="center"><em>Show me where it breaks.</em></p>
+
+<p align="center">
+  <strong>Star us&nbsp;❤️&nbsp;→</strong>&nbsp;<a href="https://github.com/lazy-senior-dev/grumpy-reviewer" title="Star grumpy-reviewer on GitHub"><picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://lazy-senior-dev.github.io/assets/hero/star-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://lazy-senior-dev.github.io/assets/hero/star-light.svg">
+    <img src="https://lazy-senior-dev.github.io/assets/hero/star-light.svg" alt="Star this repository on GitHub" width="132" height="34" align="middle">
+  </picture></a>
+</p>
 
 <p align="center"><strong>Site:</strong> <a href="https://lazy-senior-dev.github.io/grumpy-reviewer/">lazy-senior-dev.github.io/grumpy-reviewer</a> · <strong>The cast:</strong> <a href="https://lazy-senior-dev.github.io/">lazy-senior-dev.github.io</a></p>
 
