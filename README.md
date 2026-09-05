@@ -529,7 +529,7 @@ In Claude Code both `/grumpy-review` and the namespaced `/grumpy-reviewer:grumpy
 
 **Why is he grumpy?** Because "looks good to me" has shipped more incidents than any bug. Cheerful reviewers approve. Grumpy reviewers read. The grumpiness is aimed at the code, never at you; that is written into the rules, and the code of conduct says the same about this repo.
 
-**Who wrote this?** [Sandeep Bazar](https://github.com/sandeepbazar) ([@sandeepbazar](https://github.com/sandeepbazar) on GitHub): fourteen years of platform infrastructure at IBM, most of it Kubernetes and storage, most of the rest reviewing pull requests at 3 a.m. The Grump is a composite of every reviewer who ever saved him from himself.
+**Who wrote this?** [Sandeep Bazar](https://www.linkedin.com/in/sandeepbazar/) ([@sandeepbazar](https://github.com/sandeepbazar) on GitHub): fourteen years of platform infrastructure at IBM, most of it Kubernetes and storage, most of the rest reviewing pull requests at 3 a.m. The Grump is a composite of every reviewer who ever saved him from himself.
 
 ## Related
 
@@ -543,6 +543,6 @@ If the Grump saved you an incident, [sponsor the desk](https://github.com/sponso
 
 ## License
 
-[Apache-2.0](LICENSE) · by [Sandeep Bazar](https://github.com/sandeepbazar). Keep the [NOTICE](NOTICE) file with any redistribution; that is the whole ask.
+[Apache-2.0](LICENSE) · by [Sandeep Bazar](https://www.linkedin.com/in/sandeepbazar/). Keep the [NOTICE](NOTICE) file with any redistribution; that is the whole ask.
 
-Built and maintained by [Sandeep Bazar](https://github.com/sandeepbazar), part of [lazy-senior-dev](https://github.com/lazy-senior-dev).
+Built and maintained by [Sandeep Bazar](https://www.linkedin.com/in/sandeepbazar/), part of [lazy-senior-dev](https://github.com/lazy-senior-dev).
