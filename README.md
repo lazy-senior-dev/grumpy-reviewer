@@ -20,18 +20,6 @@
 
 **Your agent's code, reviewed by the staff engineer who has rejected 4,000 pull requests, before it ever reaches your branch.**
 
-<!-- bench:author:start -->
-## The number that matters: what ships
-
-**When the agent is the author, the Grump changes what ships.** On IBM Bob Shell (`bob-default`), given 14 tickets that each invite a classic defect, the agent alone shipped the defect in 6 of 28 runs (21%), 1 of 28 with a generic "be careful" prompt (4%), and 2 of 28 with the Grump loaded (7%), reviewing its own change before finishing in 28 of 28 runs. A task the agent declined or solved another way counts as clean. The shipped code is scored by fixed checks written before any run, never by a model. Each task was run 2 times per arm; [method, per-task table, raw diffs](benchmarks/results/author).
-
-| Agent | Model | Arm | Made the change | Shipped the defect | Self-reviewed | Median time | Median cost |
-|---|---|---|---|---|---|---|---|
-| IBM Bob Shell | `bob-default` (n=2) | no skill | 28 of 28 | 6 of 28 (21%) | n/a | 15 s | $0.10 |
-| IBM Bob Shell | `bob-default` (n=2) | generic care prompt | 28 of 28 | 1 of 28 (4%) | n/a | 22 s | $0.14 |
-| IBM Bob Shell | `bob-default` (n=2) | **grumpy-reviewer** | **28 of 28** | **2 of 28 (7%)** | **28 of 28** | 32 s | $0.14 |
-<!-- bench:author:end -->
-
 <!-- bench:hero:start -->
 **On Claude Code (`claude-sonnet-5`), the Grump catches 30 of 30 seeded defects, the same as the agent alone. What changes is discipline: false alarms on 10 clean diffs, 0 with him, 4 without; replies with no usable verdict per run, 0 with him, 3 without; 94% of BLOCK verdicts land on BLOCK-class defects; median review time 7 s with him, 11 s without at 229 output tokens with him, 685 output tokens without.** Median of 3 runs, measured 2026-09-04; [method, per-diff table, raw replies](benchmarks/results). **In the needle tier, where the same defect hides in a four-file, 150-line pull request, Claude Code finds 10 of 10 with the Grump, 9 without, 10 with the generic prompt.**
 <!-- bench:hero:end -->
@@ -319,6 +307,38 @@ jobs:
 ```
 
 Inputs: `mode` (`nag` or `gate`), `provider` (`anthropic`, `openai` with `OPENAI_API_KEY`, or `bob` with `BOB_API_KEY`, which installs the Bob CLI on the runner and reviews through IBM Bob), `model`, `max_files` (largest files first, the rest listed as not reviewed), `ignore` (globs). On pull requests from forks, where secrets are unavailable, it posts one neutral note and exits green. Full example: [`examples/workflow.yml`](examples/workflow.yml).
+
+## Any MCP client
+
+Every editor and desktop app that speaks the Model Context Protocol can use the Grump without an adapter in this repository. The server is stdio, has no dependencies, and exposes four tools: `grumpy_review_diff`, `grumpy_review_staged`, `grumpy_review_pr`, and `grumpy_parse_verdict`, which turns a verdict block into JSON so a script can gate a commit or a merge on the level rather than on prose.
+
+Claude Desktop (`claude_desktop_config.json`), Cursor (`~/.cursor/mcp.json`), Windsurf, and Zed:
+
+```json
+{
+  "mcpServers": {
+    "grumpy-reviewer": {"command":"npx","args":["-y","github:lazy-senior-dev/grumpy-reviewer","mcp"]}
+  }
+}
+```
+
+VS Code (`.vscode/mcp.json`):
+
+```json
+{
+  "servers": {
+    "grumpy-reviewer": { "type": "stdio", "command":"npx","args":["-y","github:lazy-senior-dev/grumpy-reviewer","mcp"]}
+  }
+}
+```
+
+Claude Code, in one line:
+
+```sh
+claude mcp add grumpy-reviewer -- npx -y github:lazy-senior-dev/grumpy-reviewer mcp
+```
+
+The server reviews with whichever headless agent it finds (`claude`, `codex`, `agy`, `bob` with `BOB_API_KEY`, or `ANTHROPIC_API_KEY`), so the client asking for the review and the agent performing it can be different tools. Nothing leaves your machine except the diff, going to the agent you already trust.
 
 ## Commands
 
