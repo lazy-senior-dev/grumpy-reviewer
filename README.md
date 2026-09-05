@@ -81,27 +81,33 @@ Each card reads the same way. **Verdict** is what The Grump concluded: APPROVE l
 
 ## The standards behind the checklist
 
-None of the ten questions is invented. Each is the operational form of something a published
-catalogue already names, so a finding can be argued on shared ground rather than on one reviewer's
-taste. Where a concern has no identifier, this table says so instead of stretching one to fit.
+Every reference below is a vendor-neutral standard: MITRE's weakness catalogue, OWASP, NIST, the SEI
+CERT coding standards, the CIS benchmarks, ISO and IETF documents, and open specifications under
+neutral governance. No vendor's engineering handbook, cloud provider's framework, or commercial
+scanner is cited, however useful they are, because a rule you can only check against one company's
+product is not a standard.
+
+That constraint is honest about its own cost: several of these questions have no identifier in any
+neutral catalogue, and the table says so rather than borrowing one from a vendor.
 
 | Checklist question | What it maps to |
 |---|---|
-| Scope | No weakness identifier exists. The anchor is Google's [Small CLs](https://google.github.io/eng-practices/review/developer/small-cls.html) and [What to look for in a code review](https://google.github.io/eng-practices/review/reviewer/looking-for.html) |
-| Inputs | [CWE-1284, improper validation of specified quantity](https://cwe.mitre.org/data/definitions/1284.html) · [CWE-116, improper encoding or escaping of output](https://cwe.mitre.org/data/definitions/116.html) · [CWE-807, reliance on untrusted inputs in a security decision](https://cwe.mitre.org/data/definitions/807.html) · [OWASP A05:2025 Injection](https://owasp.org/Top10/2025/) · [ASVS 5.0 V2 Validation and Business Logic](https://github.com/OWASP/ASVS) |
-| Errors | [OWASP A10:2025 Mishandling of Exceptional Conditions](https://owasp.org/Top10/2025/) · [CWE-390, detection of error condition without action](https://cwe.mitre.org/data/definitions/390.html) · [CWE-396, catch of generic exception](https://cwe.mitre.org/data/definitions/396.html) · [CWE-636, not failing securely](https://cwe.mitre.org/data/definitions/636.html) · [ASVS 5.0 V16.5 Error Handling](https://github.com/OWASP/ASVS) · [SEI CERT ERR](https://cmu-sei.github.io/secure-coding-standards/) |
-| Off-diff changes | No weakness identifier exists. [Semantic Versioning](https://semver.org/), on changing a contract other code depends on |
-| Dependencies | [OWASP A03:2025 Software Supply Chain Failures](https://owasp.org/Top10/2025/) · [CWE-1395, dependency on a vulnerable third-party component](https://cwe.mitre.org/data/definitions/1395.html) · [CWE-1357, reliance on an insufficiently trustworthy component](https://cwe.mitre.org/data/definitions/1357.html) · [ASVS 5.0 V15.1](https://github.com/OWASP/ASVS) |
-| Trust boundaries | [CWE Top 25 (2025)](https://cwe.mitre.org/top25/archive/2025/2025_cwe_top25.html) · [CWE-501, trust boundary violation](https://cwe.mitre.org/data/definitions/501.html) · [CWE-798, hard-coded credentials](https://cwe.mitre.org/data/definitions/798.html) · [CWE-208, observable timing discrepancy](https://cwe.mitre.org/data/definitions/208.html) · [CWE-22, path traversal](https://cwe.mitre.org/data/definitions/22.html) · [OWASP A01:2025 Broken Access Control](https://owasp.org/Top10/2025/) |
-| Tests | No weakness identifier exists. [NIST SSDF PW.8, test executable code](https://csrc.nist.gov/projects/ssdf) |
-| Rollback | No weakness identifier exists. [AWS OPS06-BP01, plan for unsuccessful changes](https://docs.aws.amazon.com/wellarchitected/latest/operational-excellence-pillar/ops_mit_deploy_risks_plan_for_unsucessful_changes.html) · [NIST SSDF PS.3](https://csrc.nist.gov/projects/ssdf) |
-| Observability | [OWASP A09:2025 Security Logging and Alerting Failures](https://owasp.org/Top10/2025/) · [CWE-778, insufficient logging](https://cwe.mitre.org/data/definitions/778.html) · [CWE-532, sensitive information in a log](https://cwe.mitre.org/data/definitions/532.html) · [ASVS 5.0 V16 Security Logging and Error Handling](https://github.com/OWASP/ASVS) |
-| Naming and dead code | [CWE-561, dead code](https://cwe.mitre.org/data/definitions/561.html) · [CWE-1085, excessive commented-out code](https://cwe.mitre.org/data/definitions/1085.html) · [CWE-1116, inaccurate source code comments](https://cwe.mitre.org/data/definitions/1116.html) · [ASVS 5.0 V15.2.3](https://github.com/OWASP/ASVS) |
+| Scope | **No standard names this.** Change scope is a review practice, not a weakness class |
+| Inputs | [CWE-1284, improper validation of specified quantity](https://cwe.mitre.org/data/definitions/1284.html) · [CWE-116, improper encoding or escaping of output](https://cwe.mitre.org/data/definitions/116.html) · [CWE-807, reliance on untrusted inputs in a security decision](https://cwe.mitre.org/data/definitions/807.html) · [OWASP A05:2025 Injection](https://owasp.org/Top10/2025/) · [OWASP ASVS 5.0, V2 Validation and Business Logic](https://github.com/OWASP/ASVS) |
+| Errors | [OWASP A10:2025 Mishandling of Exceptional Conditions](https://owasp.org/Top10/2025/) · [CWE-390, detection of error condition without action](https://cwe.mitre.org/data/definitions/390.html) · [CWE-396, catch of generic exception](https://cwe.mitre.org/data/definitions/396.html) · [CWE-636, not failing securely](https://cwe.mitre.org/data/definitions/636.html) · [ASVS 5.0, V16.5 Error Handling](https://github.com/OWASP/ASVS) · [SEI CERT, ERR rules](https://cmu-sei.github.io/secure-coding-standards/) |
+| Off-diff changes | **No standard names this.** The nearest obligation is [Semantic Versioning](https://semver.org/spec/v2.0.0.html), on changing a contract other code depends on |
+| Dependencies | [OWASP A03:2025 Software Supply Chain Failures](https://owasp.org/Top10/2025/) · [CWE-1395, dependency on a vulnerable third-party component](https://cwe.mitre.org/data/definitions/1395.html) · [CWE-1357, reliance on an insufficiently trustworthy component](https://cwe.mitre.org/data/definitions/1357.html) · [ASVS 5.0, V15.1](https://github.com/OWASP/ASVS) · [OpenSSF Best Practices](https://best.openssf.org/) |
+| Trust boundaries | [CWE Top 25, 2025](https://cwe.mitre.org/top25/archive/2025/2025_cwe_top25.html) · [CWE-501, trust boundary violation](https://cwe.mitre.org/data/definitions/501.html) · [CWE-798, hard-coded credentials](https://cwe.mitre.org/data/definitions/798.html) · [CWE-208, observable timing discrepancy](https://cwe.mitre.org/data/definitions/208.html) · [CWE-22, path traversal](https://cwe.mitre.org/data/definitions/22.html) · [OWASP A01:2025 Broken Access Control](https://owasp.org/Top10/2025/) |
+| Tests | [NIST SSDF PW.8, test executable code](https://csrc.nist.gov/projects/ssdf) |
+| Rollback | **No standard names deploy revertability.** [NIST SSDF PS.3](https://csrc.nist.gov/projects/ssdf), on archiving and protecting each release, is the nearest neutral obligation |
+| Observability | [OWASP A09:2025 Security Logging and Alerting Failures](https://owasp.org/Top10/2025/) · [CWE-778, insufficient logging](https://cwe.mitre.org/data/definitions/778.html) · [CWE-532, sensitive information in a log](https://cwe.mitre.org/data/definitions/532.html) · [ASVS 5.0, V16](https://github.com/OWASP/ASVS) · [OpenTelemetry semantic conventions](https://opentelemetry.io/docs/specs/semconv/) |
+| Naming and dead code | [CWE-561, dead code](https://cwe.mitre.org/data/definitions/561.html) · [CWE-1085, excessive commented-out code](https://cwe.mitre.org/data/definitions/1085.html) · [CWE-1116, inaccurate source code comments](https://cwe.mitre.org/data/definitions/1116.html) · [ASVS 5.0, V15.2.3](https://github.com/OWASP/ASVS) |
 
-Two notes on how these are cited. [CWE-20](https://cwe.mitre.org/data/definitions/20.html) and
-CWE-703 are marked discouraged for mapping, so the specific child is named instead of the parent, and
+Two notes on how these are cited. [CWE-20](https://cwe.mitre.org/data/definitions/20.html) and CWE-703
+are marked discouraged for mapping, so the specific child is named rather than the parent, and
 category entries are never emitted as findings. `BLOCK` is reserved for the classes those catalogues
 treat as high severity, which is why it is never downgraded by a mode setting.
+
 
 ## What agents actually get wrong
 
