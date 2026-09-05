@@ -66,7 +66,7 @@ npx github:lazy-senior-dev/grumpy-reviewer review --staged   # only what is stag
 npx github:lazy-senior-dev/grumpy-reviewer pr 123            # a pull request, via gh
 ```
 
-It finds `claude`, `codex`, `agy`, or `bob` (with `BOB_API_KEY`) on your PATH, or `ANTHROPIC_API_KEY`, sends the diff to that agent with the Grump's ruleset, prints the verdict block, and exits 1 on anything but `APPROVE`, so it drops straight into a pre-commit hook or a CI step. Nothing is installed and nothing leaves your machine except the diff going to the agent you already trust. Add `--agent codex` to choose.
+It finds `claude`, `codex`, `agy`, or `bob` (with `BOB_API_KEY`) on your PATH, or any other agent through `LSD_AGENT_CMD`,, or `ANTHROPIC_API_KEY`, sends the diff to that agent with the Grump's ruleset, prints the verdict block, and exits 1 on anything but `APPROVE`, so it drops straight into a pre-commit hook or a CI step. Nothing is installed and nothing leaves your machine except the diff going to the agent you already trust. Add `--agent codex` to choose.
 
 ## The thirty-second version
 
