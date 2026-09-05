@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.lazy-senior-dev/grumpy-reviewer",
   "description": "The Grump reviews a code diff, a pull request, or your staged changes and answers with a machine-readable verdict you can gate a commit or a merge on. Show me where it breaks.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "repository": {
     "url": "https://github.com/lazy-senior-dev/grumpy-reviewer",
     "source": "github"
@@ -13,7 +13,7 @@
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "grumpy-reviewer",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "transport": {
         "type": "stdio"
       },
@@ -28,7 +28,7 @@
     {
       "registryType": "oci",
       "registryBaseUrl": "https://ghcr.io",
-      "identifier": "ghcr.io/lazy-senior-dev/grumpy-reviewer:0.1.0",
+      "identifier": "ghcr.io/lazy-senior-dev/grumpy-reviewer:0.2.0",
       "transport": {
         "type": "stdio"
       }

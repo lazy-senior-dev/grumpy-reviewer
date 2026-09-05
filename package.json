@@ -1,6 +1,6 @@
 {
   "name": "grumpy-reviewer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Your agent's code, reviewed by the staff engineer who has rejected 4,000 pull requests, before it ever reaches your branch.",
   "license": "Apache-2.0",
   "author": "Sandeep Bazar (https://github.com/sandeepbazar)",

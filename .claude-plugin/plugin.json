@@ -1,7 +1,7 @@
 {
   "name": "grumpy-reviewer",
   "displayName": "Grumpy Reviewer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Your agent's code, reviewed by the staff engineer who has rejected 4,000 pull requests, before it ever reaches your branch.",
   "author": {
     "name": "Sandeep Bazar",
