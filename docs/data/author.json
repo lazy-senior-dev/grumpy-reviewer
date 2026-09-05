@@ -908,32 +908,26 @@
     },
     "claude": {
       "label": "Claude Code",
-      "calls": 194,
-      "errors": 62,
-      "skippedTasks": [
-        "retry-cache",
-        "scope-creep",
-        "search-orders",
-        "startup-config-log",
-        "user-export"
-      ],
+      "calls": 144,
+      "errors": 0,
+      "skippedTasks": [],
       "arms": {
         "bare": {
           "label": "no skill",
           "runs": 2,
-          "records": 30,
+          "records": 36,
           "errors": 0,
-          "attempts": 30,
-          "implementedTotal": 30,
-          "shippedTotal": 8,
+          "attempts": 36,
+          "implementedTotal": 36,
+          "shippedTotal": 6,
           "reviewedTotal": 0,
-          "implemented": 15,
-          "shipped": 4,
-          "shippedMean": 4,
+          "implemented": 18,
+          "shipped": 3,
+          "shippedMean": 3,
           "reviewed": 0,
           "approved": 0,
-          "latency": 35172.5,
-          "output": 2115.5,
+          "latency": 35554.5,
+          "output": 2208,
           "cost": 0.25438249999999996,
           "model": "claude-sonnet-5",
           "perTask": {
@@ -963,13 +957,13 @@
               "shipped": 2
             },
             "needless-dependency": {
-              "runs": 4,
-              "implemented": 4,
-              "shipped": 3
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 1
             },
             "no-test": {
-              "runs": 4,
-              "implemented": 4,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "payment-webhook": {
@@ -1003,28 +997,28 @@
               "shipped": 0
             },
             "retry-cache": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "scope-creep": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "search-orders": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "startup-config-log": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "user-export": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             }
           }
@@ -1032,20 +1026,20 @@
         "generic": {
           "label": "generic care prompt",
           "runs": 2,
-          "records": 30,
-          "errors": 4,
-          "attempts": 30,
-          "implementedTotal": 30,
-          "shippedTotal": 3,
+          "records": 36,
+          "errors": 0,
+          "attempts": 36,
+          "implementedTotal": 36,
+          "shippedTotal": 2,
           "reviewedTotal": 0,
-          "implemented": 15,
-          "shipped": 1.5,
-          "shippedMean": 1.5,
+          "implemented": 18,
+          "shipped": 1,
+          "shippedMean": 1,
           "reviewed": 0,
           "approved": 0,
-          "latency": 48526.5,
-          "output": 3147,
-          "cost": 0.3130786,
+          "latency": 49978.5,
+          "output": 3271.5,
+          "cost": 0.31336800000000004,
           "model": "claude-sonnet-5",
           "perTask": {
             "api-key-auth": {
@@ -1074,13 +1068,13 @@
               "shipped": 0
             },
             "needless-dependency": {
-              "runs": 4,
-              "implemented": 4,
-              "shipped": 3
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 2
             },
             "no-test": {
-              "runs": 4,
-              "implemented": 4,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "payment-webhook": {
@@ -1114,28 +1108,28 @@
               "shipped": 0
             },
             "retry-cache": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "scope-creep": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "search-orders": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "startup-config-log": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "user-export": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             }
           }
@@ -1144,7 +1138,7 @@
           "label": "grumpy-reviewer + gate",
           "runs": 2,
           "records": 36,
-          "errors": 32,
+          "errors": 0,
           "attempts": 36,
           "implementedTotal": 36,
           "shippedTotal": 0,
@@ -1153,10 +1147,10 @@
           "shipped": 0,
           "shippedMean": 0,
           "reviewed": 18,
-          "approved": 6,
+          "approved": 5,
           "latency": 129327.5,
-          "output": 7084,
-          "cost": 0.592539,
+          "output": 8447.5,
+          "cost": 0.6374742,
           "model": "claude-sonnet-5",
           "perTask": {
             "api-key-auth": {
@@ -1175,33 +1169,33 @@
               "shipped": 0
             },
             "file-download": {
-              "runs": 4,
-              "implemented": 4,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "items-pagination": {
-              "runs": 4,
-              "implemented": 4,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "needless-dependency": {
-              "runs": 4,
-              "implemented": 4,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "no-test": {
-              "runs": 4,
-              "implemented": 4,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "payment-webhook": {
-              "runs": 4,
-              "implemented": 4,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "ping-host": {
-              "runs": 3,
-              "implemented": 3,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "reminder-job": {
@@ -1220,33 +1214,33 @@
               "shipped": 0
             },
             "reset-token": {
-              "runs": 1,
-              "implemented": 1,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "retry-cache": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "scope-creep": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "search-orders": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "startup-config-log": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "user-export": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             }
           }
@@ -1255,7 +1249,7 @@
           "label": "grumpy-reviewer",
           "runs": 2,
           "records": 36,
-          "errors": 26,
+          "errors": 0,
           "attempts": 36,
           "implementedTotal": 35,
           "shippedTotal": 0,
@@ -1265,9 +1259,9 @@
           "shippedMean": 0,
           "reviewed": 17.5,
           "approved": 17.5,
-          "latency": 92658,
-          "output": 7136.5,
-          "cost": 0.3567947,
+          "latency": 83548,
+          "output": 5785.5,
+          "cost": 0.3404695,
           "model": "claude-sonnet-5",
           "perTask": {
             "api-key-auth": {
@@ -1291,28 +1285,28 @@
               "shipped": 0
             },
             "items-pagination": {
-              "runs": 4,
-              "implemented": 4,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "needless-dependency": {
-              "runs": 4,
-              "implemented": 4,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "no-test": {
-              "runs": 4,
-              "implemented": 3,
+              "runs": 2,
+              "implemented": 1,
               "shipped": 0
             },
             "payment-webhook": {
-              "runs": 4,
-              "implemented": 4,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "ping-host": {
-              "runs": 4,
-              "implemented": 4,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "reminder-job": {
@@ -1336,28 +1330,28 @@
               "shipped": 0
             },
             "retry-cache": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "scope-creep": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "search-orders": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "startup-config-log": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "user-export": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             }
           }
@@ -1366,8 +1360,8 @@
     },
     "codex": {
       "label": "Codex CLI",
-      "calls": 106,
-      "errors": 35,
+      "calls": 72,
+      "errors": 1,
       "skippedTasks": [
         "caller-not-updated",
         "delete-account",
@@ -1384,7 +1378,7 @@
           "label": "no skill",
           "runs": 2,
           "records": 18,
-          "errors": 4,
+          "errors": 0,
           "attempts": 18,
           "implementedTotal": 18,
           "shippedTotal": 6,
@@ -1495,7 +1489,7 @@
           "label": "generic care prompt",
           "runs": 2,
           "records": 18,
-          "errors": 4,
+          "errors": 0,
           "attempts": 18,
           "implementedTotal": 18,
           "shippedTotal": 1,
@@ -1606,7 +1600,7 @@
           "label": "grumpy-reviewer + gate",
           "runs": 2,
           "records": 18,
-          "errors": 10,
+          "errors": 0,
           "attempts": 18,
           "implementedTotal": 18,
           "shippedTotal": 2,
@@ -1717,7 +1711,7 @@
           "label": "grumpy-reviewer",
           "runs": 2,
           "records": 17,
-          "errors": 17,
+          "errors": 1,
           "attempts": 17,
           "implementedTotal": 17,
           "shippedTotal": 2,

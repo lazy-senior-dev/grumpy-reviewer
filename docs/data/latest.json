@@ -1,5 +1,5 @@
 {
-  "date": "2026-09-04",
+  "date": "2026-09-05",
   "seeded": 30,
   "clean": 10,
   "needle": 10,
@@ -93,8 +93,8 @@
     },
     "codex": {
       "label": "Codex CLI",
-      "calls": 457,
-      "errors": 7,
+      "calls": 450,
+      "errors": 0,
       "arms": {
         "bare": {
           "label": "no skill",
@@ -180,8 +180,8 @@
     },
     "bob": {
       "label": "IBM Bob Shell",
-      "calls": 451,
-      "errors": 1,
+      "calls": 450,
+      "errors": 0,
       "arms": {
         "bare": {
           "label": "no skill",
@@ -267,8 +267,8 @@
     },
     "agy": {
       "label": "Antigravity CLI",
-      "calls": 180,
-      "errors": 31,
+      "calls": 150,
+      "errors": 1,
       "arms": {
         "bare": {
           "label": "no skill",

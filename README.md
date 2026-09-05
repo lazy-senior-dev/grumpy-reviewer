@@ -47,12 +47,16 @@ Works with 14 coding agents from one ruleset, any MCP client, and a GitHub Actio
 | IBM Bob Shell | `bob-default` (n=2) | generic care prompt | 36 of 36 | 3 of 36 (8%) | n/a | 22 s |
 | IBM Bob Shell | `bob-default` (n=2) | grumpy-reviewer | 35 of 36 | 2 of 36 (6%) | 36 of 36 | 29 s |
 | IBM Bob Shell | `bob-default` (n=2) | **grumpy-reviewer + gate** | **35 of 36** | **1 of 36 (3%)** | **36 of 36** | 84 s |
+| Claude Code | `claude-sonnet-5` (n=2) | no skill | 36 of 36 | 6 of 36 (17%) | n/a | 36 s |
+| Claude Code | `claude-sonnet-5` (n=2) | generic care prompt | 36 of 36 | 2 of 36 (6%) | n/a | 50 s |
+| Claude Code | `claude-sonnet-5` (n=2) | grumpy-reviewer | 35 of 36 | 0 of 36 (0%) | 35 of 36 | 84 s |
+| Claude Code | `claude-sonnet-5` (n=2) | **grumpy-reviewer + gate** | **36 of 36** | **0 of 36 (0%)** | **36 of 36** | 129 s |
 
-Every agent whose four arms have finished is in the table above. Still running, and added as each one finishes: Claude Code, Codex CLI. Left out because it completed the change on fewer than half the tickets, so its zeros would read as "wrote nothing" rather than "wrote nothing wrong": Antigravity CLI.
+Every agent whose four arms have finished is in the table above. Still running, and added as each one finishes: Codex CLI. Left out because it completed the change on fewer than half the tickets, so its zeros would read as "wrote nothing" rather than "wrote nothing wrong": Antigravity CLI.
 <!-- bench:author:end -->
 
 <!-- bench:hero:start -->
-**On Claude Code (`claude-sonnet-5`), the Grump catches 30 of 30 seeded defects, the same as the agent alone. What changes is discipline: false alarms on 10 clean diffs, 0 with him, 4 without; replies with no usable verdict per run, 0 with him, 3 without; 94% of BLOCK verdicts land on BLOCK-class defects; median review time 7 s with him, 11 s without at 229 output tokens with him, 685 output tokens without.** Median of 3 runs, measured 2026-09-04; [method, per-diff table, raw replies](benchmarks/results). **In the needle tier, where the same defect hides in a four-file, 150-line pull request, Claude Code finds 10 of 10 with the Grump, 9 without, 10 with the generic prompt.**
+**On Claude Code (`claude-sonnet-5`), the Grump catches 30 of 30 seeded defects, the same as the agent alone. What changes is discipline: false alarms on 10 clean diffs, 0 with him, 4 without; replies with no usable verdict per run, 0 with him, 3 without; 94% of BLOCK verdicts land on BLOCK-class defects; median review time 7 s with him, 11 s without at 229 output tokens with him, 685 output tokens without.** Median of 3 runs, measured 2026-09-05; [method, per-diff table, raw replies](benchmarks/results). **In the needle tier, where the same defect hides in a four-file, 150-line pull request, Claude Code finds 10 of 10 with the Grump, 9 without, 10 with the generic prompt.**
 <!-- bench:hero:end -->
 
 <p align="center"><img src="assets/demo.gif" alt="Terminal recording: the agent writes a handler, the Grump prints GRUMP: BLOCK with the line and the fix, the write is denied, the agent fixes it, the Grump prints GRUMP: APPROVE, Fine." width="860"></p>
