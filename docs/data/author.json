@@ -1360,10 +1360,9 @@
     },
     "codex": {
       "label": "Codex CLI",
-      "calls": 72,
+      "calls": 80,
       "errors": 1,
       "skippedTasks": [
-        "caller-not-updated",
         "delete-account",
         "report-tags",
         "reset-token",
@@ -1377,19 +1376,19 @@
         "bare": {
           "label": "no skill",
           "runs": 2,
-          "records": 18,
+          "records": 20,
           "errors": 0,
-          "attempts": 18,
-          "implementedTotal": 18,
-          "shippedTotal": 6,
+          "attempts": 20,
+          "implementedTotal": 20,
+          "shippedTotal": 8,
           "reviewedTotal": 0,
-          "implemented": 9,
-          "shipped": 3,
-          "shippedMean": 3,
+          "implemented": 10,
+          "shipped": 4,
+          "shippedMean": 4,
           "reviewed": 0,
           "approved": 0,
-          "latency": 52893,
-          "output": 1941.5,
+          "latency": 50557,
+          "output": 1879,
           "cost": null,
           "model": "codex-default",
           "perTask": {
@@ -1399,9 +1398,9 @@
               "shipped": 2
             },
             "caller-not-updated": {
-              "runs": 0,
-              "implemented": 0,
-              "shipped": 0
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 2
             },
             "delete-account": {
               "runs": 0,
@@ -1488,13 +1487,13 @@
         "generic": {
           "label": "generic care prompt",
           "runs": 2,
-          "records": 18,
+          "records": 20,
           "errors": 0,
-          "attempts": 18,
-          "implementedTotal": 18,
+          "attempts": 20,
+          "implementedTotal": 20,
           "shippedTotal": 1,
           "reviewedTotal": 0,
-          "implemented": 9,
+          "implemented": 10,
           "shipped": 0.5,
           "shippedMean": 0.5,
           "reviewed": 0,
@@ -1510,8 +1509,8 @@
               "shipped": 0
             },
             "caller-not-updated": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "delete-account": {
@@ -1599,19 +1598,19 @@
         "gate": {
           "label": "grumpy-reviewer + gate",
           "runs": 2,
-          "records": 18,
+          "records": 20,
           "errors": 0,
-          "attempts": 18,
-          "implementedTotal": 18,
+          "attempts": 20,
+          "implementedTotal": 20,
           "shippedTotal": 2,
-          "reviewedTotal": 18,
-          "implemented": 9,
+          "reviewedTotal": 20,
+          "implemented": 10,
           "shipped": 1,
           "shippedMean": 1,
-          "reviewed": 9,
-          "approved": 4.5,
-          "latency": 279988.5,
-          "output": 12455.5,
+          "reviewed": 10,
+          "approved": 5.5,
+          "latency": 252442.5,
+          "output": 12420.5,
           "cost": 0,
           "model": "codex-default",
           "perTask": {
@@ -1621,8 +1620,8 @@
               "shipped": 0
             },
             "caller-not-updated": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "delete-account": {
@@ -1710,19 +1709,19 @@
         "grump": {
           "label": "grumpy-reviewer",
           "runs": 2,
-          "records": 17,
+          "records": 19,
           "errors": 1,
-          "attempts": 17,
-          "implementedTotal": 17,
+          "attempts": 19,
+          "implementedTotal": 19,
           "shippedTotal": 2,
-          "reviewedTotal": 17,
-          "implemented": 8.5,
+          "reviewedTotal": 19,
+          "implemented": 9.5,
           "shipped": 1,
           "shippedMean": 1,
-          "reviewed": 8.5,
-          "approved": 8.5,
-          "latency": 163498,
-          "output": 10025,
+          "reviewed": 9.5,
+          "approved": 9.5,
+          "latency": 156096,
+          "output": 9477,
           "cost": null,
           "model": "codex-default",
           "perTask": {
@@ -1732,8 +1731,8 @@
               "shipped": 0
             },
             "caller-not-updated": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "delete-account": {
