@@ -81,24 +81,27 @@ Each card reads the same way. **Verdict** is what The Grump concluded: APPROVE l
 
 ## The standards behind the checklist
 
-None of the ten questions is invented. Each one is the operational form of a weakness class that a
-published catalogue already names, so a finding can be argued about on shared ground rather than on
-one reviewer's taste.
+None of the ten questions is invented. Each is the operational form of something a published
+catalogue already names, so a finding can be argued on shared ground rather than on one reviewer's
+taste. Where a concern has no identifier, this table says so instead of stretching one to fit.
 
 | Checklist question | What it maps to |
 |---|---|
-| Inputs | [CWE-20, improper input validation](https://cwe.mitre.org/data/definitions/20.html) · [OWASP A03, injection](https://owasp.org/Top10/A03_2021-Injection/) |
-| Errors | [CWE-390, detection of error condition without action](https://cwe.mitre.org/data/definitions/390.html) · [CWE-703, improper check or handling of exceptional conditions](https://cwe.mitre.org/data/definitions/703.html) |
-| Off-diff changes | [Semantic Versioning](https://semver.org/), on changing a contract other code depends on |
-| Dependencies | [OpenSSF Concise Guide for Evaluating Open Source Software](https://best.openssf.org/Concise-Guide-for-Evaluating-Open-Source-Software) |
-| Trust boundaries | [OWASP Top 10](https://owasp.org/Top10/) · [CWE Top 25](https://cwe.mitre.org/top25/) · [CWE-798, hard-coded credentials](https://cwe.mitre.org/data/definitions/798.html) · [CWE-208, observable timing discrepancy](https://cwe.mitre.org/data/definitions/208.html) · [CWE-22, path traversal](https://cwe.mitre.org/data/definitions/22.html) |
-| Tests | [OWASP ASVS](https://owasp.org/www-project-application-security-verification-standard/), on verifying at the boundary |
-| Rollback | [Kubernetes deprecation policy](https://kubernetes.io/docs/reference/using-api/deprecation-policy/), on changing a contract while old clients still run |
-| Observability | [Google SRE, Monitoring Distributed Systems](https://sre.google/sre-book/monitoring-distributed-systems/) |
-| Naming and dead code | [CWE-561, dead code](https://cwe.mitre.org/data/definitions/561.html) |
+| Scope | No weakness identifier exists. The anchor is Google's [Small CLs](https://google.github.io/eng-practices/review/developer/small-cls.html) and [What to look for in a code review](https://google.github.io/eng-practices/review/reviewer/looking-for.html) |
+| Inputs | [CWE-1284, improper validation of specified quantity](https://cwe.mitre.org/data/definitions/1284.html) · [CWE-116, improper encoding or escaping of output](https://cwe.mitre.org/data/definitions/116.html) · [CWE-807, reliance on untrusted inputs in a security decision](https://cwe.mitre.org/data/definitions/807.html) · [OWASP A05:2025 Injection](https://owasp.org/Top10/2025/) · [ASVS 5.0 V2 Validation and Business Logic](https://github.com/OWASP/ASVS) |
+| Errors | [OWASP A10:2025 Mishandling of Exceptional Conditions](https://owasp.org/Top10/2025/) · [CWE-390, detection of error condition without action](https://cwe.mitre.org/data/definitions/390.html) · [CWE-396, catch of generic exception](https://cwe.mitre.org/data/definitions/396.html) · [CWE-636, not failing securely](https://cwe.mitre.org/data/definitions/636.html) · [ASVS 5.0 V16.5 Error Handling](https://github.com/OWASP/ASVS) · [SEI CERT ERR](https://cmu-sei.github.io/secure-coding-standards/) |
+| Off-diff changes | No weakness identifier exists. [Semantic Versioning](https://semver.org/), on changing a contract other code depends on |
+| Dependencies | [OWASP A03:2025 Software Supply Chain Failures](https://owasp.org/Top10/2025/) · [CWE-1395, dependency on a vulnerable third-party component](https://cwe.mitre.org/data/definitions/1395.html) · [CWE-1357, reliance on an insufficiently trustworthy component](https://cwe.mitre.org/data/definitions/1357.html) · [ASVS 5.0 V15.1](https://github.com/OWASP/ASVS) |
+| Trust boundaries | [CWE Top 25 (2025)](https://cwe.mitre.org/top25/archive/2025/2025_cwe_top25.html) · [CWE-501, trust boundary violation](https://cwe.mitre.org/data/definitions/501.html) · [CWE-798, hard-coded credentials](https://cwe.mitre.org/data/definitions/798.html) · [CWE-208, observable timing discrepancy](https://cwe.mitre.org/data/definitions/208.html) · [CWE-22, path traversal](https://cwe.mitre.org/data/definitions/22.html) · [OWASP A01:2025 Broken Access Control](https://owasp.org/Top10/2025/) |
+| Tests | No weakness identifier exists. [NIST SSDF PW.8, test executable code](https://csrc.nist.gov/projects/ssdf) |
+| Rollback | No weakness identifier exists. [AWS OPS06-BP01, plan for unsuccessful changes](https://docs.aws.amazon.com/wellarchitected/latest/operational-excellence-pillar/ops_mit_deploy_risks_plan_for_unsucessful_changes.html) · [NIST SSDF PS.3](https://csrc.nist.gov/projects/ssdf) |
+| Observability | [OWASP A09:2025 Security Logging and Alerting Failures](https://owasp.org/Top10/2025/) · [CWE-778, insufficient logging](https://cwe.mitre.org/data/definitions/778.html) · [CWE-532, sensitive information in a log](https://cwe.mitre.org/data/definitions/532.html) · [ASVS 5.0 V16 Security Logging and Error Handling](https://github.com/OWASP/ASVS) |
+| Naming and dead code | [CWE-561, dead code](https://cwe.mitre.org/data/definitions/561.html) · [CWE-1085, excessive commented-out code](https://cwe.mitre.org/data/definitions/1085.html) · [CWE-1116, inaccurate source code comments](https://cwe.mitre.org/data/definitions/1116.html) · [ASVS 5.0 V15.2.3](https://github.com/OWASP/ASVS) |
 
-The verdict levels follow the same idea: `BLOCK` is reserved for the classes those catalogues treat
-as high severity, which is why it is never downgraded by a mode setting.
+Two notes on how these are cited. [CWE-20](https://cwe.mitre.org/data/definitions/20.html) and
+CWE-703 are marked discouraged for mapping, so the specific child is named instead of the parent, and
+category entries are never emitted as findings. `BLOCK` is reserved for the classes those catalogues
+treat as high severity, which is why it is never downgraded by a mode setting.
 
 ## What agents actually get wrong
 
