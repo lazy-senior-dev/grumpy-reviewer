@@ -321,6 +321,18 @@ jobs:
 
 Inputs: `mode` (`nag` or `gate`), `provider` (`anthropic`, `openai` with `OPENAI_API_KEY`, or `bob` with `BOB_API_KEY`, which installs the Bob CLI on the runner and reviews through IBM Bob), `model`, `max_files` (largest files first, the rest listed as not reviewed), `ignore` (globs). On pull requests from forks, where secrets are unavailable, it posts one neutral note and exits green. Full example: [`examples/workflow.yml`](examples/workflow.yml).
 
+## House rules, without forking
+
+A team or an organisation adds its own checks by committing `.grumpy/policy.md` next to the code:
+
+```markdown
+- Every endpoint that writes carries an idempotency key.
+- No new runtime dependency without a named owner in CODEOWNERS.
+- Anything touching billing needs a second reviewer named in the pull request.
+```
+
+the Grump reads it every turn, in the hook, the CLI, the MCP server, and the Action alike. House rules are additional: they can add a finding or raise a verdict, and they can never lower one or waive a non-negotiable, which the card states so the reviewer knows the precedence. Point `policy` in `.grumpy.json` somewhere else if you keep yours elsewhere, or vendor one file into every repository from a template so a whole organisation reviews the same way.
+
 ## Any MCP client
 
 Every editor and desktop app that speaks the Model Context Protocol can use the Grump without an adapter in this repository. The server is stdio, has no dependencies, and exposes four tools: `grumpy_review_diff`, `grumpy_review_staged`, `grumpy_review_pr`, and `grumpy_parse_verdict`, which turns a verdict block into JSON so a script can gate a commit or a merge on the level rather than on prose.
