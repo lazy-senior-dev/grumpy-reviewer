@@ -47,14 +47,14 @@ The same staged diff, one CLI, 4 agents. Each recording is a real run captured w
 | Claude Code | Codex CLI |
 |---|---|
 | <img src="assets/recordings/claude.gif" alt="Terminal recording of the Grump reviewing a staged diff with Claude Code: GRUMP: BLOCK with 1 numbered findings" width="440"> | <img src="assets/recordings/codex.gif" alt="Terminal recording of the Grump reviewing a staged diff with Codex CLI: GRUMP: BLOCK with 1 numbered findings" width="440"> |
-| <b>Verdict</b> GRUMP: BLOCK<br><b>Findings</b> 1<br><b>Time</b> 7 s<br><b>Tokens</b> 7,886 in / 350 out<br><b>Cost</b> $0.0239 | <b>Verdict</b> GRUMP: BLOCK<br><b>Findings</b> 1<br><b>Time</b> 7 s<br><b>Tokens</b> 15,580 in / 309 out<br><b>Cost</b> not reported by the host |
+| <b>Verdict</b> GRUMP: BLOCK<br><b>Findings</b> 1<br><b>Time</b> 7 s<br><b>Tokens</b> 7,886 in / 350 out | <b>Verdict</b> GRUMP: BLOCK<br><b>Findings</b> 1<br><b>Time</b> 7 s<br><b>Tokens</b> 15,580 in / 309 out |
 
 | Antigravity CLI | IBM Bob Shell |
 |---|---|
 | <img src="assets/recordings/agy.gif" alt="Terminal recording of the Grump reviewing a staged diff with Antigravity CLI: GRUMP: REQUEST_CHANGES with 1 numbered findings" width="440"> | <img src="assets/recordings/bob.gif" alt="Terminal recording of the Grump reviewing a staged diff with IBM Bob Shell: GRUMP: BLOCK with 1 numbered findings" width="440"> |
-| <b>Verdict</b> GRUMP: REQUEST_CHANGES<br><b>Findings</b> 1<br><b>Time</b> 269 s<br><b>Tokens</b> 66,177 in / 124,662 out<br><b>Cost</b> not reported by the host | <b>Verdict</b> GRUMP: BLOCK<br><b>Findings</b> 1<br><b>Time</b> 13 s<br><b>Tokens</b> not reported by the host<br><b>Cost</b> $0.0106 |
+| <b>Verdict</b> GRUMP: REQUEST_CHANGES<br><b>Findings</b> 1<br><b>Time</b> 269 s<br><b>Tokens</b> 66,177 in / 124,662 out | <b>Verdict</b> GRUMP: BLOCK<br><b>Findings</b> 1<br><b>Time</b> 13 s<br><b>Tokens</b> not reported by the host |
 
-Every card lists the same five things; a host that does not report tokens or cost says so rather than leaving a blank. Agents that narrate the whole checklist before the verdict are shown from the verdict block down; the CLI prints it the same way. Re-capture any of them with `--agent claude|codex|agy|bob`; Bob needs `BOB_API_KEY`.
+Each card reads the same way. **Verdict** is what The Grump concluded: APPROVE lets the change through, REQUEST_CHANGES asks for fixes, BLOCK stops it. **Findings** counts the numbered problems he listed, each naming a file, a line, and the smallest fix. **Time** is how long the whole review took, start to finish. **Tokens** is what the host reported it read and wrote, and says so plainly when a host reports nothing. Agents that narrate the whole checklist before the verdict are shown from the verdict block down; the CLI prints it the same way. Re-capture any of them with `--agent claude|codex|agy|bob`; Bob needs `BOB_API_KEY`.
 <!-- recordings:end -->
 
 ## Try him in 60 seconds, install nothing
