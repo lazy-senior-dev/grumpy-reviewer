@@ -1,24 +1,495 @@
 {
-  "date": "2026-09-04",
-  "tasks": 14,
+  "date": "2026-09-05",
+  "tasks": 18,
   "agents": {
+    "agy": {
+      "label": "Antigravity CLI",
+      "calls": 1,
+      "errors": 0,
+      "skippedTasks": [
+        "caller-not-updated",
+        "delete-account",
+        "file-download",
+        "items-pagination",
+        "needless-dependency",
+        "no-test",
+        "payment-webhook",
+        "ping-host",
+        "reminder-job",
+        "rename-column-migration",
+        "report-tags",
+        "reset-token",
+        "retry-cache",
+        "scope-creep",
+        "search-orders",
+        "startup-config-log",
+        "user-export"
+      ],
+      "arms": {
+        "bare": {
+          "label": "no skill",
+          "runs": 1,
+          "records": 1,
+          "errors": 0,
+          "attempts": 1,
+          "implementedTotal": 1,
+          "shippedTotal": 0,
+          "reviewedTotal": 1,
+          "implemented": 1,
+          "shipped": 0,
+          "shippedMean": 0,
+          "reviewed": 1,
+          "approved": 1,
+          "latency": 205702,
+          "output": 31819,
+          "cost": null,
+          "model": "agy-default",
+          "perTask": {
+            "api-key-auth": {
+              "runs": 1,
+              "implemented": 1,
+              "shipped": 0
+            },
+            "caller-not-updated": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "delete-account": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "file-download": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "items-pagination": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "needless-dependency": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "no-test": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "payment-webhook": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "ping-host": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "reminder-job": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "rename-column-migration": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "report-tags": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "reset-token": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "retry-cache": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "scope-creep": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "search-orders": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "startup-config-log": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "user-export": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            }
+          }
+        },
+        "generic": {
+          "label": "generic care prompt",
+          "runs": 0,
+          "records": 0,
+          "errors": 0,
+          "attempts": 0,
+          "implementedTotal": 0,
+          "shippedTotal": 0,
+          "reviewedTotal": 0,
+          "implemented": null,
+          "shipped": null,
+          "shippedMean": null,
+          "reviewed": null,
+          "approved": null,
+          "latency": null,
+          "output": null,
+          "cost": null,
+          "model": "",
+          "perTask": {
+            "api-key-auth": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "caller-not-updated": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "delete-account": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "file-download": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "items-pagination": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "needless-dependency": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "no-test": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "payment-webhook": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "ping-host": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "reminder-job": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "rename-column-migration": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "report-tags": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "reset-token": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "retry-cache": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "scope-creep": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "search-orders": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "startup-config-log": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "user-export": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            }
+          }
+        },
+        "gate": {
+          "label": "grumpy-reviewer + gate",
+          "runs": 0,
+          "records": 0,
+          "errors": 0,
+          "attempts": 0,
+          "implementedTotal": 0,
+          "shippedTotal": 0,
+          "reviewedTotal": 0,
+          "implemented": null,
+          "shipped": null,
+          "shippedMean": null,
+          "reviewed": null,
+          "approved": null,
+          "latency": null,
+          "output": null,
+          "cost": null,
+          "model": "",
+          "perTask": {
+            "api-key-auth": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "caller-not-updated": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "delete-account": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "file-download": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "items-pagination": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "needless-dependency": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "no-test": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "payment-webhook": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "ping-host": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "reminder-job": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "rename-column-migration": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "report-tags": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "reset-token": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "retry-cache": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "scope-creep": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "search-orders": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "startup-config-log": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "user-export": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            }
+          }
+        },
+        "grump": {
+          "label": "grumpy-reviewer",
+          "runs": 0,
+          "records": 0,
+          "errors": 0,
+          "attempts": 0,
+          "implementedTotal": 0,
+          "shippedTotal": 0,
+          "reviewedTotal": 0,
+          "implemented": null,
+          "shipped": null,
+          "shippedMean": null,
+          "reviewed": null,
+          "approved": null,
+          "latency": null,
+          "output": null,
+          "cost": null,
+          "model": "",
+          "perTask": {
+            "api-key-auth": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "caller-not-updated": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "delete-account": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "file-download": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "items-pagination": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "needless-dependency": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "no-test": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "payment-webhook": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "ping-host": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "reminder-job": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "rename-column-migration": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "report-tags": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "reset-token": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "retry-cache": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "scope-creep": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "search-orders": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "startup-config-log": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "user-export": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            }
+          }
+        }
+      }
+    },
     "bob": {
       "label": "IBM Bob Shell",
-      "calls": 84,
+      "calls": 144,
       "errors": 0,
+      "skippedTasks": [],
       "arms": {
         "bare": {
           "label": "no skill",
           "runs": 2,
-          "records": 28,
+          "records": 36,
           "errors": 0,
-          "attempts": 28,
-          "implementedTotal": 28,
-          "shippedTotal": 6,
+          "attempts": 36,
+          "implementedTotal": 36,
+          "shippedTotal": 8,
           "reviewedTotal": 0,
-          "implemented": 14,
-          "shipped": 3,
-          "shippedMean": 3,
+          "implemented": 18,
+          "shipped": 4,
+          "shippedMean": 4,
           "reviewed": 0,
           "approved": 0,
           "latency": 14658,
@@ -30,6 +501,11 @@
               "runs": 2,
               "implemented": 2,
               "shipped": 2
+            },
+            "caller-not-updated": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
             },
             "delete-account": {
               "runs": 2,
@@ -45,6 +521,16 @@
               "runs": 2,
               "implemented": 2,
               "shipped": 2
+            },
+            "needless-dependency": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "no-test": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
             },
             "payment-webhook": {
               "runs": 2,
@@ -64,7 +550,7 @@
             "rename-column-migration": {
               "runs": 2,
               "implemented": 2,
-              "shipped": 0
+              "shipped": 2
             },
             "report-tags": {
               "runs": 2,
@@ -77,6 +563,11 @@
               "shipped": 0
             },
             "retry-cache": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "scope-creep": {
               "runs": 2,
               "implemented": 2,
               "shipped": 0
@@ -101,23 +592,28 @@
         "generic": {
           "label": "generic care prompt",
           "runs": 2,
-          "records": 28,
+          "records": 36,
           "errors": 0,
-          "attempts": 28,
-          "implementedTotal": 28,
-          "shippedTotal": 1,
+          "attempts": 36,
+          "implementedTotal": 36,
+          "shippedTotal": 3,
           "reviewedTotal": 0,
-          "implemented": 14,
-          "shipped": 0.5,
-          "shippedMean": 0.5,
+          "implemented": 18,
+          "shipped": 1.5,
+          "shippedMean": 1.5,
           "reviewed": 0,
           "approved": 0,
-          "latency": 22344,
+          "latency": 22266,
           "output": 0,
-          "cost": 0.135653,
+          "cost": 0.136426,
           "model": "bob-default",
           "perTask": {
             "api-key-auth": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "caller-not-updated": {
               "runs": 2,
               "implemented": 2,
               "shipped": 0
@@ -133,6 +629,16 @@
               "shipped": 0
             },
             "items-pagination": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "needless-dependency": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "no-test": {
               "runs": 2,
               "implemented": 2,
               "shipped": 0
@@ -155,7 +661,7 @@
             "rename-column-migration": {
               "runs": 2,
               "implemented": 2,
-              "shipped": 0
+              "shipped": 2
             },
             "report-tags": {
               "runs": 2,
@@ -168,6 +674,122 @@
               "shipped": 0
             },
             "retry-cache": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "scope-creep": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "search-orders": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "startup-config-log": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "user-export": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            }
+          }
+        },
+        "gate": {
+          "label": "grumpy-reviewer + gate",
+          "runs": 2,
+          "records": 36,
+          "errors": 0,
+          "attempts": 36,
+          "implementedTotal": 35,
+          "shippedTotal": 1,
+          "reviewedTotal": 36,
+          "implemented": 17.5,
+          "shipped": 0.5,
+          "shippedMean": 0.5,
+          "reviewed": 18,
+          "approved": 3.5,
+          "latency": 83722.5,
+          "output": 0,
+          "cost": 0.5365139999999999,
+          "model": "bob-default",
+          "perTask": {
+            "api-key-auth": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "caller-not-updated": {
+              "runs": 2,
+              "implemented": 1,
+              "shipped": 0
+            },
+            "delete-account": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "file-download": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "items-pagination": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "needless-dependency": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "no-test": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "payment-webhook": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "ping-host": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "reminder-job": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "rename-column-migration": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 1
+            },
+            "report-tags": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "reset-token": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "retry-cache": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "scope-creep": {
               "runs": 2,
               "implemented": 2,
               "shipped": 0
@@ -192,26 +814,31 @@
         "grump": {
           "label": "grumpy-reviewer",
           "runs": 2,
-          "records": 28,
+          "records": 36,
           "errors": 0,
-          "attempts": 28,
-          "implementedTotal": 28,
+          "attempts": 36,
+          "implementedTotal": 35,
           "shippedTotal": 2,
-          "reviewedTotal": 28,
-          "implemented": 14,
+          "reviewedTotal": 36,
+          "implemented": 17.5,
           "shipped": 1,
           "shippedMean": 1,
-          "reviewed": 14,
-          "approved": 14,
-          "latency": 31754,
+          "reviewed": 18,
+          "approved": 18,
+          "latency": 29175,
           "output": 0,
-          "cost": 0.13807899999999998,
+          "cost": 0.124788,
           "model": "bob-default",
           "perTask": {
             "api-key-auth": {
               "runs": 2,
               "implemented": 2,
-              "shipped": 2
+              "shipped": 0
+            },
+            "caller-not-updated": {
+              "runs": 2,
+              "implemented": 1,
+              "shipped": 0
             },
             "delete-account": {
               "runs": 2,
@@ -224,6 +851,16 @@
               "shipped": 0
             },
             "items-pagination": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "needless-dependency": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "no-test": {
               "runs": 2,
               "implemented": 2,
               "shipped": 0
@@ -246,7 +883,7 @@
             "rename-column-migration": {
               "runs": 2,
               "implemented": 2,
-              "shipped": 0
+              "shipped": 2
             },
             "report-tags": {
               "runs": 2,
@@ -259,6 +896,11 @@
               "shipped": 0
             },
             "retry-cache": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "scope-creep": {
               "runs": 2,
               "implemented": 2,
               "shipped": 0
@@ -284,32 +926,48 @@
     },
     "claude": {
       "label": "Claude Code",
-      "calls": 28,
-      "errors": 0,
+      "calls": 102,
+      "errors": 1,
+      "skippedTasks": [
+        "reminder-job",
+        "rename-column-migration",
+        "report-tags",
+        "reset-token",
+        "retry-cache",
+        "scope-creep",
+        "search-orders",
+        "startup-config-log",
+        "user-export"
+      ],
       "arms": {
         "bare": {
           "label": "no skill",
           "runs": 2,
-          "records": 15,
+          "records": 22,
           "errors": 0,
-          "attempts": 15,
-          "implementedTotal": 15,
-          "shippedTotal": 3,
+          "attempts": 22,
+          "implementedTotal": 22,
+          "shippedTotal": 6,
           "reviewedTotal": 0,
-          "implemented": 7.5,
-          "shipped": 1.5,
-          "shippedMean": 1.5,
+          "implemented": 11,
+          "shipped": 3,
+          "shippedMean": 3,
           "reviewed": 0,
           "approved": 0,
-          "latency": 34910,
-          "output": 1966,
-          "cost": 0.25019240000000004,
+          "latency": 37197.5,
+          "output": 2282,
+          "cost": 0.25205649999999996,
           "model": "claude-sonnet-5",
           "perTask": {
             "api-key-auth": {
               "runs": 2,
               "implemented": 2,
               "shipped": 1
+            },
+            "caller-not-updated": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
             },
             "delete-account": {
               "runs": 2,
@@ -326,6 +984,16 @@
               "implemented": 2,
               "shipped": 2
             },
+            "needless-dependency": {
+              "runs": 4,
+              "implemented": 4,
+              "shipped": 3
+            },
+            "no-test": {
+              "runs": 4,
+              "implemented": 4,
+              "shipped": 0
+            },
             "payment-webhook": {
               "runs": 2,
               "implemented": 2,
@@ -337,13 +1005,13 @@
               "shipped": 0
             },
             "reminder-job": {
-              "runs": 1,
-              "implemented": 1,
+              "runs": 0,
+              "implemented": 0,
               "shipped": 0
             },
             "rename-column-migration": {
-              "runs": 2,
-              "implemented": 2,
+              "runs": 0,
+              "implemented": 0,
               "shipped": 0
             },
             "report-tags": {
@@ -357,6 +1025,11 @@
               "shipped": 0
             },
             "retry-cache": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "scope-creep": {
               "runs": 0,
               "implemented": 0,
               "shipped": 0
@@ -381,23 +1054,28 @@
         "generic": {
           "label": "generic care prompt",
           "runs": 2,
-          "records": 13,
+          "records": 22,
           "errors": 0,
-          "attempts": 13,
-          "implementedTotal": 13,
-          "shippedTotal": 0,
+          "attempts": 22,
+          "implementedTotal": 22,
+          "shippedTotal": 3,
           "reviewedTotal": 0,
-          "implemented": 6.5,
-          "shipped": 0,
-          "shippedMean": 0,
+          "implemented": 11,
+          "shipped": 1.5,
+          "shippedMean": 1.5,
           "reviewed": 0,
           "approved": 0,
-          "latency": 46806,
-          "output": 3250,
-          "cost": 0.29734499999999997,
+          "latency": 48526.5,
+          "output": 3147,
+          "cost": 0.3130786,
           "model": "claude-sonnet-5",
           "perTask": {
             "api-key-auth": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "caller-not-updated": {
               "runs": 2,
               "implemented": 2,
               "shipped": 0
@@ -417,6 +1095,16 @@
               "implemented": 2,
               "shipped": 0
             },
+            "needless-dependency": {
+              "runs": 4,
+              "implemented": 4,
+              "shipped": 3
+            },
+            "no-test": {
+              "runs": 4,
+              "implemented": 4,
+              "shipped": 0
+            },
             "payment-webhook": {
               "runs": 2,
               "implemented": 2,
@@ -433,8 +1121,8 @@
               "shipped": 0
             },
             "rename-column-migration": {
-              "runs": 1,
-              "implemented": 1,
+              "runs": 0,
+              "implemented": 0,
               "shipped": 0
             },
             "report-tags": {
@@ -448,6 +1136,122 @@
               "shipped": 0
             },
             "retry-cache": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "scope-creep": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "search-orders": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "startup-config-log": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "user-export": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            }
+          }
+        },
+        "gate": {
+          "label": "grumpy-reviewer + gate",
+          "runs": 2,
+          "records": 29,
+          "errors": 1,
+          "attempts": 29,
+          "implementedTotal": 29,
+          "shippedTotal": 0,
+          "reviewedTotal": 29,
+          "implemented": 14.5,
+          "shipped": 0,
+          "shippedMean": 0,
+          "reviewed": 14.5,
+          "approved": 5.5,
+          "latency": 127008,
+          "output": 6912,
+          "cost": 0.574848,
+          "model": "claude-sonnet-5",
+          "perTask": {
+            "api-key-auth": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "caller-not-updated": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "delete-account": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "file-download": {
+              "runs": 4,
+              "implemented": 4,
+              "shipped": 0
+            },
+            "items-pagination": {
+              "runs": 4,
+              "implemented": 4,
+              "shipped": 0
+            },
+            "needless-dependency": {
+              "runs": 4,
+              "implemented": 4,
+              "shipped": 0
+            },
+            "no-test": {
+              "runs": 4,
+              "implemented": 4,
+              "shipped": 0
+            },
+            "payment-webhook": {
+              "runs": 4,
+              "implemented": 4,
+              "shipped": 0
+            },
+            "ping-host": {
+              "runs": 3,
+              "implemented": 3,
+              "shipped": 0
+            },
+            "reminder-job": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "rename-column-migration": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "report-tags": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "reset-token": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "retry-cache": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "scope-creep": {
               "runs": 0,
               "implemented": 0,
               "shipped": 0
@@ -471,51 +1275,66 @@
         },
         "grump": {
           "label": "grumpy-reviewer",
-          "runs": 0,
-          "records": 0,
+          "runs": 2,
+          "records": 28,
           "errors": 0,
-          "attempts": 0,
-          "implementedTotal": 0,
+          "attempts": 28,
+          "implementedTotal": 27,
           "shippedTotal": 0,
-          "reviewedTotal": 0,
-          "implemented": null,
-          "shipped": null,
-          "shippedMean": null,
-          "reviewed": null,
-          "approved": null,
-          "latency": null,
-          "output": null,
-          "cost": null,
-          "model": "",
+          "reviewedTotal": 27,
+          "implemented": 13.5,
+          "shipped": 0,
+          "shippedMean": 0,
+          "reviewed": 13.5,
+          "approved": 13.5,
+          "latency": 92614.5,
+          "output": 6794.5,
+          "cost": 0.37050669999999997,
+          "model": "claude-sonnet-5",
           "perTask": {
             "api-key-auth": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "caller-not-updated": {
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "delete-account": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "file-download": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "items-pagination": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 4,
+              "implemented": 4,
+              "shipped": 0
+            },
+            "needless-dependency": {
+              "runs": 4,
+              "implemented": 4,
+              "shipped": 0
+            },
+            "no-test": {
+              "runs": 4,
+              "implemented": 3,
               "shipped": 0
             },
             "payment-webhook": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 4,
+              "implemented": 4,
               "shipped": 0
             },
             "ping-host": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 4,
+              "implemented": 4,
               "shipped": 0
             },
             "reminder-job": {
@@ -539,6 +1358,11 @@
               "shipped": 0
             },
             "retry-cache": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "scope-creep": {
               "runs": 0,
               "implemented": 0,
               "shipped": 0
@@ -564,36 +1388,53 @@
     },
     "codex": {
       "label": "Codex CLI",
-      "calls": 24,
-      "errors": 0,
+      "calls": 73,
+      "errors": 10,
+      "skippedTasks": [
+        "api-key-auth",
+        "caller-not-updated",
+        "delete-account",
+        "report-tags",
+        "reset-token",
+        "retry-cache",
+        "scope-creep",
+        "search-orders",
+        "startup-config-log",
+        "user-export"
+      ],
       "arms": {
         "bare": {
           "label": "no skill",
           "runs": 2,
-          "records": 12,
-          "errors": 0,
-          "attempts": 12,
-          "implementedTotal": 12,
+          "records": 16,
+          "errors": 4,
+          "attempts": 16,
+          "implementedTotal": 16,
           "shippedTotal": 4,
           "reviewedTotal": 0,
-          "implemented": 6,
+          "implemented": 8,
           "shipped": 2,
           "shippedMean": 2,
           "reviewed": 0,
           "approved": 0,
-          "latency": 42874.5,
-          "output": 2080.5,
+          "latency": 52893,
+          "output": 1941.5,
           "cost": null,
           "model": "codex-default",
           "perTask": {
             "api-key-auth": {
-              "runs": 2,
-              "implemented": 2,
-              "shipped": 2
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "caller-not-updated": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
             },
             "delete-account": {
-              "runs": 2,
-              "implemented": 2,
+              "runs": 0,
+              "implemented": 0,
               "shipped": 0
             },
             "file-download": {
@@ -606,6 +1447,16 @@
               "implemented": 2,
               "shipped": 2
             },
+            "needless-dependency": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "no-test": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
             "payment-webhook": {
               "runs": 2,
               "implemented": 2,
@@ -617,14 +1468,14 @@
               "shipped": 0
             },
             "reminder-job": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "rename-column-migration": {
-              "runs": 0,
-              "implemented": 0,
-              "shipped": 0
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 2
             },
             "report-tags": {
               "runs": 0,
@@ -637,6 +1488,11 @@
               "shipped": 0
             },
             "retry-cache": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "scope-creep": {
               "runs": 0,
               "implemented": 0,
               "shipped": 0
@@ -661,30 +1517,35 @@
         "generic": {
           "label": "generic care prompt",
           "runs": 2,
-          "records": 12,
-          "errors": 0,
-          "attempts": 12,
-          "implementedTotal": 12,
-          "shippedTotal": 0,
+          "records": 16,
+          "errors": 4,
+          "attempts": 16,
+          "implementedTotal": 16,
+          "shippedTotal": 1,
           "reviewedTotal": 0,
-          "implemented": 6,
-          "shipped": 0,
-          "shippedMean": 0,
+          "implemented": 8,
+          "shipped": 0.5,
+          "shippedMean": 0.5,
           "reviewed": 0,
           "approved": 0,
-          "latency": 75996.5,
+          "latency": 83565.5,
           "output": 5097,
           "cost": null,
           "model": "codex-default",
           "perTask": {
             "api-key-auth": {
-              "runs": 2,
-              "implemented": 2,
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "caller-not-updated": {
+              "runs": 0,
+              "implemented": 0,
               "shipped": 0
             },
             "delete-account": {
-              "runs": 2,
-              "implemented": 2,
+              "runs": 0,
+              "implemented": 0,
               "shipped": 0
             },
             "file-download": {
@@ -693,6 +1554,16 @@
               "shipped": 0
             },
             "items-pagination": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "needless-dependency": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "no-test": {
               "runs": 2,
               "implemented": 2,
               "shipped": 0
@@ -708,14 +1579,14 @@
               "shipped": 0
             },
             "reminder-job": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "rename-column-migration": {
-              "runs": 0,
-              "implemented": 0,
-              "shipped": 0
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 1
             },
             "report-tags": {
               "runs": 0,
@@ -728,6 +1599,122 @@
               "shipped": 0
             },
             "retry-cache": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "scope-creep": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "search-orders": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "startup-config-log": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "user-export": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            }
+          }
+        },
+        "gate": {
+          "label": "grumpy-reviewer + gate",
+          "runs": 2,
+          "records": 16,
+          "errors": 0,
+          "attempts": 16,
+          "implementedTotal": 16,
+          "shippedTotal": 2,
+          "reviewedTotal": 16,
+          "implemented": 8,
+          "shipped": 1,
+          "shippedMean": 1,
+          "reviewed": 8,
+          "approved": 3.5,
+          "latency": 279988.5,
+          "output": 12610.5,
+          "cost": 0,
+          "model": "codex-default",
+          "perTask": {
+            "api-key-auth": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "caller-not-updated": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "delete-account": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "file-download": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "items-pagination": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "needless-dependency": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "no-test": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "payment-webhook": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "ping-host": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "reminder-job": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "rename-column-migration": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 2
+            },
+            "report-tags": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "reset-token": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "retry-cache": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "scope-creep": {
               "runs": 0,
               "implemented": 0,
               "shipped": 0
@@ -751,24 +1738,29 @@
         },
         "grump": {
           "label": "grumpy-reviewer",
-          "runs": 0,
-          "records": 0,
-          "errors": 0,
-          "attempts": 0,
-          "implementedTotal": 0,
-          "shippedTotal": 0,
-          "reviewedTotal": 0,
-          "implemented": null,
-          "shipped": null,
-          "shippedMean": null,
-          "reviewed": null,
-          "approved": null,
-          "latency": null,
-          "output": null,
+          "runs": 2,
+          "records": 15,
+          "errors": 2,
+          "attempts": 15,
+          "implementedTotal": 15,
+          "shippedTotal": 2,
+          "reviewedTotal": 15,
+          "implemented": 7.5,
+          "shipped": 1,
+          "shippedMean": 1,
+          "reviewed": 7.5,
+          "approved": 7.5,
+          "latency": 163498,
+          "output": 10025,
           "cost": null,
-          "model": "",
+          "model": "codex-default",
           "perTask": {
             "api-key-auth": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "caller-not-updated": {
               "runs": 0,
               "implemented": 0,
               "shipped": 0
@@ -779,34 +1771,44 @@
               "shipped": 0
             },
             "file-download": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "items-pagination": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "needless-dependency": {
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 0
+            },
+            "no-test": {
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "payment-webhook": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "ping-host": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 2,
+              "implemented": 2,
               "shipped": 0
             },
             "reminder-job": {
-              "runs": 0,
-              "implemented": 0,
+              "runs": 1,
+              "implemented": 1,
               "shipped": 0
             },
             "rename-column-migration": {
-              "runs": 0,
-              "implemented": 0,
-              "shipped": 0
+              "runs": 2,
+              "implemented": 2,
+              "shipped": 2
             },
             "report-tags": {
               "runs": 0,
@@ -819,6 +1821,11 @@
               "shipped": 0
             },
             "retry-cache": {
+              "runs": 0,
+              "implemented": 0,
+              "shipped": 0
+            },
+            "scope-creep": {
               "runs": 0,
               "implemented": 0,
               "shipped": 0

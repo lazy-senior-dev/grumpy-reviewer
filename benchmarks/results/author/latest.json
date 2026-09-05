@@ -707,11 +707,11 @@
           "errors": 0,
           "attempts": 36,
           "implementedTotal": 35,
-          "shippedTotal": 2,
+          "shippedTotal": 1,
           "reviewedTotal": 36,
           "implemented": 17.5,
-          "shipped": 1,
-          "shippedMean": 1,
+          "shipped": 0.5,
+          "shippedMean": 0.5,
           "reviewed": 18,
           "approved": 3.5,
           "latency": 83722.5,
@@ -772,7 +772,7 @@
             "rename-column-migration": {
               "runs": 2,
               "implemented": 2,
-              "shipped": 2
+              "shipped": 1
             },
             "report-tags": {
               "runs": 2,

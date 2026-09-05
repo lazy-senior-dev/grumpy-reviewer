@@ -20,6 +20,19 @@
 
 **Your agent's code, reviewed by the staff engineer who has rejected 4,000 pull requests, before it ever reaches your branch.**
 
+<!-- bench:author:start -->
+## The number that matters: what ships
+
+**When the agent is the author, the Grump changes what ships.** On IBM Bob Shell (`bob-default`), given 18 tickets that each invite a classic defect, the agent alone shipped the defect in 8 of 36 runs (22%), 3 of 36 with a generic "be careful" prompt (8%), and 1 of 36 with the Grump installed, where he refuses the write until the findings are fixed (3%). A task the agent declined or solved another way counts as clean. The shipped code is scored by fixed checks written before any run, never by a model. Each task was run 2 times per arm; [method, per-task table, raw diffs](benchmarks/results/author).
+
+| Agent | Model | Arm | Made the change | Shipped the defect | Self-reviewed | Median time | Median cost |
+|---|---|---|---|---|---|---|---|
+| IBM Bob Shell | `bob-default` (n=2) | no skill | 36 of 36 | 8 of 36 (22%) | n/a | 15 s | $0.10 |
+| IBM Bob Shell | `bob-default` (n=2) | generic care prompt | 36 of 36 | 3 of 36 (8%) | n/a | 22 s | $0.14 |
+| IBM Bob Shell | `bob-default` (n=2) | grumpy-reviewer | 35 of 36 | 2 of 36 (6%) | 36 of 36 | 29 s | $0.12 |
+| IBM Bob Shell | `bob-default` (n=2) | **grumpy-reviewer + gate** | **35 of 36** | **1 of 36 (3%)** | **36 of 36** | 84 s | $0.54 |
+<!-- bench:author:end -->
+
 <!-- bench:hero:start -->
 **On Claude Code (`claude-sonnet-5`), the Grump catches 30 of 30 seeded defects, the same as the agent alone. What changes is discipline: false alarms on 10 clean diffs, 0 with him, 4 without; replies with no usable verdict per run, 0 with him, 3 without; 94% of BLOCK verdicts land on BLOCK-class defects; median review time 7 s with him, 11 s without at 229 output tokens with him, 685 output tokens without.** Median of 3 runs, measured 2026-09-04; [method, per-diff table, raw replies](benchmarks/results). **In the needle tier, where the same defect hides in a four-file, 150-line pull request, Claude Code finds 10 of 10 with the Grump, 9 without, 10 with the generic prompt.**
 <!-- bench:hero:end -->
