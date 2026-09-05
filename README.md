@@ -13,6 +13,7 @@
   <a href="CHANGELOG.md"><img alt="Version 0.1.0" src="https://img.shields.io/badge/version-0.1.0-1f1f1f"></a>
   <img alt="Works with 14 agents" src="https://img.shields.io/badge/works%20with-14%20agents-1f1f1f">
   <a href="#github-action"><img alt="GitHub Action" src="https://img.shields.io/badge/GitHub%20Action-v1-1f1f1f"></a>
+  <a href="https://scorecard.dev/viewer/?uri=github.com/lazy-senior-dev/grumpy-reviewer"><img alt="OpenSSF Scorecard" src="https://api.scorecard.dev/projects/github.com/lazy-senior-dev/grumpy-reviewer/badge"></a>
   <a href="LICENSE"><img alt="Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-1f1f1f"></a>
   <!-- npm badge once published: <a href="https://www.npmjs.com/package/grumpy-reviewer"><img alt="npm" src="https://img.shields.io/npm/v/grumpy-reviewer?style=flat&color=1f1f1f"></a> -->
   <!-- Trendshift badge slot: <a href="https://trendshift.io/repositories/XXXXX"><img src="https://trendshift.io/api/badge/repositories/XXXXX" alt="trendshift" height="55"></a> -->
@@ -73,6 +74,23 @@ The same staged diff, one CLI, 4 agents. Each recording is a real run captured w
 
 Each card reads the same way. **Verdict** is what The Grump concluded: APPROVE lets the change through, REQUEST_CHANGES asks for fixes, BLOCK stops it. **Findings** counts the numbered problems he listed, each naming a file, a line, and the smallest fix. **Time** is how long the whole review took, start to finish. **Tokens** is what the host reported it read and wrote, and says so plainly when a host reports nothing. Agents that narrate the whole checklist before the verdict are shown from the verdict block down; the CLI prints it the same way. Re-capture any of them with `--agent claude|codex|agy|bob`; Bob needs `BOB_API_KEY`.
 <!-- recordings:end -->
+
+## Where to get it, and how it is vetted
+
+- **npm** — not published yet; the first tagged release will do it. Until then, `npx github:lazy-senior-dev/grumpy-reviewer review` works today and needs only git. The release workflow publishes through [OIDC trusted publishing](https://docs.npmjs.com/trusted-publishers), so no long-lived token is ever stored here, and npm records build provenance for the package.
+- **Official MCP Registry** — the listing is `io.github.lazy-senior-dev/grumpy-reviewer`, published from CI with GitHub OIDC and no stored secret, so any client or platform that browses the registry can discover and configure this server with the package, transport and command already filled in. It goes live with the first tagged release, alongside the npm package it points at.
+- **Container image on GHCR** — for a machine with no Node on it: `docker run --rm -i -v "$PWD:/work" -w /work ghcr.io/lazy-senior-dev/grumpy-reviewer`. Published by the first tagged release and built in CI with a bill of materials and SLSA build provenance attached, gated on a Trivy scan for fixable high and critical findings, and signed keyless with Cosign:
+
+  ```sh
+  cosign verify \
+    --certificate-identity-regexp "^https://github.com/lazy-senior-dev/grumpy-reviewer/" \
+    --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+    ghcr.io/lazy-senior-dev/grumpy-reviewer:latest
+  ```
+
+- **Release archive** — the adapters for every host, plus a CycloneDX bill of materials, attested by the tag build: `gh attestation verify <file> --repo lazy-senior-dev/grumpy-reviewer`.
+- **OpenSSF Scorecard** — the repository's supply-chain posture is scored every week and published for anyone to read.
+- **No runtime dependencies.** `package.json` declares none, so there is no transitive tree to audit and nothing resolved at install time. Node 22 or newer is the only requirement.
 
 ## Why not just a rules file, or a pull-request bot?
 
