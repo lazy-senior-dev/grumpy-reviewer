@@ -18,19 +18,36 @@
   <!-- Trendshift badge slot: <a href="https://trendshift.io/repositories/XXXXX"><img src="https://trendshift.io/api/badge/repositories/XXXXX" alt="trendshift" height="55"></a> -->
 </p>
 
-**Your agent's code, reviewed by the staff engineer who has rejected 4,000 pull requests, before it ever reaches your branch.**
+<!-- hero:start -->
+Every AI code reviewer waits for the pull request. By then the code is written, the branch is yours, and you are the one reading it.
+
+The Grump reads the change **before your agent is allowed to write it**, and refuses the write until it is right. Your agent's own rules file cannot do this. Anthropic's documentation is blunt about it: a rules file is *"context, not enforced configuration… To block an action regardless of what Claude decides, use a PreToolUse hook instead."* That hook is what this repository is.
+
+```sh
+npx github:lazy-senior-dev/grumpy-reviewer review          # any repository, any agent you already have. Installs nothing.
+```
+
+```
+/plugin marketplace add lazy-senior-dev/grumpy-reviewer
+/plugin install grumpy-reviewer@lazy-senior-dev
+```
+
+Works with 14 coding agents from one ruleset, any MCP client, and a GitHub Action. Apache-2.0, no dependencies, no service, no account. The diff goes to the agent you already trust and nowhere else.
+<!-- hero:end -->
 
 <!-- bench:author:start -->
 ## The number that matters: what ships
 
 **When the agent is the author, the Grump changes what ships.** On IBM Bob Shell (`bob-default`), given 18 tickets that each invite a classic defect, the agent alone shipped the defect in 8 of 36 runs (22%), 3 of 36 with a generic "be careful" prompt (8%), and 1 of 36 with the Grump installed, where he refuses the write until the findings are fixed (3%). A task the agent declined or solved another way counts as clean. The shipped code is scored by fixed checks written before any run, never by a model. Each task was run 2 times per arm; [method, per-task table, raw diffs](benchmarks/results/author).
 
-| Agent | Model | Arm | Made the change | Shipped the defect | Self-reviewed | Median time | Median cost |
-|---|---|---|---|---|---|---|---|
-| IBM Bob Shell | `bob-default` (n=2) | no skill | 36 of 36 | 8 of 36 (22%) | n/a | 15 s | $0.10 |
-| IBM Bob Shell | `bob-default` (n=2) | generic care prompt | 36 of 36 | 3 of 36 (8%) | n/a | 22 s | $0.14 |
-| IBM Bob Shell | `bob-default` (n=2) | grumpy-reviewer | 35 of 36 | 2 of 36 (6%) | 36 of 36 | 29 s | $0.12 |
-| IBM Bob Shell | `bob-default` (n=2) | **grumpy-reviewer + gate** | **35 of 36** | **1 of 36 (3%)** | **36 of 36** | 84 s | $0.54 |
+| Agent | Model | Arm | Made the change | Shipped the defect | Self-reviewed | Median time |
+|---|---|---|---|---|---|---|
+| IBM Bob Shell | `bob-default` (n=2) | no skill | 36 of 36 | 8 of 36 (22%) | n/a | 15 s |
+| IBM Bob Shell | `bob-default` (n=2) | generic care prompt | 36 of 36 | 3 of 36 (8%) | n/a | 22 s |
+| IBM Bob Shell | `bob-default` (n=2) | grumpy-reviewer | 35 of 36 | 2 of 36 (6%) | 36 of 36 | 29 s |
+| IBM Bob Shell | `bob-default` (n=2) | **grumpy-reviewer + gate** | **35 of 36** | **1 of 36 (3%)** | **36 of 36** | 84 s |
+
+Every agent whose four arms have finished is in the table above. Still running, and added as each one finishes: Claude Code, Codex CLI. Left out because it completed the change on fewer than half the tickets, so its zeros would read as "wrote nothing" rather than "wrote nothing wrong": Antigravity CLI.
 <!-- bench:author:end -->
 
 <!-- bench:hero:start -->
