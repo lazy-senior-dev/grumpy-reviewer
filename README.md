@@ -74,6 +74,20 @@ The same staged diff, one CLI, 4 agents. Each recording is a real run captured w
 Each card reads the same way. **Verdict** is what The Grump concluded: APPROVE lets the change through, REQUEST_CHANGES asks for fixes, BLOCK stops it. **Findings** counts the numbered problems he listed, each naming a file, a line, and the smallest fix. **Time** is how long the whole review took, start to finish. **Tokens** is what the host reported it read and wrote, and says so plainly when a host reports nothing. Agents that narrate the whole checklist before the verdict are shown from the verdict block down; the CLI prints it the same way. Re-capture any of them with `--agent claude|codex|agy|bob`; Bob needs `BOB_API_KEY`.
 <!-- recordings:end -->
 
+## Why not just a rules file, or a pull-request bot?
+
+Those are the two things you already have, and they fail in opposite directions. One is advice the agent may ignore; the other arrives after the code exists.
+
+|  | A rules file<br>(`CLAUDE.md`, `.cursorrules`) | A pull-request reviewer | grumpy-reviewer |
+|---|---|---|---|
+| **When it runs** | Every turn, as context | After the code is written and pushed | Before the write is allowed to land |
+| **When it disagrees** | Nothing happens. The agent may ignore it | Leaves a comment for a human to read | The Grump denies the write until the finding is fixed |
+| **What you can gate on** | Nothing | Prose | `APPROVE` / `REQUEST_CHANGES` / `BLOCK`, parsed to JSON |
+| **Where it works** | One file format per host, maintained by hand | The forge you host on | 14 agents, any MCP client, and a GitHub Action, from one ruleset |
+| **How you know it helps** | You do not | Vendor's own blog post | Two benchmark tiers in this repository, every raw reply committed, rerun it yourself |
+
+The first column is not a strawman. Anthropic's own documentation says a rules file is *"context, not enforced configuration"* and that *"to block an action regardless of what Claude decides, use a PreToolUse hook instead."* That hook is what this repository is.
+
 ## Try him in 60 seconds, install nothing
 
 You already have a coding agent signed in. Point the Grump at your working tree with it:
