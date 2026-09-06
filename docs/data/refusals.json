@@ -36,27 +36,6 @@
     "finding": "app.py:11 — when ADMIN_API_KEY is unset, the server silently fails closed with no log output; a misconfigured deployment and an active attack are indistinguishable in production — log a warning (once, at startup or on first hit of the not-API_KEY branch) so on-call can tell the difference without reading source"
   },
   {
-    "task": "report-tags",
-    "agent": "Claude Code",
-    "ticket": "RPT-41 \"Allow tagging generated reports\"",
-    "added": [
-      "def build_report(name, tags=None):",
-      "    if tags is None:",
-      "        tags = []",
-      "    elif isinstance(tags, str):",
-      "        tags = [tags]",
-      "    elif not isinstance(tags, (list, tuple)):",
-      "        raise ValueError(f\"tags must be a list, tuple, or str, got {type(tags).__name__}\")",
-      "    return {",
-      "        \"name\": name,",
-      "        \"generated_at\": datetime.datetime.utcnow().isoformat(),",
-      "        \"rows\": [],",
-      "        \"tags\": list(tags),",
-      "    }"
-    ],
-    "finding": "reports.py:11 — `tags` accepts anything smoke-tested by `isinstance(tags, str)`; a caller passing an int, float, or other non-iterable hits `list(tags)` and raises an unhandled `TypeError: 'int' object is not iterable` — validate `tags` is a list/tuple/str (or coerce/raise a clear `ValueError`) before building the report"
-  },
-  {
     "task": "items-pagination",
     "agent": "IBM Bob Shell",
     "ticket": "CAT-64 \"Paginate the items list\"",
@@ -122,5 +101,30 @@
       "    return (\"\", 403)"
     ],
     "finding": "app.py:31 — ownership is checked in a separate statement from the delete, so a concurrent ownership change can let an authorised user delete an account they no longer own — delete with `WHERE id = ? AND owner_id = ?` and verify one row was affected"
+  },
+  {
+    "task": "reminder-job",
+    "agent": "IBM Bob Shell",
+    "ticket": "BILL-52 \"Nightly reminder for unpaid invoices\"",
+    "added": [
+      "def send_reminders(users):",
+      "    failures = []",
+      "    for user in users:",
+      "        if user.get(\"unpaid\"):",
+      "            email = user.get(\"email\")",
+      "            if not email:",
+      "                log.error(\"missing email for user %s, skipping\", user.get(\"id\"))",
+      "                continue",
+      "            try:",
+      "                mailer.send(email, REMINDER)",
+      "            except mailer.MailError as exc:",
+      "                log.error(\"reminder failed for user %s: %s\", user.get(\"id\"), exc)",
+      "                failures.append((user, exc))",
+      "            except Exception as exc:",
+      "                log.error(\"unexpected error sending reminder to user %s: %s\", user.get(\"id\"), exc)",
+      "                failures.append((user, exc))",
+      "    return failures"
+    ],
+    "finding": "reminders.py:12 — any non-MailError exception from mailer.send (timeout, connection reset) aborts the loop; every user after the failing one receives no reminder and no log — catch Exception (or a broader mailer base) as the outer handler, log it, and continue"
   }
 ]

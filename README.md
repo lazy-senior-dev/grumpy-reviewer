@@ -10,6 +10,12 @@
 
 <p align="center"><em>Show me where it breaks.</em></p>
 
+<!-- headline:start -->
+**The gate is the part a prompt cannot replace.** When the agent writes the code itself, 18% of unaided runs shipped the defect, 4% with a generic "be careful" prompt, 3% with the ruleset loaded, and **0% with the gate**, which refuses the write until the findings are fixed. Measured on IBM Bob Shell (`bob-default`), 5 runs per arm; [method and raw diffs](benchmarks/results/author).
+
+**It is quiet on code that is fine.** Across the agents tested, the median run objects to 4 of 10 clean changes unaided and 2 with the Grump loaded; the worst agent goes from 4 to 3. That happens on every review, not only the ones with a bug in them, which is why it is the first thing worth knowing; [per-diff table](benchmarks/results).
+<!-- headline:end -->
+
 <!-- refusals:start -->
 ## What it actually stops
 
@@ -60,22 +66,22 @@ if not API_KEY:
 </td></tr>
 <tr><td>
 
-**RPT-41 "Allow tagging generated reports"**
+**CAT-64 "Paginate the items list"**
 
 Your agent wrote:
 
 ```python
-def build_report(name, tags=None):
-    if tags is None:
-        tags = []
-    elif isinstance(tags, str):
-        tags = [tags]
-    elif not isinstance(tags, (list, tuple)):
+    try:
+        limit = int(request.args.get("limit", 20))
+        offset = int(request.args.get("offset", 0))
+    except (ValueError, TypeError):
+        return jsonify({"error": "limit and offset must be integers"}), 400
+    if limit < 1 or limit > 1000:
 ```
 
-**It was refused:** reports.py:11 — `tags` accepts anything smoke-tested by `isinstance(tags, str)`; a caller passing an int, float, or other non-iterable hits `list(tags)` and raises an unhandled `TypeError: 'int' object is not iterable` — validate `tags` is a list/tuple/str (or coerce/raise a clear `ValueError`) before building the report
+**It was refused:** app.py:15 — query_all is now called with two arguments but the original call site had none; if the function signature does not accept params the endpoint raises TypeError and returns 500 on every request — confirm query_all(sql, params) is a valid call, or show it in the diff
 
-<sub>Recorded run, Claude Code. Task `report-tags`.</sub>
+<sub>Recorded run, IBM Bob Shell. Task `items-pagination`.</sub>
 
 </td></tr>
 </table>
@@ -122,20 +128,16 @@ Works with 14 coding agents from one ruleset, any MCP client, and a GitHub Actio
 <!-- bench:author:start -->
 ## The number that matters: what ships
 
-**When the agent is the author, the Grump changes what ships.** On Codex CLI (`codex-default`), given 18 tickets that each invite a classic defect, the agent alone shipped the defect in 11 of 36 runs (31%), 2 of 36 with a generic "be careful" prompt (6%), and 2 of 36 with the Grump installed, where he refuses the write until the findings are fixed (6%). A task the agent declined or solved another way counts as clean. The shipped code is scored by fixed checks written before any run, never by a model. Each task was run 2 times per arm; [method, per-task table, raw diffs](benchmarks/results/author).
+**When the agent is the author, the Grump changes what ships.** On IBM Bob Shell (`bob-default`), given 18 tickets that each invite a classic defect, the agent alone shipped the defect in 16 of 90 runs (18%), 4 of 90 with a generic "be careful" prompt (4%), and 0 of 90 with the Grump installed, where he refuses the write until the findings are fixed (0%). A task the agent declined or solved another way counts as clean. The shipped code is scored by fixed checks written before any run, never by a model. Each task was run 5 times per arm; [method, per-task table, raw diffs](benchmarks/results/author).
 
 | Agent | Model | Arm | Made the change | Shipped the defect | Self-reviewed | Median time |
 |---|---|---|---|---|---|---|
-| Codex CLI | `codex-default` (n=2) | no skill | 36 of 36 | 11 of 36 (31%) | n/a | 51 s |
-| Codex CLI | `codex-default` (n=2) | generic care prompt | 36 of 36 | 2 of 36 (6%) | n/a | 84 s |
-| Codex CLI | `codex-default` (n=2) | grumpy-reviewer | 35 of 36 | 3 of 36 (8%) | 35 of 36 | 85 s |
-| Codex CLI | `codex-default` (n=2) | **grumpy-reviewer + gate** | **36 of 36** | **2 of 36 (6%)** | **36 of 36** | 97 s |
-| Claude Code | `claude-sonnet-5` (n=2) | no skill | 36 of 36 | 6 of 36 (17%) | n/a | 36 s |
-| Claude Code | `claude-sonnet-5` (n=2) | generic care prompt | 36 of 36 | 2 of 36 (6%) | n/a | 50 s |
-| Claude Code | `claude-sonnet-5` (n=2) | grumpy-reviewer | 35 of 36 | 0 of 36 (0%) | 35 of 36 | 84 s |
-| Claude Code | `claude-sonnet-5` (n=2) | **grumpy-reviewer + gate** | **36 of 36** | **0 of 36 (0%)** | **36 of 36** | 129 s |
+| IBM Bob Shell | `bob-default` (n=5) | no skill | 55 of 90 | 16 of 90 (18%) | n/a | 13 s |
+| IBM Bob Shell | `bob-default` (n=5) | generic care prompt | 55 of 90 | 4 of 90 (4%) | n/a | 18 s |
+| IBM Bob Shell | `bob-default` (n=5) | grumpy-reviewer | 55 of 90 | 3 of 90 (3%) | 60 of 90 | 26 s |
+| IBM Bob Shell | `bob-default` (n=5) | **grumpy-reviewer + gate** | **53 of 90** | **0 of 90 (0%)** | **58 of 90** | 36 s |
 
-Every agent whose four arms have finished is in the table above. Still running, and added as each one finishes: Antigravity CLI, IBM Bob Shell.
+Every agent whose four arms have finished is in the table above. Still running, and added as each one finishes: Antigravity CLI, Claude Code, Codex CLI.
 <!-- bench:author:end -->
 
 <!-- bench:hero:start -->
