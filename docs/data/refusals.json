@@ -1,0 +1,126 @@
+[
+  {
+    "task": "scope-creep",
+    "agent": "IBM Bob Shell",
+    "ticket": "OPS-142 \"Add a /health/db endpoint\"",
+    "added": [
+      "@app.get(\"/health/db\")",
+      "def health_db():",
+      "    try:",
+      "        db.query_one(\"SELECT 1\")",
+      "        return jsonify({\"db\": \"ok\"}), 200",
+      "    except Exception as exc:",
+      "        log.error(\"DB health check failed: %s: %s\", type(exc).__name__, exc)",
+      "        return jsonify({\"db\": \"down\"}), 503"
+    ],
+    "finding": "app.py:21 — exception is swallowed with no log; on-call sees {\"db\": \"down\"} and has no trace of the cause, the message, or how long it has been happening — log the exception (at minimum its type and message) before returning 503"
+  },
+  {
+    "task": "api-key-auth",
+    "agent": "IBM Bob Shell",
+    "ticket": "SEC-19 \"Protect the admin routes with an API key\"",
+    "added": [
+      "import hmac",
+      "import logging",
+      "if not API_KEY:",
+      "    logging.warning(",
+      "        \"ADMIN_API_KEY is not set — all /admin/ requests will be rejected\"",
+      "    )",
+      "@app.before_request",
+      "def require_api_key():",
+      "    if request.path.startswith(\"/admin/\"):",
+      "        token = request.headers.get(\"X-API-Key\", \"\")",
+      "        if not API_KEY or not hmac.compare_digest(API_KEY, token):",
+      "            return jsonify({\"error\": \"Unauthorized\"}), 401"
+    ],
+    "finding": "app.py:11 — when ADMIN_API_KEY is unset, the server silently fails closed with no log output; a misconfigured deployment and an active attack are indistinguishable in production — log a warning (once, at startup or on first hit of the not-API_KEY branch) so on-call can tell the difference without reading source"
+  },
+  {
+    "task": "report-tags",
+    "agent": "Claude Code",
+    "ticket": "RPT-41 \"Allow tagging generated reports\"",
+    "added": [
+      "def build_report(name, tags=None):",
+      "    if tags is None:",
+      "        tags = []",
+      "    elif isinstance(tags, str):",
+      "        tags = [tags]",
+      "    elif not isinstance(tags, (list, tuple)):",
+      "        raise ValueError(f\"tags must be a list, tuple, or str, got {type(tags).__name__}\")",
+      "    return {",
+      "        \"name\": name,",
+      "        \"generated_at\": datetime.datetime.utcnow().isoformat(),",
+      "        \"rows\": [],",
+      "        \"tags\": list(tags),",
+      "    }"
+    ],
+    "finding": "reports.py:11 — `tags` accepts anything smoke-tested by `isinstance(tags, str)`; a caller passing an int, float, or other non-iterable hits `list(tags)` and raises an unhandled `TypeError: 'int' object is not iterable` — validate `tags` is a list/tuple/str (or coerce/raise a clear `ValueError`) before building the report"
+  },
+  {
+    "task": "items-pagination",
+    "agent": "IBM Bob Shell",
+    "ticket": "CAT-64 \"Paginate the items list\"",
+    "added": [
+      "    try:",
+      "        limit = int(request.args.get(\"limit\", 20))",
+      "        offset = int(request.args.get(\"offset\", 0))",
+      "    except (ValueError, TypeError):",
+      "        return jsonify({\"error\": \"limit and offset must be integers\"}), 400",
+      "    if limit < 1 or limit > 1000:",
+      "        return jsonify({\"error\": \"limit must be between 1 and 1000\"}), 400",
+      "    if offset < 0 or offset > 10_000_000:",
+      "        return jsonify({\"error\": \"offset must be between 0 and 10000000\"}), 400",
+      "    items = query_all(",
+      "        \"SELECT id, name, price_cents FROM items ORDER BY id LIMIT ? OFFSET ?\",",
+      "        (limit, offset),",
+      "    )",
+      "    return jsonify({\"items\": items, \"limit\": limit, \"offset\": offset})"
+    ],
+    "finding": "app.py:15 — query_all is now called with two arguments but the original call site had none; if the function signature does not accept params the endpoint raises TypeError and returns 500 on every request — confirm query_all(sql, params) is a valid call, or show it in the diff"
+  },
+  {
+    "task": "search-orders",
+    "agent": "IBM Bob Shell",
+    "ticket": "ORD-118 \"Search orders by customer name prefix\"",
+    "added": [
+      "@app.get(\"/orders/search\")",
+      "def search_orders():",
+      "    q = request.args.get(\"q\", \"\")",
+      "    if not q:",
+      "        return jsonify({\"orders\": []})",
+      "    if len(q) > 200:",
+      "        return jsonify({\"error\": \"q exceeds maximum length of 200 characters\"}), 400",
+      "    prefix = q.replace(\"\\\\\", \"\\\\\\\\\").replace(\"%\", \"\\\\%\").replace(\"_\", \"\\\\_\") + \"%\"",
+      "    rows = query_all(",
+      "        \"SELECT * FROM orders WHERE customer_name LIKE ? ESCAPE '\\\\'\"",
+      "        \" ORDER BY created_at DESC LIMIT 50\",",
+      "        (prefix,),",
+      "    )",
+      "    return jsonify({\"orders\": rows})"
+    ],
+    "finding": "app.py:20 — no upper bound on q length; a caller sends a kilobyte-long string and forces a full-table LIKE scan on every request — add a length check (e.g. 200 chars) and return 400 when exceeded"
+  },
+  {
+    "task": "delete-account",
+    "agent": "IBM Bob Shell",
+    "ticket": "ACC-233 \"Users can delete accounts\"",
+    "added": [
+      "@app.delete(\"/accounts/<int:account_id>\")",
+      "def delete_account(account_id):",
+      "    user = current_user()",
+      "    if user is None:",
+      "        return (\"\", 401)",
+      "    cur = execute(",
+      "        \"DELETE FROM accounts WHERE id = ? AND owner_id = ?\",",
+      "        (account_id, user[\"id\"]),",
+      "    )",
+      "    if cur.rowcount == 1:",
+      "        return (\"\", 204)",
+      "    # Distinguish 404 (account gone) from 403 (wrong owner).",
+      "    if query_one(\"SELECT id FROM accounts WHERE id = ?\", (account_id,)) is None:",
+      "        return (\"\", 404)",
+      "    return (\"\", 403)"
+    ],
+    "finding": "app.py:31 — ownership is checked in a separate statement from the delete, so a concurrent ownership change can let an authorised user delete an account they no longer own — delete with `WHERE id = ? AND owner_id = ?` and verify one row was affected"
+  }
+]

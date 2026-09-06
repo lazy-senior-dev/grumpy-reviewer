@@ -10,6 +10,77 @@
 
 <p align="center"><em>Show me where it breaks.</em></p>
 
+<!-- refusals:start -->
+## What it actually stops
+
+Every one of these is a recorded run, not an illustration. The agent wrote the code; the gate refused
+it before it reached the branch. Regenerate with `npm run bench:report` and this list changes with
+the runs.
+
+<table>
+<tr><td>
+
+**OPS-142 "Add a /health/db endpoint"**
+
+Your agent wrote:
+
+```python
+@app.get("/health/db")
+def health_db():
+    try:
+        db.query_one("SELECT 1")
+        return jsonify({"db": "ok"}), 200
+    except Exception as exc:
+```
+
+**It was refused:** app.py:21 — exception is swallowed with no log; on-call sees {"db": "down"} and has no trace of the cause, the message, or how long it has been happening — log the exception (at minimum its type and message) before returning 503
+
+<sub>Recorded run, IBM Bob Shell. Task `scope-creep`.</sub>
+
+</td></tr>
+<tr><td>
+
+**SEC-19 "Protect the admin routes with an API key"**
+
+Your agent wrote:
+
+```python
+import hmac
+import logging
+if not API_KEY:
+    logging.warning(
+        "ADMIN_API_KEY is not set — all /admin/ requests will be rejected"
+    )
+```
+
+**It was refused:** app.py:11 — when ADMIN_API_KEY is unset, the server silently fails closed with no log output; a misconfigured deployment and an active attack are indistinguishable in production — log a warning (once, at startup or on first hit of the not-API_KEY branch) so on-call can tell the difference without reading source
+
+<sub>Recorded run, IBM Bob Shell. Task `api-key-auth`.</sub>
+
+</td></tr>
+<tr><td>
+
+**RPT-41 "Allow tagging generated reports"**
+
+Your agent wrote:
+
+```python
+def build_report(name, tags=None):
+    if tags is None:
+        tags = []
+    elif isinstance(tags, str):
+        tags = [tags]
+    elif not isinstance(tags, (list, tuple)):
+```
+
+**It was refused:** reports.py:11 — `tags` accepts anything smoke-tested by `isinstance(tags, str)`; a caller passing an int, float, or other non-iterable hits `list(tags)` and raises an unhandled `TypeError: 'int' object is not iterable` — validate `tags` is a list/tuple/str (or coerce/raise a clear `ValueError`) before building the report
+
+<sub>Recorded run, Claude Code. Task `report-tags`.</sub>
+
+</td></tr>
+</table>
+<!-- refusals:end -->
+
 <p align="center">
   <strong>Star us&nbsp;❤️&nbsp;→</strong>&nbsp;<a href="https://github.com/lazy-senior-dev/grumpy-reviewer" title="Star grumpy-reviewer on GitHub"><picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://lazy-senior-dev.github.io/assets/hero/star-dark.svg">
@@ -51,24 +122,24 @@ Works with 14 coding agents from one ruleset, any MCP client, and a GitHub Actio
 <!-- bench:author:start -->
 ## The number that matters: what ships
 
-**When the agent is the author, the Grump changes what ships.** On IBM Bob Shell (`bob-default`), given 18 tickets that each invite a classic defect, the agent alone shipped the defect in 8 of 36 runs (22%), 3 of 36 with a generic "be careful" prompt (8%), and 1 of 36 with the Grump installed, where he refuses the write until the findings are fixed (3%). A task the agent declined or solved another way counts as clean. The shipped code is scored by fixed checks written before any run, never by a model. Each task was run 2 times per arm; [method, per-task table, raw diffs](benchmarks/results/author).
+**When the agent is the author, the Grump changes what ships.** On Codex CLI (`codex-default`), given 18 tickets that each invite a classic defect, the agent alone shipped the defect in 11 of 36 runs (31%), 2 of 36 with a generic "be careful" prompt (6%), and 2 of 36 with the Grump installed, where he refuses the write until the findings are fixed (6%). A task the agent declined or solved another way counts as clean. The shipped code is scored by fixed checks written before any run, never by a model. Each task was run 2 times per arm; [method, per-task table, raw diffs](benchmarks/results/author).
 
 | Agent | Model | Arm | Made the change | Shipped the defect | Self-reviewed | Median time |
 |---|---|---|---|---|---|---|
-| IBM Bob Shell | `bob-default` (n=2) | no skill | 36 of 36 | 8 of 36 (22%) | n/a | 15 s |
-| IBM Bob Shell | `bob-default` (n=2) | generic care prompt | 36 of 36 | 3 of 36 (8%) | n/a | 22 s |
-| IBM Bob Shell | `bob-default` (n=2) | grumpy-reviewer | 35 of 36 | 2 of 36 (6%) | 36 of 36 | 29 s |
-| IBM Bob Shell | `bob-default` (n=2) | **grumpy-reviewer + gate** | **35 of 36** | **1 of 36 (3%)** | **36 of 36** | 84 s |
+| Codex CLI | `codex-default` (n=2) | no skill | 36 of 36 | 11 of 36 (31%) | n/a | 51 s |
+| Codex CLI | `codex-default` (n=2) | generic care prompt | 36 of 36 | 2 of 36 (6%) | n/a | 84 s |
+| Codex CLI | `codex-default` (n=2) | grumpy-reviewer | 35 of 36 | 3 of 36 (8%) | 35 of 36 | 85 s |
+| Codex CLI | `codex-default` (n=2) | **grumpy-reviewer + gate** | **36 of 36** | **2 of 36 (6%)** | **36 of 36** | 97 s |
 | Claude Code | `claude-sonnet-5` (n=2) | no skill | 36 of 36 | 6 of 36 (17%) | n/a | 36 s |
 | Claude Code | `claude-sonnet-5` (n=2) | generic care prompt | 36 of 36 | 2 of 36 (6%) | n/a | 50 s |
 | Claude Code | `claude-sonnet-5` (n=2) | grumpy-reviewer | 35 of 36 | 0 of 36 (0%) | 35 of 36 | 84 s |
 | Claude Code | `claude-sonnet-5` (n=2) | **grumpy-reviewer + gate** | **36 of 36** | **0 of 36 (0%)** | **36 of 36** | 129 s |
 
-Every agent whose four arms have finished is in the table above. Still running, and added as each one finishes: Codex CLI. Left out because it completed the change on fewer than half the tickets, so its zeros would read as "wrote nothing" rather than "wrote nothing wrong": Antigravity CLI.
+Every agent whose four arms have finished is in the table above. Still running, and added as each one finishes: Antigravity CLI, IBM Bob Shell.
 <!-- bench:author:end -->
 
 <!-- bench:hero:start -->
-**On Claude Code (`claude-sonnet-5`), the Grump catches 30 of 30 seeded defects, the same as the agent alone. What changes is discipline: false alarms on 10 clean diffs, 0 with him, 4 without; replies with no usable verdict per run, 0 with him, 3 without; 94% of BLOCK verdicts land on BLOCK-class defects; median review time 7 s with him, 11 s without at 229 output tokens with him, 685 output tokens without.** Median of 3 runs, measured 2026-09-05; [method, per-diff table, raw replies](benchmarks/results). **In the needle tier, where the same defect hides in a four-file, 150-line pull request, Claude Code finds 10 of 10 with the Grump, 9 without, 10 with the generic prompt.**
+**On Claude Code (`claude-sonnet-5`), the Grump catches 30 of 30 seeded defects, the same as the agent alone. What changes is discipline: false alarms on 10 clean diffs, 0 with him, 4 without; replies with no usable verdict per run, 0 with him, 3 without; 94% of BLOCK verdicts land on BLOCK-class defects; median review time 7 s with him, 11 s without at 229 output tokens with him, 685 output tokens without.** Median of 3 runs, measured 2026-09-06; [method, per-diff table, raw replies](benchmarks/results). **In the needle tier, where the same defect hides in a four-file, 150-line pull request, Claude Code finds 10 of 10 with the Grump, 9 without, 10 with the generic prompt.**
 <!-- bench:hero:end -->
 
 <p align="center"><img src="assets/demo.gif" alt="Terminal recording: the agent writes a handler, the Grump prints GRUMP: BLOCK with the line and the fix, the write is denied, the agent fixes it, the Grump prints GRUMP: APPROVE, Fine." width="860"></p>
