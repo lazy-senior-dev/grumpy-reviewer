@@ -7,12 +7,21 @@
 //
 // Spec: https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html
 import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 
-// A verdict is about the whole change; SARIF levels are per result. BLOCK is the only verdict that
-// stops a merge, so it is the only one raised to error. A finding the model wrote in a shape the
-// parser could not read is reported as a note rather than dropped: silently losing it would make a
-// broken reply look like a clean one.
-const LEVEL = { BLOCK: "error", REQUEST_CHANGES: "warning", APPROVE: "note" };
+const P = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), "..", "..", "persona.json"), "utf8"));
+
+// A verdict is about the whole change; SARIF levels are per result. The blocking verdict is the only
+// one that stops a merge, so it is the only one raised to error. Keyed off the persona's own words
+// rather than one persona's literals: each of these reviewers has its own vocabulary, and a map
+// written against one of them silently downgrades the others' blocking findings to warnings.
+const LEVEL = {
+  [P.verdicts.block]: "error",
+  [P.verdicts.changes]: "warning",
+  [P.verdicts.approve]: "note",
+};
 
 const RULES = [
   { id: "review/block", name: "BlockingDefect", level: "error",
@@ -38,7 +47,7 @@ export function toSarif({ results, verdict, tool = {}, repoRoot = "" } = {}) {
     const uri = repoRoot && file.startsWith(repoRoot) ? file.slice(repoRoot.length).replace(/^\/+/, "") : file;
     for (const f of [...(r.verdict.findings || []), ...(r.verdict.malformed || [])]) {
       const complete = Boolean(f.complete);
-      const ruleId = !complete ? "review/unparsed" : r.verdict.verdict === "BLOCK" ? "review/block" : "review/finding";
+      const ruleId = !complete ? "review/unparsed" : r.verdict.verdict === P.verdicts.block ? "review/block" : "review/finding";
       const text = complete ? `${f.failure}\n\nSmallest fix: ${f.fix}` : String(f.raw || "").trim();
       const region = Number.isInteger(f.line) && f.line > 0 ? { startLine: f.line } : undefined;
       sarifResults.push({

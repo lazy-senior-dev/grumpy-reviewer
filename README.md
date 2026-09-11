@@ -137,8 +137,19 @@ Works with 14 coding agents from one ruleset, any MCP client, and a GitHub Actio
 | IBM Bob Shell | `bob-default` (n=5) | grumpy-reviewer | 55 of 90 | 3 of 90 (3%) | 60 of 90 | 26 s |
 | IBM Bob Shell | `bob-default` (n=5) | **grumpy-reviewer + gate** | **53 of 90** | **0 of 90 (0%)** | **58 of 90** | 36 s |
 
-Every agent whose four arms have finished is in the table above. Still running, and added as each one finishes: Antigravity CLI, Claude Code, Codex CLI.
+Every agent whose four arms have finished is in the table above. Still running, and added as each one finishes: Claude Code.
 <!-- bench:author:end -->
+
+<!-- live:start -->
+## Verified in the host, not only in the harness
+
+**The thing you install is the thing that was measured.** The table above scores the ruleset by re-running the review over a staged diff. This runs the shipped plugin inside a real Claude Code session (`claude-sonnet-5`, gate mode), gives it the same 4 tickets, and records what the host itself decided: the persona arrived on 4 of 4 sessions, and the gate refused 8 writes across 4 of them. The agent still finished the ticket in 3 of 4, and shipped the seeded defect in 0. One session per ticket: this shows the gate fires and what it costs, not a rate to compare with the table above. Measured 2026-09-11; reproduce with `npm run verify:live`, which exits non-zero if no write is ever refused.
+
+The host's own words, from the recorded stream:
+
+> No verdict found for this write to app.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an ...
+
+<!-- live:end -->
 
 <!-- bench:hero:start -->
 **On Claude Code (`claude-sonnet-5`), the Grump catches 30 of 30 seeded defects, the same as the agent alone. What changes is discipline: false alarms on 10 clean diffs, 0 with him, 4 without; replies with no usable verdict per run, 0 with him, 3 without; 94% of BLOCK verdicts land on BLOCK-class defects; median review time 7 s with him, 11 s without at 229 output tokens with him, 685 output tokens without.** Median of 3 runs, measured 2026-09-06; [method, per-diff table, raw replies](benchmarks/results). **In the needle tier, where the same defect hides in a four-file, 150-line pull request, Claude Code finds 10 of 10 with the Grump, 9 without, 10 with the generic prompt.**
