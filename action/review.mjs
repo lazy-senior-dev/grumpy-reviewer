@@ -236,7 +236,7 @@ export async function run({ inputs, event, fetchImpl = fetch, sleep, log = conso
   if (inputs.sarifFile) {
     const { writeFileSync, mkdirSync } = await import("node:fs");
     const { dirname } = await import("node:path");
-    const sarif = toSarif({ results, verdict, tool: { version: VERSION, model: provider.model } });
+    const sarif = toSarif({ results, verdict, tool: { name: P.slug, informationUri: P.homepage, version: VERSION, model: provider.model } });
     mkdirSync(dirname(inputs.sarifFile), { recursive: true });
     writeFileSync(inputs.sarifFile, JSON.stringify(sarif, null, 2) + "\n");
     log(`wrote ${sarif.runs[0].results.length} finding(s) to ${inputs.sarifFile} as SARIF 2.1.0`);

@@ -13,12 +13,22 @@ const finding = (line, failure = "exception is swallowed", fix = "log it before 
   ({ line, failure, fix, complete: true });
 
 test("the document is SARIF 2.1.0 with one run and a named driver", () => {
-  const s = toSarif({ results: [], verdict: P.verdicts.approve });
+  const s = toSarif({ results: [], verdict: P.verdicts.approve, tool: { name: P.slug, informationUri: P.homepage } });
   assert.equal(s.version, "2.1.0");
   assert.equal(s.runs.length, 1);
-  assert.ok(s.runs[0].tool.driver.name);
-  assert.ok(s.runs[0].tool.driver.informationUri);
+  assert.equal(s.runs[0].tool.driver.name, P.slug);
+  assert.equal(s.runs[0].tool.driver.informationUri, P.homepage);
   assert.ok(s.runs[0].tool.driver.rules.length >= 3);
+});
+
+test("the driver never names a persona the caller did not ask for", () => {
+  // This file is copied between the three personas. A default naming one of them would travel with
+  // it and make the others report results under the wrong tool.
+  const s = JSON.stringify(toSarif({ results: [] }));
+  for (const other of ["grumpy-reviewer", "paranoid-sre", "tenured"]) {
+    if (other === P.slug) continue;
+    assert.ok(!s.includes(other), `the default driver does not mention ${other}`);
+  }
 });
 
 test("a blocking verdict raises its findings to error, other verdicts stay warnings", () => {

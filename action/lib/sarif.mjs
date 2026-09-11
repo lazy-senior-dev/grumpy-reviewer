@@ -58,8 +58,10 @@ export function toSarif({ results, verdict, tool = {}, repoRoot = "" } = {}) {
     runs: [{
       tool: {
         driver: {
-          name: tool.name || "grumpy-reviewer",
-          informationUri: tool.informationUri || "https://github.com/lazy-senior-dev/grumpy-reviewer",
+          // Named by the caller from persona.json. A default naming one particular persona would
+          // travel with this file into the others and make their results claim the wrong tool.
+          name: tool.name || "code-review",
+          ...(tool.informationUri ? { informationUri: tool.informationUri } : {}),
           ...(tool.version ? { version: tool.version } : {}),
           rules: RULES.map((r) => ({
             id: r.id,
