@@ -56,10 +56,17 @@ export const AUTHORS = {
   },
   codex: {
     label: "Codex CLI",
+    // Pinned for the same reason as Antigravity below: an unnamed default is not reproducible, and
+    // the newest tier burns the account's window part-way through a sweep. Reasoning effort is set
+    // explicitly rather than inherited, so a rerun a month from now scores the same arm even if the
+    // CLI changes what it defaults to.
+    defaultModel: "gpt-5.5",
+    reasoningEffort: "medium",
     available: () => which("codex"),
     async write({ prompt, cwd, model }) {
       const args = ["exec", "--json", "--sandbox", "workspace-write", "--skip-git-repo-check", "-C", cwd];
       if (model) args.push("--model", model);
+      args.push("-c", `model_reasoning_effort="${AUTHORS.codex.reasoningEffort}"`);
       args.push(prompt);
       const res = await run("codex", args, { cwd });
       let text = "", usage = { input: 0, output: 0 }, mdl = model || "codex-default";
@@ -84,7 +91,7 @@ export const AUTHORS = {
     // bought 123 records in a window against 52, but finished the ticket in 19% of runs against
     // 65%. Records that wrote nothing are not cheaper records, they are unusable ones, and a run
     // that never writes still spends the quota.
-    defaultModel: "gemini-3.8-flash-medium",
+    defaultModel: "gemini-3.1-pro-low",
     available: () => which("agy"),
     async write({ prompt, cwd, model }) {
       // Tools are pre-approved because headless mode cannot ask, and the working tree here is a

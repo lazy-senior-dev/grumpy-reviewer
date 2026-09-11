@@ -85,6 +85,19 @@ async function job(agentName, t, arm, runIdx) {
 for (const agentName of agents) {
   if (!AUTHORS[agentName]) { console.error(`unknown agent ${agentName}`); process.exit(2); }
   const file = join(RAW, `${agentName}.jsonl`);
+  // One row in the published table is one agent on one model. Resume keys on task|arm|run and says
+  // nothing about the model, so pointing this runner at a different model would quietly append the
+  // new records beside the old and average two models into a single row. Refuse instead: the old
+  // file has to be moved aside first, which also keeps it, because those runs did happen.
+  const effectiveModel = AUTHORS[agentName].defaultModel || `${agentName}-default`;
+  const priorModels = [...new Set((existsSync(file) ? readFileSync(file, "utf8").trim().split("\n").filter(Boolean).map((l) => JSON.parse(l)) : [])
+    .filter((r) => !r.error && r.model).map((r) => r.model))];
+  const foreign = priorModels.filter((m) => m !== effectiveModel);
+  if (foreign.length) {
+    console.error(`[${agentName}] refusing to mix models: ${file} already holds records for ${foreign.join(", ")}, this pass would add ${effectiveModel}.`);
+    console.error(`[${agentName}] move the existing file aside first, e.g. mkdir -p ${join(RAW, "archive")} && mv ${file} ${join(RAW, "archive")}/`);
+    process.exit(3);
+  }
   const done = new Set(existsSync(file) ? readFileSync(file, "utf8").trim().split("\n").filter(Boolean).map((l) => JSON.parse(l)).filter((r) => !r.error).map((r) => `${r.task}|${r.arm}|${r.run}`) : []);
   const jobs = [];
   for (const t of tasks) for (const arm of arms) for (let r = 1; r <= n; r++) if (!done.has(`${t.id}|${arm}|${r}`)) jobs.push({ t, arm, r });
