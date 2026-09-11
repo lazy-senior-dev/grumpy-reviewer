@@ -1,0 +1,42 @@
+# The Grump reviews this repository's own pull requests, with the action built from the commit under
+# review. A reviewer that is never pointed at its author's work is a claim, not a demonstration.
+#
+# Inert until ANTHROPIC_API_KEY is set: without it the job reports that it is not configured and
+# succeeds, because a missing optional credential is not a broken pull request. Forks never see the
+# secret, so they are skipped rather than failed.
+name: self-review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  review:
+    # Same-repository pull requests only: a fork's job cannot read the secret, and the action would
+    # have nothing to review with.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - id: key
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -n "$ANTHROPIC_API_KEY" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=self-review skipped::Set the ANTHROPIC_API_KEY secret to have the Grump review this repository's own pull requests."
+          fi
+      - if: steps.key.outputs.present == 'true'
+        uses: ./
+        with:
+          mode: nag
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
