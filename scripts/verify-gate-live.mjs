@@ -65,7 +65,8 @@ async function one(taskId, runIdx) {
     git(repo, ["add", "-A"]);
     git(repo, ["-c", "user.name=bench", "-c", "user.email=bench@example.com", "commit", "-q", "-m", "current state"]);
     const res = await claude(readFileSync(join(dir, "TASK.md"), "utf8"), repo);
-    if (USAGE_LIMIT.test(res.out) || USAGE_LIMIT.test(res.err)) throw new Error("usage limit");
+    const limit = (USAGE_LIMIT.exec(res.out) || USAGE_LIMIT.exec(res.err));
+    if (limit) throw new Error(`usage limit: ${(res.err || res.out).replace(/\s+/g, " ").slice(0, 200)}`);
     const { denials, hookCalls, personaInjected } = readDecisions(res.out, { personaName: P.short });
     const added = git(repo, ["diff", "-U0"]).split("\n").filter((l) => l.startsWith("+") && !l.startsWith("+++")).join("\n");
     const check = await import(pathToFileURL(join(dir, "check.mjs")).href);
@@ -80,11 +81,17 @@ async function one(taskId, runIdx) {
   }
 }
 
-const queue = [];
-for (const t of taskIds()) for (let i = 0; i < runs; i++) queue.push([t, i]);
-console.log(`[live] ${queue.length} sessions, model=${model}, concurrency=${concurrency}`);
+const OUT_FILE = join(OUT, "claude-code.json");
+const prior = existsSync(OUT_FILE)
+  ? (JSON.parse(readFileSync(OUT_FILE, "utf8")).records || []).filter((r) => r.model === model && !r.error)
+  : [];
+const done = new Set(prior.map((r) => `${r.task}#${r.run}`));
 
-const records = [];
+const queue = [];
+for (const t of taskIds()) for (let i = 0; i < runs; i++) if (!done.has(`${t}#${i}`)) queue.push([t, i]);
+console.log(`[live] ${queue.length} sessions to run (${prior.length} already recorded), model=${model}, concurrency=${concurrency}`);
+
+const records = [...prior];
 let cursor = 0, limitHit = null;
 await Promise.all(Array.from({ length: Math.min(concurrency, queue.length) }, async () => {
   while (cursor < queue.length && !limitHit) {
@@ -102,7 +109,7 @@ await Promise.all(Array.from({ length: Math.min(concurrency, queue.length) }, as
 }));
 
 mkdirSync(OUT, { recursive: true });
-writeFileSync(join(OUT, "claude-code.json"), JSON.stringify({ model, host: "claude-code", recordedAt: new Date().toISOString(), records }, null, 2) + "\n");
+writeFileSync(OUT_FILE, JSON.stringify({ model, host: "claude-code", recordedAt: new Date().toISOString(), records }, null, 2) + "\n");
 
 const ok = records.filter((r) => !r.error);
 const denied = ok.filter((r) => r.denied).length;
