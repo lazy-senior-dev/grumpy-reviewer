@@ -105,10 +105,37 @@ if (cmd === "install" || cmd === "uninstall") {
     if (h.settings && fs.existsSync(join(cwd, h.settings))) {
       try {
         const existing = JSON.parse(readFileSync(join(cwd, h.settings), "utf8"));
-        for (const [event, groups] of Object.entries(existing.hooks || {})) existing.hooks[event] = groups.filter((g) => !JSON.stringify(g).includes("review-"));
-        fs.writeFileSync(join(cwd, h.settings), JSON.stringify(existing, null, 2) + "\n");
-        removed.push(h.settings + " (grumpy hooks removed)");
+        for (const [event, groups] of Object.entries(existing.hooks || {})) {
+          const kept = groups.filter((g) => !JSON.stringify(g).includes("review-"));
+          // An event left with no hooks is something install introduced, not something the user
+          // wrote. Leaving "UserPromptSubmit": [] behind is a trace of a tool that says it removes
+          // exactly what it added.
+          if (kept.length) existing.hooks[event] = kept;
+          else delete existing.hooks[event];
+        }
+        if (existing.hooks && !Object.keys(existing.hooks).length) delete existing.hooks;
+        if (!Object.keys(existing).length) {
+          // The whole file was ours. Take it, and the directory if nothing else is using it.
+          fs.rmSync(join(cwd, h.settings));
+          removed.push(h.settings);
+          try { fs.rmdirSync(dirname(join(cwd, h.settings))); } catch { /* other files live there */ }
+        } else {
+          fs.writeFileSync(join(cwd, h.settings), JSON.stringify(existing, null, 2) + "\n");
+          removed.push(h.settings + " (grumpy hooks removed)");
+        }
       } catch { console.log("  could not parse " + h.settings + "; remove the grumpy hooks by hand"); }
+    }
+    // Removing every file this host owns can leave the directories that held them. An empty
+    // .bob/rules is still a trace of an uninstalled tool, so walk back up from each thing that was
+    // removed and drop directories that are now empty. rmdir refuses a non-empty one, which is
+    // exactly the test wanted: anything the user still keeps there stops the walk.
+    const roots = new Set([...h.files, ...(h.dirs || []).map(([, to]) => to), ...(h.settings ? [h.settings] : [])]);
+    for (const rel of roots) {
+      let dir = dirname(join(cwd, rel));
+      while (dir.startsWith(cwd) && dir !== cwd) {
+        try { fs.rmdirSync(dir); } catch { break; }
+        dir = dirname(dir);
+      }
     }
     console.log(removed.length ? "Removed:\n  " + removed.join("\n  ") : "Nothing to remove.");
   }
