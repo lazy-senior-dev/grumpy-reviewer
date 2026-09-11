@@ -217,6 +217,7 @@ running in this repository today, and every body listed governs its specificatio
 | [REUSE licence identifiers](https://reuse.software/spec/) | Free Software Foundation Europe | `SPDX-License-Identifier` on the files this project authors |
 | [AGENTS.md](https://agents.md/) | Agentic AI Foundation, Linux Foundation | Generated from the ruleset for any agent that reads it |
 | [Agent Skills](https://agentskills.io/) | Open specification | `skills/` and `.github/skills/` |
+| [SARIF 2.1.0](https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html) | OASIS | The Action writes findings to `sarif_file` for any SARIF consumer |
 | [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0) | Apache Software Foundation | `LICENSE` and `NOTICE` |
 
 ## Where to get it, and how it is vetted
@@ -512,7 +513,30 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 ```
 
-Inputs: `mode` (`nag` or `gate`), `provider` (`anthropic`, `openai` with `OPENAI_API_KEY`, or `bob` with `BOB_API_KEY`, which installs the Bob CLI on the runner and reviews through IBM Bob), `model`, `max_files` (largest files first, the rest listed as not reviewed), `ignore` (globs). On pull requests from forks, where secrets are unavailable, it posts one neutral note and exits green. Full example: [`examples/workflow.yml`](examples/workflow.yml).
+Inputs: `mode` (`nag` or `gate`), `provider` (`anthropic`, `openai` with `OPENAI_API_KEY`, or `bob` with `BOB_API_KEY`, which installs the Bob CLI on the runner and reviews through IBM Bob), `model`, `max_files` (largest files first, the rest listed as not reviewed), `ignore` (globs), `sarif_file` (below). On pull requests from forks, where secrets are unavailable, it posts one neutral note and exits green. Full example: [`examples/workflow.yml`](examples/workflow.yml).
+
+### Findings as SARIF, not only as comments
+
+A review posted as pull-request comments exists inside one vendor. Point `sarif_file` at a path and
+the same findings are also written as [SARIF 2.1.0](https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html),
+the OASIS standard that GitHub code scanning, GitLab, Azure DevOps and every SARIF viewer already
+read:
+
+```yaml
+      - uses: lazy-senior-dev/grumpy-reviewer@v1
+        with:
+          sarif_file: grumpy.sarif
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      - uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: grumpy.sarif
+```
+
+`BLOCK` findings arrive as errors, `REQUEST_CHANGES` as warnings, and a finding the verdict parser
+could not read is reported as a note rather than dropped, because a lost finding looks like a clean
+review. The file is written before the review is posted, so the findings survive a run that lacks
+permission to comment.
 
 ## House rules, without forking
 
