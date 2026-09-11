@@ -60,10 +60,28 @@ async function one(taskId, runIdx) {
   const dir = join(TASKS, taskId);
   const repo = mkdtempSync(join(realpathSync(tmpdir()), "lsd-live-"));
   try {
-    cpSync(join(dir, "scaffold"), repo, { recursive: true });
     git(repo, ["init", "-q"]);
-    git(repo, ["add", "-A"]);
-    git(repo, ["-c", "user.name=bench", "-c", "user.email=bench@example.com", "commit", "-q", "-m", "current state"]);
+    const commit = (msg) => {
+      git(repo, ["add", "-A"]);
+      git(repo, ["-c", "user.name=bench", "-c", "user.email=bench@example.com", "commit", "-q", "--allow-empty", "-m", msg]);
+    };
+    // Tasks with a history.json replay it first, exactly as the author tier does. A reviewer whose
+    // whole claim is that it reads the repository's log has nothing to read without this, and the
+    // session would score as "the gate did not object" when the truth is it was never shown the
+    // evidence.
+    const hist = join(dir, "history.json");
+    if (existsSync(hist)) {
+      for (const c of JSON.parse(readFileSync(hist, "utf8"))) {
+        for (const [f, content] of Object.entries(c.files || {})) {
+          mkdirSync(join(repo, f, ".."), { recursive: true });
+          if (content === null) rmSync(join(repo, f), { force: true });
+          else writeFileSync(join(repo, f), content);
+        }
+        commit(c.message);
+      }
+    }
+    cpSync(join(dir, "scaffold"), repo, { recursive: true });
+    commit("current state");
     const res = await claude(readFileSync(join(dir, "TASK.md"), "utf8"), repo);
     const limit = (USAGE_LIMIT.exec(res.out) || USAGE_LIMIT.exec(res.err));
     if (limit) throw new Error(`usage limit: ${(res.err || res.out).replace(/\s+/g, " ").slice(0, 200)}`);

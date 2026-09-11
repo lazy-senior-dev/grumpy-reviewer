@@ -34,10 +34,14 @@ test("an allowed write is not counted as a denial", () => {
 });
 
 test("the persona is seen only when the prompt hook actually injected it", () => {
-  const injected = hookResponse("UserPromptSubmit", "UserPromptSubmit", JSON.stringify({
-    hookSpecificOutput: { hookEventName: "UserPromptSubmit", additionalContext: `# You are also the ${P.short}\n` },
-  }));
-  assert.equal(readDecisions(injected, { personaName: P.short }).personaInjected, true);
+  // Both headings are real: "You are also the Grump" and "You are also Tenured". The article is
+  // optional, and matching only one form reports the persona as absent where it was always present.
+  for (const heading of [`# You are also the ${P.short}\n`, `# You are also ${P.short}\n`]) {
+    const injected = hookResponse("UserPromptSubmit", "UserPromptSubmit", JSON.stringify({
+      hookSpecificOutput: { hookEventName: "UserPromptSubmit", additionalContext: heading },
+    }));
+    assert.equal(readDecisions(injected, { personaName: P.short }).personaInjected, true, heading.trim());
+  }
   assert.equal(readDecisions(hookResponse("UserPromptSubmit", "UserPromptSubmit", "{}\n"), { personaName: P.short }).personaInjected, false);
 });
 

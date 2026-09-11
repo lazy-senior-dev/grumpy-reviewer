@@ -18,7 +18,10 @@ export function readDecisions(stream, { personaName = "Grump" } = {}) {
     if (e.subtype !== "hook_response") continue;
     hookCalls++;
     const body = typeof e.output === "string" ? e.output : JSON.stringify(e.output ?? "");
-    if (e.hook_event === "UserPromptSubmit" && body.includes(`You are also the ${personaName}`)) personaInjected = true;
+    // "You are also the Grump" and "You are also Tenured" are both real headings, so the article is
+    // optional. Matching only the first form reports the persona as never injected in a repository
+    // where it was injected every time.
+    if (e.hook_event === "UserPromptSubmit" && new RegExp(`You are also (?:the )?${personaName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`).test(body)) personaInjected = true;
     if (e.hook_event !== "PreToolUse") continue;
     let o;
     try { o = JSON.parse(body); } catch { continue; }
