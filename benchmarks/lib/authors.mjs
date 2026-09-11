@@ -91,18 +91,42 @@ export const AUTHORS = {
     // bought 123 records in a window against 52, but finished the ticket in 19% of runs against
     // 65%. Records that wrote nothing are not cheaper records, they are unusable ones, and a run
     // that never writes still spends the quota.
-    defaultModel: "gemini-3.1-pro-low",
+    defaultModel: "gemini-3.6-flash-medium",
     available: () => which("agy"),
     async write({ prompt, cwd, model }) {
       // Tools are pre-approved because headless mode cannot ask, and the working tree here is a
       // scratch copy of the task scaffold in the system temp directory, not a real repository.
-      const args = ["-p", prompt, "--output-format", "json", "--mode", "accept-edits", "--dangerously-skip-permissions", "--disable-slash-commands", "--print-timeout", "15m"];
+      // --add-dir is not optional here. Without it the CLI works in its own scratch directory and
+      // reports success having edited a copy: exit 0, a confident summary, and an empty diff in the
+      // workspace we handed it. Every run then scores as "did not make the change" when the agent
+      // did make it, somewhere else.
+      const args = ["-p", prompt, "--output-format", "json", "--mode", "accept-edits", "--dangerously-skip-permissions", "--disable-slash-commands", "--print-timeout", "15m", "--add-dir", cwd];
       if (model) args.push("--model", model);
       const res = await run("agy", args, { cwd, timeoutMs: 1_000_000 });
       let data = {};
       try { data = JSON.parse(res.stdout.trim().split("\n").filter((l) => l.startsWith("{")).pop() || "{}"); } catch { /* keep raw */ }
       const u = data.usage || {};
       return { text: data.response || res.stdout, usage: { input: u.input_tokens || 0, output: (u.output_tokens || 0) + (u.thinking_tokens || 0) }, costUsd: undefined, model: model || "agy-default", durationMs: res.durationMs, exit: res.code, stderr: res.stderr.slice(0, 500) };
+    },
+  },
+  agyg: {
+    label: "Antigravity CLI (GPT-OSS)",
+    defaultModel: "gpt-oss-120b-medium",
+    available: () => which("agy"),
+    async write({ prompt, cwd, model }) {
+      // Tools are pre-approved because headless mode cannot ask, and the working tree here is a
+      // scratch copy of the task scaffold in the system temp directory, not a real repository.
+      // --add-dir is not optional here. Without it the CLI works in its own scratch directory and
+      // reports success having edited a copy: exit 0, a confident summary, and an empty diff in the
+      // workspace we handed it. Every run then scores as "did not make the change" when the agent
+      // did make it, somewhere else.
+      const args = ["-p", prompt, "--output-format", "json", "--mode", "accept-edits", "--dangerously-skip-permissions", "--disable-slash-commands", "--print-timeout", "15m", "--add-dir", cwd];
+      if (model) args.push("--model", model);
+      const res = await run("agy", args, { cwd, timeoutMs: 1_000_000 });
+      let data = {};
+      try { data = JSON.parse(res.stdout.trim().split("\n").filter((l) => l.startsWith("{")).pop() || "{}"); } catch { /* keep raw */ }
+      const u = data.usage || {};
+      return { text: data.response || res.stdout, usage: { input: u.input_tokens || 0, output: (u.output_tokens || 0) + (u.thinking_tokens || 0) }, costUsd: undefined, model: model || "agyg-default", durationMs: res.durationMs, exit: res.code, stderr: res.stderr.slice(0, 500) };
     },
   },
   // Any other agent. Set LSD_AGENT_CMD to a command that reads the prompt on stdin, edits files in
