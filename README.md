@@ -11,7 +11,7 @@
 <p align="center"><em>Show me where it breaks.</em></p>
 
 <!-- headline:start -->
-**The gate is the part a prompt cannot replace.** When the agent writes the code itself, 18% of unaided runs shipped the defect, 4% with a generic "be careful" prompt, 3% with the ruleset loaded, and **0% with the gate**, which refuses the write until the findings are fixed. Measured on IBM Bob Shell (`bob-default`), 5 runs per arm. The same arms on the other host measured so far: 7% to **2%** on Claude Code (`claude-sonnet-5`) -- a smaller drop, from a baseline that was already lower, and one that is not on its own distinguishable from chance at these counts; [method and raw diffs](benchmarks/results/author).
+**The gate is the part a prompt cannot replace.** When the agent writes the code itself, 29% of unaided runs shipped the defect, 8% with a generic "be careful" prompt, 6% with the ruleset loaded, and **0% with the gate**, which refuses the write until the findings are fixed. Measured on Antigravity CLI (`gemini-3.6-flash-medium`), 5 runs per arm. The same arms on the other hosts measured so far: 18% to **0%** on IBM Bob Shell (`bob-default`), 7% to **2%** on Claude Code (`claude-sonnet-5`) -- a smaller drop, from a baseline that was already lower, and one that is not on its own distinguishable from chance at these counts; [method and raw diffs](benchmarks/results/author).
 
 **It is quiet on code that is fine.** Across the 4 agents tested, the median run objects to 4 of 10 clean changes unaided and 2 with the Grump loaded; the worst agent goes from 4 to 3. It does not buy that quiet by approving more: the median run still catches 30 of 30 seeded defects, against 30 unaided. That happens on every review, not only the ones with a bug in them, which is why it is the first thing worth knowing; [per-diff table](benchmarks/results).
 <!-- headline:end -->
@@ -128,10 +128,14 @@ Works with 14 coding agents from one ruleset, any MCP client, and a GitHub Actio
 <!-- bench:author:start -->
 ## The number that matters: what ships
 
-**When the agent is the author, the Grump changes what ships.** On IBM Bob Shell (`bob-default`), given 18 tickets that each invite a classic defect, the agent alone shipped the defect in 16 of 90 runs (18%), 4 of 90 with a generic "be careful" prompt (4%), and 0 of 90 with the Grump installed, where he refuses the write until the findings are fixed (0%). A task the agent declined or solved another way counts as clean. The shipped code is scored by fixed checks written before any run, never by a model. Each task was run 5 times per arm; [method, per-task table, raw diffs](benchmarks/results/author).
+**When the agent is the author, the Grump changes what ships.** On Antigravity CLI (`gemini-3.6-flash-medium`), given 18 tickets that each invite a classic defect, the agent alone shipped the defect in 26 of 90 runs (29%), 7 of 90 with a generic "be careful" prompt (8%), and 0 of 90 with the Grump installed, where he refuses the write until the findings are fixed (0%). A task the agent declined or solved another way counts as clean. The shipped code is scored by fixed checks written before any run, never by a model. Each task was run 5 times per arm; [method, per-task table, raw diffs](benchmarks/results/author).
 
 | Agent | Model | Arm | Made the change | Shipped the defect | Self-reviewed | Median time |
 |---|---|---|---|---|---|---|
+| Antigravity CLI | `gemini-3.6-flash-medium` (n=5) | no skill | 85 of 90 | 26 of 90 (29%) | n/a | 42 s |
+| Antigravity CLI | `gemini-3.6-flash-medium` (n=5) | generic care prompt | 85 of 90 | 7 of 90 (8%) | n/a | 59 s |
+| Antigravity CLI | `gemini-3.6-flash-medium` (n=5) | grumpy-reviewer | 70 of 90 | 5 of 90 (6%) | 90 of 90 | 36 s |
+| Antigravity CLI | `gemini-3.6-flash-medium` (n=5) | **grumpy-reviewer + gate** | **73 of 90** | **0 of 90 (0%)** | **90 of 90** | 32 s |
 | IBM Bob Shell | `bob-default` (n=5) | no skill | 55 of 90 | 16 of 90 (18%) | n/a | 13 s |
 | IBM Bob Shell | `bob-default` (n=5) | generic care prompt | 55 of 90 | 4 of 90 (4%) | n/a | 18 s |
 | IBM Bob Shell | `bob-default` (n=5) | grumpy-reviewer | 55 of 90 | 3 of 90 (3%) | 60 of 90 | 26 s |
@@ -141,7 +145,7 @@ Works with 14 coding agents from one ruleset, any MCP client, and a GitHub Actio
 | Claude Code | `claude-sonnet-5` (n=5) | grumpy-reviewer | 85 of 90 | 4 of 90 (4%) | 89 of 90 | 85 s |
 | Claude Code | `claude-sonnet-5` (n=5) | **grumpy-reviewer + gate** | **86 of 90** | **2 of 90 (2%)** | **90 of 90** | 157 s |
 
-Every agent whose four arms have finished is in the table above. Still running, and added as each one finishes: Antigravity CLI, Codex CLI.
+Every agent whose four arms have finished is in the table above. Still running, and added as each one finishes: Codex CLI.
 <!-- bench:author:end -->
 
 <!-- live:start -->
