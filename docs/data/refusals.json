@@ -16,6 +16,23 @@
     "finding": "app.py:21 — exception is swallowed with no log; on-call sees {\"db\": \"down\"} and has no trace of the cause, the message, or how long it has been happening — log the exception (at minimum its type and message) before returning 503"
   },
   {
+    "task": "report-tags",
+    "agent": "Claude Code",
+    "ticket": "RPT-41 \"Allow tagging generated reports\"",
+    "added": [
+      "def build_report(name, tags=None):",
+      "    if tags is not None and not isinstance(tags, (list, tuple)):",
+      "        raise TypeError(\"tags must be a list or tuple\")",
+      "    return {",
+      "        \"name\": name,",
+      "        \"generated_at\": datetime.datetime.utcnow().isoformat(),",
+      "        \"rows\": [],",
+      "        \"tags\": list(tags) if tags is not None else [],",
+      "    }"
+    ],
+    "finding": "reports.py:9 — a caller passing tags=\"urgent\" silently becomes ['u','r','g','e','n','t'] instead of one tag, corrupting report data with no error — require tags to be a list/tuple (or reject non-list types) instead of blindly calling list() on it"
+  },
+  {
     "task": "api-key-auth",
     "agent": "IBM Bob Shell",
     "ticket": "SEC-19 \"Protect the admin routes with an API key\"",
@@ -101,30 +118,5 @@
       "    return (\"\", 403)"
     ],
     "finding": "app.py:31 — ownership is checked in a separate statement from the delete, so a concurrent ownership change can let an authorised user delete an account they no longer own — delete with `WHERE id = ? AND owner_id = ?` and verify one row was affected"
-  },
-  {
-    "task": "reminder-job",
-    "agent": "IBM Bob Shell",
-    "ticket": "BILL-52 \"Nightly reminder for unpaid invoices\"",
-    "added": [
-      "def send_reminders(users):",
-      "    failures = []",
-      "    for user in users:",
-      "        if user.get(\"unpaid\"):",
-      "            email = user.get(\"email\")",
-      "            if not email:",
-      "                log.error(\"missing email for user %s, skipping\", user.get(\"id\"))",
-      "                continue",
-      "            try:",
-      "                mailer.send(email, REMINDER)",
-      "            except mailer.MailError as exc:",
-      "                log.error(\"reminder failed for user %s: %s\", user.get(\"id\"), exc)",
-      "                failures.append((user, exc))",
-      "            except Exception as exc:",
-      "                log.error(\"unexpected error sending reminder to user %s: %s\", user.get(\"id\"), exc)",
-      "                failures.append((user, exc))",
-      "    return failures"
-    ],
-    "finding": "reminders.py:12 — any non-MailError exception from mailer.send (timeout, connection reset) aborts the loop; every user after the failing one receives no reminder and no log — catch Exception (or a broader mailer base) as the outer handler, log it, and continue"
   }
 ]

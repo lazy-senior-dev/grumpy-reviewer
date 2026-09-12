@@ -11,7 +11,7 @@
 <p align="center"><em>Show me where it breaks.</em></p>
 
 <!-- headline:start -->
-**The gate is the part a prompt cannot replace.** When the agent writes the code itself, 18% of unaided runs shipped the defect, 4% with a generic "be careful" prompt, 3% with the ruleset loaded, and **0% with the gate**, which refuses the write until the findings are fixed. Measured on IBM Bob Shell (`bob-default`), 5 runs per arm; [method and raw diffs](benchmarks/results/author).
+**The gate is the part a prompt cannot replace.** When the agent writes the code itself, 18% of unaided runs shipped the defect, 4% with a generic "be careful" prompt, 3% with the ruleset loaded, and **0% with the gate**, which refuses the write until the findings are fixed. Measured on IBM Bob Shell (`bob-default`), 5 runs per arm. The same arms on the other host measured so far: 7% to **2%** on Claude Code (`claude-sonnet-5`) -- a smaller drop, from a baseline that was already lower, and one that is not on its own distinguishable from chance at these counts; [method and raw diffs](benchmarks/results/author).
 
 **It is quiet on code that is fine.** Across the 4 agents tested, the median run objects to 4 of 10 clean changes unaided and 2 with the Grump loaded; the worst agent goes from 4 to 3. It does not buy that quiet by approving more: the median run still catches 30 of 30 seeded defects, against 30 unaided. That happens on every review, not only the ones with a bug in them, which is why it is the first thing worth knowing; [per-diff table](benchmarks/results).
 <!-- headline:end -->
@@ -46,6 +46,26 @@ def health_db():
 </td></tr>
 <tr><td>
 
+**RPT-41 "Allow tagging generated reports"**
+
+Your agent wrote:
+
+```python
+def build_report(name, tags=None):
+    if tags is not None and not isinstance(tags, (list, tuple)):
+        raise TypeError("tags must be a list or tuple")
+    return {
+        "name": name,
+        "generated_at": datetime.datetime.utcnow().isoformat(),
+```
+
+**It was refused:** reports.py:9 — a caller passing tags="urgent" silently becomes ['u','r','g','e','n','t'] instead of one tag, corrupting report data with no error — require tags to be a list/tuple (or reject non-list types) instead of blindly calling list() on it
+
+<sub>Recorded run, Claude Code. Task `report-tags`.</sub>
+
+</td></tr>
+<tr><td>
+
 **SEC-19 "Protect the admin routes with an API key"**
 
 Your agent wrote:
@@ -62,26 +82,6 @@ if not API_KEY:
 **It was refused:** app.py:11 — when ADMIN_API_KEY is unset, the server silently fails closed with no log output; a misconfigured deployment and an active attack are indistinguishable in production — log a warning (once, at startup or on first hit of the not-API_KEY branch) so on-call can tell the difference without reading source
 
 <sub>Recorded run, IBM Bob Shell. Task `api-key-auth`.</sub>
-
-</td></tr>
-<tr><td>
-
-**CAT-64 "Paginate the items list"**
-
-Your agent wrote:
-
-```python
-    try:
-        limit = int(request.args.get("limit", 20))
-        offset = int(request.args.get("offset", 0))
-    except (ValueError, TypeError):
-        return jsonify({"error": "limit and offset must be integers"}), 400
-    if limit < 1 or limit > 1000:
-```
-
-**It was refused:** app.py:15 — query_all is now called with two arguments but the original call site had none; if the function signature does not accept params the endpoint raises TypeError and returns 500 on every request — confirm query_all(sql, params) is a valid call, or show it in the diff
-
-<sub>Recorded run, IBM Bob Shell. Task `items-pagination`.</sub>
 
 </td></tr>
 </table>
@@ -136,8 +136,12 @@ Works with 14 coding agents from one ruleset, any MCP client, and a GitHub Actio
 | IBM Bob Shell | `bob-default` (n=5) | generic care prompt | 55 of 90 | 4 of 90 (4%) | n/a | 18 s |
 | IBM Bob Shell | `bob-default` (n=5) | grumpy-reviewer | 55 of 90 | 3 of 90 (3%) | 60 of 90 | 26 s |
 | IBM Bob Shell | `bob-default` (n=5) | **grumpy-reviewer + gate** | **53 of 90** | **0 of 90 (0%)** | **58 of 90** | 36 s |
+| Claude Code | `claude-sonnet-5` (n=5) | no skill | 85 of 90 | 6 of 90 (7%) | n/a | 46 s |
+| Claude Code | `claude-sonnet-5` (n=5) | generic care prompt | 85 of 90 | 4 of 90 (4%) | n/a | 57 s |
+| Claude Code | `claude-sonnet-5` (n=5) | grumpy-reviewer | 85 of 90 | 4 of 90 (4%) | 89 of 90 | 85 s |
+| Claude Code | `claude-sonnet-5` (n=5) | **grumpy-reviewer + gate** | **86 of 90** | **2 of 90 (2%)** | **90 of 90** | 157 s |
 
-Every agent whose four arms have finished is in the table above. Still running, and added as each one finishes: Claude Code.
+Every agent whose four arms have finished is in the table above. Still running, and added as each one finishes: Antigravity CLI, Codex CLI.
 <!-- bench:author:end -->
 
 <!-- live:start -->
@@ -152,7 +156,7 @@ The host's own words, from the recorded stream:
 <!-- live:end -->
 
 <!-- bench:hero:start -->
-**On Claude Code (`claude-sonnet-5`), the Grump catches 30 of 30 seeded defects, the same as the agent alone. What changes is discipline: false alarms on 10 clean diffs, 0 with him, 4 without; replies with no usable verdict per run, 0 with him, 3 without; 94% of BLOCK verdicts land on BLOCK-class defects; median review time 7 s with him, 11 s without at 229 output tokens with him, 685 output tokens without.** Median of 3 runs, measured 2026-09-06; [method, per-diff table, raw replies](benchmarks/results). **In the needle tier, where the same defect hides in a four-file, 150-line pull request, Claude Code finds 10 of 10 with the Grump, 9 without, 10 with the generic prompt.**
+**On Claude Code (`claude-sonnet-5`), the Grump catches 30 of 30 seeded defects, the same as the agent alone. What changes is discipline: false alarms on 10 clean diffs, 0 with him, 4 without; replies with no usable verdict per run, 0 with him, 3 without; 94% of BLOCK verdicts land on BLOCK-class defects; median review time 7 s with him, 11 s without at 229 output tokens with him, 685 output tokens without.** Median of 3 runs, measured 2026-09-12; [method, per-diff table, raw replies](benchmarks/results). **In the needle tier, where the same defect hides in a four-file, 150-line pull request, Claude Code finds 10 of 10 with the Grump, 9 without, 10 with the generic prompt.**
 <!-- bench:hero:end -->
 
 <p align="center"><img src="assets/demo.gif" alt="Terminal recording: the agent writes a handler, the Grump prints GRUMP: BLOCK with the line and the fix, the write is denied, the agent fixes it, the Grump prints GRUMP: APPROVE, Fine." width="860"></p>
