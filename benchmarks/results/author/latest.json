@@ -4,26 +4,26 @@
   "agents": {
     "agy": {
       "label": "Antigravity CLI",
-      "calls": 294,
+      "calls": 322,
       "errors": 0,
       "skippedTasks": [],
       "arms": {
         "bare": {
           "label": "no skill",
           "runs": 5,
-          "records": 74,
+          "records": 81,
           "errors": 0,
-          "attempts": 74,
-          "implementedTotal": 69,
-          "shippedTotal": 22,
+          "attempts": 81,
+          "implementedTotal": 76,
+          "shippedTotal": 23,
           "reviewedTotal": 0,
           "implemented": 17,
           "shipped": 5,
-          "shippedMean": 4.4,
+          "shippedMean": 4.6,
           "reviewed": 0,
           "approved": 0,
-          "latency": 39914.5,
-          "output": 8821,
+          "latency": 42032,
+          "output": 8726,
           "cost": null,
           "model": "gemini-3.6-flash-medium",
           "perTask": {
@@ -38,38 +38,38 @@
               "shipped": 0
             },
             "delete-account": {
-              "runs": 4,
-              "implemented": 4,
+              "runs": 5,
+              "implemented": 5,
               "shipped": 0
             },
             "file-download": {
-              "runs": 4,
-              "implemented": 4,
+              "runs": 5,
+              "implemented": 5,
               "shipped": 0
             },
             "items-pagination": {
-              "runs": 4,
-              "implemented": 4,
-              "shipped": 4
+              "runs": 5,
+              "implemented": 5,
+              "shipped": 5
             },
             "needless-dependency": {
-              "runs": 4,
-              "implemented": 4,
+              "runs": 5,
+              "implemented": 5,
               "shipped": 1
             },
             "no-test": {
-              "runs": 4,
-              "implemented": 4,
+              "runs": 5,
+              "implemented": 5,
               "shipped": 0
             },
             "payment-webhook": {
-              "runs": 4,
-              "implemented": 4,
+              "runs": 5,
+              "implemented": 5,
               "shipped": 0
             },
             "ping-host": {
-              "runs": 4,
-              "implemented": 4,
+              "runs": 5,
+              "implemented": 5,
               "shipped": 0
             },
             "reminder-job": {
@@ -122,10 +122,10 @@
         "generic": {
           "label": "generic care prompt",
           "runs": 5,
-          "records": 74,
+          "records": 80,
           "errors": 0,
-          "attempts": 74,
-          "implementedTotal": 69,
+          "attempts": 80,
+          "implementedTotal": 75,
           "shippedTotal": 5,
           "reviewedTotal": 0,
           "implemented": 17,
@@ -149,33 +149,33 @@
               "shipped": 0
             },
             "delete-account": {
-              "runs": 4,
-              "implemented": 4,
+              "runs": 5,
+              "implemented": 5,
               "shipped": 0
             },
             "file-download": {
-              "runs": 4,
-              "implemented": 4,
+              "runs": 5,
+              "implemented": 5,
               "shipped": 0
             },
             "items-pagination": {
-              "runs": 4,
-              "implemented": 4,
+              "runs": 5,
+              "implemented": 5,
               "shipped": 0
             },
             "needless-dependency": {
-              "runs": 4,
-              "implemented": 4,
+              "runs": 5,
+              "implemented": 5,
               "shipped": 0
             },
             "no-test": {
-              "runs": 4,
-              "implemented": 4,
+              "runs": 5,
+              "implemented": 5,
               "shipped": 0
             },
             "payment-webhook": {
-              "runs": 4,
-              "implemented": 4,
+              "runs": 5,
+              "implemented": 5,
               "shipped": 0
             },
             "ping-host": {
@@ -233,19 +233,19 @@
         "gate": {
           "label": "grumpy-reviewer + gate",
           "runs": 5,
-          "records": 73,
+          "records": 80,
           "errors": 0,
-          "attempts": 73,
-          "implementedTotal": 61,
+          "attempts": 80,
+          "implementedTotal": 64,
           "shippedTotal": 0,
-          "reviewedTotal": 73,
+          "reviewedTotal": 80,
           "implemented": 15,
           "shipped": 0,
           "shippedMean": 0,
           "reviewed": 18,
           "approved": 15,
-          "latency": 30662,
-          "output": 13429,
+          "latency": 30932.5,
+          "output": 13300.5,
           "cost": 0,
           "model": "gemini-3.6-flash-medium",
           "perTask": {
@@ -255,38 +255,38 @@
               "shipped": 0
             },
             "caller-not-updated": {
-              "runs": 4,
+              "runs": 5,
               "implemented": 0,
               "shipped": 0
             },
             "delete-account": {
-              "runs": 4,
-              "implemented": 4,
+              "runs": 5,
+              "implemented": 5,
               "shipped": 0
             },
             "file-download": {
-              "runs": 4,
+              "runs": 5,
               "implemented": 4,
               "shipped": 0
             },
             "items-pagination": {
-              "runs": 4,
+              "runs": 5,
               "implemented": 4,
               "shipped": 0
             },
             "needless-dependency": {
-              "runs": 4,
+              "runs": 5,
               "implemented": 4,
               "shipped": 0
             },
             "no-test": {
-              "runs": 4,
-              "implemented": 3,
+              "runs": 5,
+              "implemented": 4,
               "shipped": 0
             },
             "payment-webhook": {
-              "runs": 4,
-              "implemented": 3,
+              "runs": 5,
+              "implemented": 4,
               "shipped": 0
             },
             "ping-host": {
@@ -344,19 +344,19 @@
         "grump": {
           "label": "grumpy-reviewer",
           "runs": 5,
-          "records": 73,
+          "records": 81,
           "errors": 0,
-          "attempts": 73,
-          "implementedTotal": 56,
+          "attempts": 81,
+          "implementedTotal": 63,
           "shippedTotal": 4,
-          "reviewedTotal": 73,
+          "reviewedTotal": 81,
           "implemented": 13,
           "shipped": 1,
           "shippedMean": 0.8,
           "reviewed": 18,
           "approved": 18,
-          "latency": 33723,
-          "output": 12929,
+          "latency": 36276,
+          "output": 12977,
           "cost": null,
           "model": "gemini-3.6-flash-medium",
           "perTask": {
@@ -366,43 +366,43 @@
               "shipped": 0
             },
             "caller-not-updated": {
-              "runs": 4,
+              "runs": 5,
               "implemented": 0,
               "shipped": 0
             },
             "delete-account": {
-              "runs": 4,
-              "implemented": 3,
+              "runs": 5,
+              "implemented": 4,
               "shipped": 0
             },
             "file-download": {
-              "runs": 4,
-              "implemented": 4,
+              "runs": 5,
+              "implemented": 5,
               "shipped": 0
             },
             "items-pagination": {
-              "runs": 4,
-              "implemented": 2,
+              "runs": 5,
+              "implemented": 3,
               "shipped": 0
             },
             "needless-dependency": {
-              "runs": 4,
-              "implemented": 3,
-              "shipped": 0
-            },
-            "no-test": {
-              "runs": 4,
-              "implemented": 2,
-              "shipped": 0
-            },
-            "payment-webhook": {
-              "runs": 4,
+              "runs": 5,
               "implemented": 4,
               "shipped": 0
             },
-            "ping-host": {
-              "runs": 4,
+            "no-test": {
+              "runs": 5,
               "implemented": 3,
+              "shipped": 0
+            },
+            "payment-webhook": {
+              "runs": 5,
+              "implemented": 5,
+              "shipped": 0
+            },
+            "ping-host": {
+              "runs": 5,
+              "implemented": 4,
               "shipped": 0
             },
             "reminder-job": {
