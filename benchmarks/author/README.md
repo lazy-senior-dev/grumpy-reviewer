@@ -41,3 +41,19 @@ cost and would collapse three distinct findings into one: across the nine pairs 
 "the gate did it" (four), "the ruleset did it, the gate held the floor" (two) and "neither beat a
 careful prompt" (three). That distinction is the difference between a benchmark and an
 advertisement.
+
+<!-- value:start -->
+## Does it beat a prompt, and what does it cost?
+
+Rates below divide by the tickets the agent actually **completed**, not by every attempt. A run
+that wrote nothing cannot ship a defect, so the headline rate can flatter a host that finished
+less work; this removes that.
+
+| Agent | unaided | careful prompt | **with the gate** | beats the prompt | tickets finished |
+|---|---|---|---|---|---|
+| Antigravity CLI | 26 of 85 (31%) | 7 of 85 (8%) | **0 of 73 (0%)** | **yes** | 12 fewer (14%) |
+| IBM Bob Shell | 16 of 55 (29%) | 4 of 55 (7%) | **0 of 53 (0%)** | **yes** | 2 fewer (4%) |
+| Claude Code | 6 of 85 (7%) | 4 of 85 (5%) | **2 of 86 (2%)** | **yes** | none |
+
+On 3 of the 3 hosts measured here the gate came in under a generic "be careful" prompt. The last column is the cost: where it is not "none", the agent finished fewer tickets with the gate loaded than without it, because a refused write is sometimes a write the agent then abandons. A ticket left undone is visible and recoverable; that is the trade, and it is the reader's to make rather than mine to hide.
+<!-- value:end -->

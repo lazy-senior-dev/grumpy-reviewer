@@ -145,7 +145,7 @@ Works with 14 coding agents from one ruleset, any MCP client, and a GitHub Actio
 | Claude Code | `claude-sonnet-5` (n=5) | grumpy-reviewer | 85 of 90 | 4 of 90 (4%) | 89 of 90 | 85 s |
 | Claude Code | `claude-sonnet-5` (n=5) | **grumpy-reviewer + gate** | **86 of 90** | **2 of 90 (2%)** | **90 of 90** | 157 s |
 
-Every agent whose four arms have finished is in the table above. Still running, and added as each one finishes: Codex CLI.
+Every agent whose four arms have finished is in the table above. Still running, and added as each one finishes: Codex CLI. It is not free. The gate finished fewer tickets than the unaided agent on Antigravity CLI (73 against 85, 14% fewer; 31% of completed tickets shipped a defect unaided against 0% gated) — a refused write is sometimes a write the agent abandons rather than fixes. Counted per ticket actually completed the improvement still holds, so the shortfall is a cost to weigh, not the explanation for it; an unfinished ticket is at least visible.
 <!-- bench:author:end -->
 
 <!-- live:start -->
