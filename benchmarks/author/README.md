@@ -54,6 +54,7 @@ less work; this removes that.
 | Antigravity CLI | 26 of 85 (31%) | 7 of 85 (8%) | **0 of 73 (0%)** | **yes** | 12 fewer (14%) |
 | IBM Bob Shell | 16 of 55 (29%) | 4 of 55 (7%) | **0 of 53 (0%)** | **yes** | 2 fewer (4%) |
 | Claude Code | 6 of 85 (7%) | 4 of 85 (5%) | **2 of 86 (2%)** | **yes** | none |
+| Codex CLI | 13 of 67 (19%) | 5 of 66 (8%) | **4 of 67 (6%)** | **yes** | none |
 
-On 3 of the 3 hosts measured here the gate came in under a generic "be careful" prompt. The last column is the cost: where it is not "none", the agent finished fewer tickets with the gate loaded than without it, because a refused write is sometimes a write the agent then abandons. A ticket left undone is visible and recoverable; that is the trade, and it is the reader's to make rather than mine to hide.
+On 4 of the 4 hosts measured here the gate came in under a generic "be careful" prompt. The last column is the cost: where it is not "none", the agent finished fewer tickets with the gate loaded than without it, because a refused write is sometimes a write the agent then abandons. A ticket left undone is visible and recoverable; that is the trade, and it is the reader's to make rather than mine to hide.
 <!-- value:end -->
