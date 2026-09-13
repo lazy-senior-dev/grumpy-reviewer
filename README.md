@@ -11,7 +11,7 @@
 <p align="center"><em>Show me where it breaks.</em></p>
 
 <!-- headline:start -->
-**The gate is the part a prompt cannot replace.** When the agent writes the code itself, 29% of unaided runs shipped the defect, 8% with a generic "be careful" prompt, 6% with the ruleset loaded, and **0% with the gate**, which refuses the write until the findings are fixed. Measured on Antigravity CLI (`gemini-3.6-flash-medium`), 5 runs per arm. The same arms on the other hosts measured so far: 18% to **0%** on IBM Bob Shell (`bob-default`), 7% to **2%** on Claude Code (`claude-sonnet-5`), 18% to **6%** on Codex CLI (`gpt-5.5`) -- though the Claude Code figure rests on 4 runs and is not on its own distinguishable from chance; [method and raw diffs](benchmarks/results/author).
+**The gate is the part a prompt cannot replace.** When the agent writes the code itself, 29% of unaided runs shipped the defect, 8% with a generic "be careful" prompt, 6% with the ruleset loaded, and **0% with the gate**, which refuses the write until the findings are fixed. Measured on Antigravity CLI (`gemini-3.6-flash-medium`), 5 runs per arm. The same arms on the other hosts measured so far: 18% to **0%** on IBM Bob Shell (`bob-default`), 7% to **2%** on Claude Code (`claude-sonnet-5`), 19% to **6%** on Codex CLI (`gpt-5.5`) -- though the Claude Code figure rests on 4 runs and is not on its own distinguishable from chance; [method and raw diffs](benchmarks/results/author).
 
 **It is quiet on code that is fine.** Across the 4 agents tested, the median run objects to 4 of 10 clean changes unaided and 2 with the Grump loaded; the worst agent goes from 4 to 3. It does not buy that quiet by approving more: the median run still catches 30 of 30 seeded defects, against 30 unaided. That happens on every review, not only the ones with a bug in them, which is why it is the first thing worth knowing; [per-diff table](benchmarks/results).
 <!-- headline:end -->
@@ -140,10 +140,10 @@ Works with 14 coding agents from one ruleset, any MCP client, and a GitHub Actio
 | IBM Bob Shell | `bob-default` (n=5) | generic care prompt | 55 of 90 | 4 of 90 (4%) | n/a | 18 s |
 | IBM Bob Shell | `bob-default` (n=5) | grumpy-reviewer | 55 of 90 | 3 of 90 (3%) | 60 of 90 | 26 s |
 | IBM Bob Shell | `bob-default` (n=5) | **grumpy-reviewer + gate** | **53 of 90** | **0 of 90 (0%)** | **58 of 90** | 36 s |
-| Codex CLI | `gpt-5.5` (n=4) | no skill | 67 of 72 | 13 of 72 (18%) | n/a | 41 s |
-| Codex CLI | `gpt-5.5` (n=4) | generic care prompt | 66 of 72 | 5 of 72 (7%) | n/a | 69 s |
-| Codex CLI | `gpt-5.5` (n=4) | grumpy-reviewer | 68 of 72 | 5 of 72 (7%) | 72 of 72 | 76 s |
-| Codex CLI | `gpt-5.5` (n=4) | **grumpy-reviewer + gate** | **67 of 72** | **4 of 72 (6%)** | **71 of 72** | 89 s |
+| Codex CLI | `gpt-5.5` (n=5) | no skill | 84 of 90 | 17 of 90 (19%) | n/a | 40 s |
+| Codex CLI | `gpt-5.5` (n=5) | generic care prompt | 82 of 90 | 7 of 90 (8%) | n/a | 73 s |
+| Codex CLI | `gpt-5.5` (n=5) | grumpy-reviewer | 85 of 90 | 7 of 90 (8%) | 90 of 90 | 75 s |
+| Codex CLI | `gpt-5.5` (n=5) | **grumpy-reviewer + gate** | **84 of 90** | **5 of 90 (6%)** | **89 of 90** | 88 s |
 | Claude Code | `claude-sonnet-5` (n=5) | no skill | 85 of 90 | 6 of 90 (7%) | n/a | 46 s |
 | Claude Code | `claude-sonnet-5` (n=5) | generic care prompt | 85 of 90 | 4 of 90 (4%) | n/a | 57 s |
 | Claude Code | `claude-sonnet-5` (n=5) | grumpy-reviewer | 85 of 90 | 4 of 90 (4%) | 89 of 90 | 85 s |
@@ -164,7 +164,7 @@ The host's own words, from the recorded stream:
 <!-- live:end -->
 
 <!-- bench:hero:start -->
-**On Claude Code (`claude-sonnet-5`), the Grump catches 30 of 30 seeded defects, the same as the agent alone. What changes is discipline: false alarms on 10 clean diffs, 0 with him, 4 without; replies with no usable verdict per run, 0 with him, 3 without; 94% of BLOCK verdicts land on BLOCK-class defects; median review time 7 s with him, 11 s without at 229 output tokens with him, 685 output tokens without.** Median of 3 runs, measured 2026-09-12; [method, per-diff table, raw replies](benchmarks/results). **In the needle tier, where the same defect hides in a four-file, 150-line pull request, Claude Code finds 10 of 10 with the Grump, 9 without, 10 with the generic prompt.**
+**On Claude Code (`claude-sonnet-5`), the Grump catches 30 of 30 seeded defects, the same as the agent alone. What changes is discipline: false alarms on 10 clean diffs, 0 with him, 4 without; replies with no usable verdict per run, 0 with him, 3 without; 94% of BLOCK verdicts land on BLOCK-class defects; median review time 7 s with him, 11 s without at 229 output tokens with him, 685 output tokens without.** Median of 3 runs, measured 2026-09-13; [method, per-diff table, raw replies](benchmarks/results). **In the needle tier, where the same defect hides in a four-file, 150-line pull request, Claude Code finds 10 of 10 with the Grump, 9 without, 10 with the generic prompt.**
 <!-- bench:hero:end -->
 
 <p align="center"><img src="assets/demo.gif" alt="Terminal recording: the agent writes a handler, the Grump prints GRUMP: BLOCK with the line and the fix, the write is denied, the agent fixes it, the Grump prints GRUMP: APPROVE, Fine." width="860"></p>
