@@ -155,7 +155,7 @@ Every agent whose four arms have finished is in the table above. It is not free.
 <!-- live:start -->
 ## Verified in the host, not only in the harness
 
-**The thing you install is the thing that was measured.** The table above scores the ruleset by re-running the review over a staged diff. This runs the shipped plugin inside a real Claude Code session (`claude-sonnet-5`, gate mode), gives it the same 4 tickets, and records what the host itself decided: the persona arrived on 4 of 4 sessions, and the gate refused 8 writes across 4 of them. The agent still finished the ticket in 3 of 4, and shipped the seeded defect in 0. One session per ticket: this shows the gate fires and what it costs, not a rate to compare with the table above. Measured 2026-09-11; reproduce with `npm run verify:live`, which exits non-zero if no write is ever refused.
+**The thing you install is the thing that was measured.** The table above scores the ruleset by re-running the review over a staged diff. This runs the shipped plugin inside a real Claude Code session (`claude-sonnet-5`, gate mode), gives it the same 18 tickets, and records what the host itself decided: the persona arrived on 18 of 18 sessions, and the gate refused 40 writes across 18 of them. The agent still finished the ticket in 15 of 18, and shipped the seeded defect in 0. One session per ticket: this shows the gate fires and what it costs, not a rate to compare with the table above. Measured 2026-09-13; reproduce with `npm run verify:live`, which exits non-zero if no write is ever refused.
 
 The host's own words, from the recorded stream:
 
@@ -172,17 +172,17 @@ The host's own words, from the recorded stream:
 <!-- recordings:start -->
 ## Watch him work on every agent
 
-The same staged diff, one CLI, 4 agents. Each recording is a real run captured with `node scripts/capture-run.mjs --agent <name>` and rendered frame by frame from the transcript, nothing typed by hand and nothing cut. The captions come from the recording itself. Captured 2026-09-04.
+The same staged diff, one CLI, 4 agents. Each recording is a real run captured with `node scripts/capture-run.mjs --agent <name>` and rendered frame by frame from the transcript, nothing typed by hand and nothing cut. The captions come from the recording itself. Captured 2026-09-13.
 
 | Claude Code | Codex CLI |
 |---|---|
-| <img src="assets/recordings/claude.gif" alt="Terminal recording of the Grump reviewing a staged diff with Claude Code: GRUMP: BLOCK with 1 numbered findings" width="440"> | <img src="assets/recordings/codex.gif" alt="Terminal recording of the Grump reviewing a staged diff with Codex CLI: GRUMP: BLOCK with 1 numbered findings" width="440"> |
-| <b>Verdict</b> GRUMP: BLOCK<br><b>Findings</b> 1<br><b>Time</b> 7 s<br><b>Tokens</b> 7,886 in / 350 out | <b>Verdict</b> GRUMP: BLOCK<br><b>Findings</b> 1<br><b>Time</b> 7 s<br><b>Tokens</b> 15,580 in / 309 out |
+| <img src="assets/recordings/claude.gif" alt="Terminal recording of the Grump reviewing a staged diff with Claude Code: GRUMP: REQUEST_CHANGES with 2 numbered findings" width="440"> | <img src="assets/recordings/codex.gif" alt="Terminal recording of the Grump reviewing a staged diff with Codex CLI: GRUMP: BLOCK with 1 numbered findings" width="440"> |
+| <b>Verdict</b> GRUMP: REQUEST_CHANGES<br><b>Findings</b> 2<br><b>Time</b> 10 s<br><b>Tokens</b> 7,966 in / 594 out | <b>Verdict</b> GRUMP: BLOCK<br><b>Findings</b> 1<br><b>Time</b> 7 s<br><b>Tokens</b> 15,580 in / 309 out |
 
 | Antigravity CLI | IBM Bob Shell |
 |---|---|
-| <img src="assets/recordings/agy.gif" alt="Terminal recording of the Grump reviewing a staged diff with Antigravity CLI: GRUMP: REQUEST_CHANGES with 1 numbered findings" width="440"> | <img src="assets/recordings/bob.gif" alt="Terminal recording of the Grump reviewing a staged diff with IBM Bob Shell: GRUMP: BLOCK with 1 numbered findings" width="440"> |
-| <b>Verdict</b> GRUMP: REQUEST_CHANGES<br><b>Findings</b> 1<br><b>Time</b> 269 s<br><b>Tokens</b> 66,177 in / 124,662 out | <b>Verdict</b> GRUMP: BLOCK<br><b>Findings</b> 1<br><b>Time</b> 13 s<br><b>Tokens</b> not reported by the host |
+| <img src="assets/recordings/agy.gif" alt="Terminal recording of the Grump reviewing a staged diff with Antigravity CLI: GRUMP: REQUEST_CHANGES with 1 numbered findings" width="440"> | <img src="assets/recordings/bob.gif" alt="Terminal recording of the Grump reviewing a staged diff with IBM Bob Shell: GRUMP: BLOCK with 3 numbered findings" width="440"> |
+| <b>Verdict</b> GRUMP: REQUEST_CHANGES<br><b>Findings</b> 1<br><b>Time</b> 117 s<br><b>Tokens</b> 29,104 in / 76,769 out | <b>Verdict</b> GRUMP: BLOCK<br><b>Findings</b> 3<br><b>Time</b> 15 s<br><b>Tokens</b> not reported by the host |
 
 Each card reads the same way. **Verdict** is what The Grump concluded: APPROVE lets the change through, REQUEST_CHANGES asks for fixes, BLOCK stops it. **Findings** counts the numbered problems he listed, each naming a file, a line, and the smallest fix. **Time** is how long the whole review took, start to finish. **Tokens** is what the host reported it read and wrote, and says so plainly when a host reports nothing. Agents that narrate the whole checklist before the verdict are shown from the verdict block down; the CLI prints it the same way. Re-capture any of them with `--agent claude|codex|agy|bob`; Bob needs `BOB_API_KEY`.
 <!-- recordings:end -->

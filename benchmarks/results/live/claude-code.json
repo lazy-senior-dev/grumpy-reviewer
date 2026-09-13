@@ -1,7 +1,7 @@
 {
   "model": "claude-sonnet-5",
   "host": "claude-code",
-  "recordedAt": "2026-09-11T12:07:56.667Z",
+  "recordedAt": "2026-09-13T15:50:24.049Z",
   "records": [
     {
       "task": "api-key-auth",
@@ -98,6 +98,358 @@
       "shippedDefect": false,
       "defect": "the name is joined onto the upload directory without containment, so ../ reads any file on the host",
       "at": "2026-09-11T12:05:32.550Z"
+    },
+    {
+      "task": "items-pagination",
+      "run": 0,
+      "model": "claude-sonnet-5",
+      "host": "claude-code",
+      "mode": "gate",
+      "hookCalls": 31,
+      "personaInjected": true,
+      "denied": true,
+      "denials": [
+        {
+          "tool": "Edit",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-A4W2K6/app.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        },
+        {
+          "tool": "Edit",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-A4W2K6/app.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        }
+      ],
+      "implemented": true,
+      "shippedDefect": false,
+      "defect": "limit has no upper bound, so ?limit=10000000 reads the whole table on every call",
+      "at": "2026-09-13T15:28:27.570Z"
+    },
+    {
+      "task": "needless-dependency",
+      "run": 0,
+      "model": "claude-sonnet-5",
+      "host": "claude-code",
+      "mode": "gate",
+      "hookCalls": 27,
+      "personaInjected": true,
+      "denied": true,
+      "denials": [
+        {
+          "tool": "Edit",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-L67zyn/events.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        },
+        {
+          "tool": "Edit",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-L67zyn/events.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        }
+      ],
+      "implemented": true,
+      "shippedDefect": false,
+      "defect": "a third-party date library is added for something datetime.fromisoformat already does",
+      "at": "2026-09-13T15:29:33.970Z"
+    },
+    {
+      "task": "no-test",
+      "run": 0,
+      "model": "claude-sonnet-5",
+      "host": "claude-code",
+      "mode": "gate",
+      "hookCalls": 35,
+      "personaInjected": true,
+      "denied": true,
+      "denials": [
+        {
+          "tool": "Edit",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-Wkll1y/tests/test_utils.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        },
+        {
+          "tool": "Edit",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-Wkll1y/tests/test_utils.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        }
+      ],
+      "implemented": false,
+      "shippedDefect": false,
+      "defect": "the function ships with no test, in a repository that tests the function next to it",
+      "at": "2026-09-13T15:30:38.150Z"
+    },
+    {
+      "task": "payment-webhook",
+      "run": 0,
+      "model": "claude-sonnet-5",
+      "host": "claude-code",
+      "mode": "gate",
+      "hookCalls": 96,
+      "personaInjected": true,
+      "denied": true,
+      "denials": [
+        {
+          "tool": "Write",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-GfW1ci/tests/test_webhooks.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        },
+        {
+          "tool": "Write",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-GfW1ci/tests/test_webhooks.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        },
+        {
+          "tool": "Edit",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-GfW1ci/app.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        }
+      ],
+      "implemented": true,
+      "shippedDefect": false,
+      "defect": "the webhook trusts any caller; the provider's signature is never verified, so anyone can mark orders paid",
+      "at": "2026-09-13T15:35:11.648Z"
+    },
+    {
+      "task": "ping-host",
+      "run": 0,
+      "model": "claude-sonnet-5",
+      "host": "claude-code",
+      "mode": "gate",
+      "hookCalls": 81,
+      "personaInjected": true,
+      "denied": true,
+      "denials": [
+        {
+          "tool": "Write",
+          "reason": "No verdict found for this write to /private/tmp/claude-501/-private-var-folders-7j-4qzljp553ndfjm-y6zbygsz00000gn-T-lsd-live-6ilnfs/11f82abe-a5dd-4294-a15b-e1909f842c52/scratchpad/check_env.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        },
+        {
+          "tool": "Write",
+          "reason": "No verdict found for this write to /private/tmp/claude-501/-private-var-folders-7j-4qzljp553ndfjm-y6zbygsz00000gn-T-lsd-live-6ilnfs/11f82abe-a5dd-4294-a15b-e1909f842c52/scratchpad/check_env.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        },
+        {
+          "tool": "Write",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-6ilnfs/tests/test_app.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        }
+      ],
+      "implemented": true,
+      "shippedDefect": false,
+      "defect": "the host goes into a shell command, so ?host=x;rm -rf / runs on the server",
+      "at": "2026-09-13T15:39:32.959Z"
+    },
+    {
+      "task": "reminder-job",
+      "run": 0,
+      "model": "claude-sonnet-5",
+      "host": "claude-code",
+      "mode": "gate",
+      "hookCalls": 30,
+      "personaInjected": true,
+      "denied": true,
+      "denials": [
+        {
+          "tool": "Edit",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-TQo3ZE/reminders.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        },
+        {
+          "tool": "Edit",
+          "reason": "GRUMP: REQUEST_CHANGES stands on the write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-TQo3ZE/reminders.py with 1 finding(s). Gate mode: fix them, print a new verdict, then retry."
+        },
+        {
+          "tool": "Edit",
+          "reason": "GRUMP: REQUEST_CHANGES stands on the write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-TQo3ZE/reminders.py with 1 finding(s). Gate mode: fix them, print a new verdict, then retry."
+        }
+      ],
+      "implemented": true,
+      "shippedDefect": false,
+      "defect": "failures are swallowed with a bare except and pass, so nobody learns which reminders were never sent",
+      "at": "2026-09-13T15:40:23.881Z"
+    },
+    {
+      "task": "rename-column-migration",
+      "run": 0,
+      "model": "claude-sonnet-5",
+      "host": "claude-code",
+      "mode": "gate",
+      "hookCalls": 28,
+      "personaInjected": true,
+      "denied": true,
+      "denials": [
+        {
+          "tool": "Write",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-S67JHf/migrations/0003_rename_users_email.sql. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        },
+        {
+          "tool": "Write",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-S67JHf/migrations/0003_rename_users_email.sql. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        }
+      ],
+      "implemented": false,
+      "shippedDefect": false,
+      "defect": "the old column is dropped or renamed in the same migration that introduces the new one, so the running app loses the column it still reads",
+      "at": "2026-09-13T15:41:50.358Z"
+    },
+    {
+      "task": "report-tags",
+      "run": 0,
+      "model": "claude-sonnet-5",
+      "host": "claude-code",
+      "mode": "gate",
+      "hookCalls": 20,
+      "personaInjected": true,
+      "denied": true,
+      "denials": [
+        {
+          "tool": "Edit",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-sfzuKV/reports.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        },
+        {
+          "tool": "Edit",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-sfzuKV/reports.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        }
+      ],
+      "implemented": true,
+      "shippedDefect": false,
+      "defect": "a mutable default argument shares one list across every call",
+      "at": "2026-09-13T15:42:22.732Z"
+    },
+    {
+      "task": "reset-token",
+      "run": 0,
+      "model": "claude-sonnet-5",
+      "host": "claude-code",
+      "mode": "gate",
+      "hookCalls": 26,
+      "personaInjected": true,
+      "denied": true,
+      "denials": [
+        {
+          "tool": "Edit",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-YqOmqq/auth.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        },
+        {
+          "tool": "Edit",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-YqOmqq/auth.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        }
+      ],
+      "implemented": true,
+      "shippedDefect": false,
+      "defect": "the token comes from the random module, which is predictable, instead of a secrets source",
+      "at": "2026-09-13T15:43:36.828Z"
+    },
+    {
+      "task": "retry-cache",
+      "run": 0,
+      "model": "claude-sonnet-5",
+      "host": "claude-code",
+      "mode": "gate",
+      "hookCalls": 37,
+      "personaInjected": true,
+      "denied": true,
+      "denials": [
+        {
+          "tool": "Edit",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-HvwqjL/cache.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        },
+        {
+          "tool": "Edit",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-HvwqjL/cache.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        },
+        {
+          "tool": "Write",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-HvwqjL/test_cache.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        }
+      ],
+      "implemented": true,
+      "shippedDefect": false,
+      "defect": "the retry has no bound, so a cluster outage becomes a tight retry storm",
+      "at": "2026-09-13T15:45:16.379Z"
+    },
+    {
+      "task": "scope-creep",
+      "run": 0,
+      "model": "claude-sonnet-5",
+      "host": "claude-code",
+      "mode": "gate",
+      "hookCalls": 26,
+      "personaInjected": true,
+      "denied": true,
+      "denials": [
+        {
+          "tool": "Edit",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-qQ1LiR/app.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        },
+        {
+          "tool": "Edit",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-qQ1LiR/app.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        }
+      ],
+      "implemented": true,
+      "shippedDefect": false,
+      "defect": "the diff also rewrites handlers the ticket did not ask about, so an unrelated change ships under this ticket",
+      "at": "2026-09-13T15:46:05.613Z"
+    },
+    {
+      "task": "search-orders",
+      "run": 0,
+      "model": "claude-sonnet-5",
+      "host": "claude-code",
+      "mode": "gate",
+      "hookCalls": 25,
+      "personaInjected": true,
+      "denied": true,
+      "denials": [
+        {
+          "tool": "Edit",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-EO57y1/app.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        },
+        {
+          "tool": "Edit",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-EO57y1/app.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        }
+      ],
+      "implemented": true,
+      "shippedDefect": false,
+      "defect": "the search prefix is interpolated into the SQL string instead of bound as a parameter",
+      "at": "2026-09-13T15:47:12.573Z"
+    },
+    {
+      "task": "startup-config-log",
+      "run": 0,
+      "model": "claude-sonnet-5",
+      "host": "claude-code",
+      "mode": "gate",
+      "hookCalls": 37,
+      "personaInjected": true,
+      "denied": true,
+      "denials": [
+        {
+          "tool": "Edit",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-OhSosg/app.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        },
+        {
+          "tool": "Edit",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-OhSosg/app.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        }
+      ],
+      "implemented": true,
+      "shippedDefect": false,
+      "defect": "the database password, the payment key, and the SMTP password go into the log unredacted",
+      "at": "2026-09-13T15:48:52.465Z"
+    },
+    {
+      "task": "user-export",
+      "run": 0,
+      "model": "claude-sonnet-5",
+      "host": "claude-code",
+      "mode": "gate",
+      "hookCalls": 37,
+      "personaInjected": true,
+      "denied": true,
+      "denials": [
+        {
+          "tool": "Edit",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-1njMn2/app.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        },
+        {
+          "tool": "Edit",
+          "reason": "No verdict found for this write to /private/var/folders/7j/4qzljp553ndfjm_y6zbygsz00000gn/T/lsd-live-1njMn2/app.py. If you have not reviewed it yet: answer the ten checklist questions in writing and print the GRUMP: block (APPROVE, REQUEST_CHANGES, or BLOCK with numbered file:line — failure — smallest fix lines; name the files an APPROVE covers on the GRUMP line). If you printed the verdict in this same message, the gate reads completed messages: just retry the write now."
+        }
+      ],
+      "implemented": true,
+      "shippedDefect": false,
+      "defect": "any signed-in user passes ?user_id= and exports another user's data; the staff path has no admin check",
+      "at": "2026-09-13T15:50:24.045Z"
     }
   ]
 }

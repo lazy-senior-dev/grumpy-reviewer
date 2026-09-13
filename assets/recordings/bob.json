@@ -3,15 +3,17 @@
   "agent": "bob",
   "case": "s01-py-user-id-from-body",
   "command": "npx github:lazy-senior-dev/grumpy-reviewer review --staged --agent bob",
-  "durationMs": 12636,
+  "durationMs": 15458,
   "exitCode": 1,
   "stderr": [
     "Reading the staged changes (34 lines) with IBM Bob Shell. The Grump does not skim; give it a moment.",
-    "13 s · $0.0106"
+    "15 s · $0.0112"
   ],
   "stdout": [
     "GRUMP: BLOCK",
-    "1. app/api/profiles.py:9 — any authenticated user supplies {\"user_id\": <victim>} in the body and reads any other user's profile and notification settings — remove the body lookup entirely; take user_id from session only, as the original code did"
+    "1. app/api/profiles.py:9 — user_id read from the request body is trusted without comparison to the session, so any caller can read any user's profile and notification settings by supplying an arbitrary user_id — remove the payload/body lookup entirely; take user_id only from session.get(\"user_id\"), exactly as /me/notifications does",
+    "2. app/api/profiles.py:7-16 — the new user_id resolution logic in /me is outside the scope of this ticket and ships without a test that covers the auth boundary — revert the /me endpoint to read user_id from the session only; the /me/notifications endpoint is where the new behaviour belongs",
+    "3. app/api/profiles.py — neither the changed /me endpoint nor the new /me/notifications endpoint has a test proving that a request without a valid session is rejected — add at least one test per endpoint that asserts 401 when the session is absent"
   ],
-  "recordedAt": "2026-09-04T18:47:01.231Z"
+  "recordedAt": "2026-09-13T16:13:45.188Z"
 }
